@@ -66,6 +66,7 @@ private:
     std::mutex m;
     std::condition_variable cv;
     bool finish = false;
+    bool terminated = false;
 
 public:
     thread_pool() {
@@ -89,7 +90,6 @@ public:
                     try {
                         p.second();
                     } catch (...) {
-
                     }
                     p.first.on_finish();
                 }
@@ -98,6 +98,8 @@ public:
     }
 
     ~thread_pool() {
+        if (terminated)
+            return;
         {
             std::lock_guard<std::mutex> lg(m);
             finish = true;
@@ -107,6 +109,15 @@ public:
         for (std::thread& t : th) {
             t.join();
         }
+    }
+
+    void await() {
+        if (terminated)
+            return;
+        for (std::thread& t : th) {
+            t.join();
+        }
+        terminated = true;
     }
 
     fawait submit(runnable const& r) {

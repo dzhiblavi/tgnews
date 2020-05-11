@@ -16,11 +16,12 @@ void walker::run() {
         roots.pop();
         walker::walk(pool, p);
     }
+    pool.await();
 }
 
-void walker::walk(thread_pool<8> &thp, std::filesystem::path path) {
+fawait walker::walk(thread_pool<8> &thp, std::filesystem::path path) {
     std::cout << "HERE: " << path << std::endl;
-    thp.submit([&thp, path] {
+    return thp.submit([&thp, path] {
         try {
             std::cout << "PROCESS " << path << '\n';
             for (auto p : std::filesystem::directory_iterator(path)) {
