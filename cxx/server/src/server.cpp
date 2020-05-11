@@ -51,7 +51,7 @@ server::client_connection::client_connection(io_api::io_context &ctx, server *sr
             [this] { on_disconnect(); },
             [this] { on_read(); },
             {}))
-    , storage(&socket, [this] { on_write(); }) {}
+    , stor(&socket, [this] { on_write(); }) {}
 
 void server::client_connection::on_disconnect() {
     errlog(2, __func__);
@@ -82,7 +82,7 @@ void server::client_connection::on_read() {
 void server::client_connection::on_write() {
     errlog(4, __func__);
 
-    std::string res = storage.get();
+    std::string res = stor.get();
 
     int r = socket.send(res.c_str(), res.size());
     if (r < 0) {
@@ -92,6 +92,6 @@ void server::client_connection::on_write() {
     }
 
     if (r < res.size())
-        storage.push_back(res.substr(r, res.size() - r));
+        stor.push_back(res.substr(r, res.size() - r));
 }
 

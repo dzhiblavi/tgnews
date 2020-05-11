@@ -56,7 +56,7 @@ private:
     server* srv;
     ipv4::socket socket;
     thread_pool<CLIENT_THP_SIZE> thp;
-    storage<std::string> storage;
+    storage<std::string> stor;
 
     char buff[CLIENT_BUFF_SIZE]{0};
     http_buff req_buff;

@@ -22,7 +22,8 @@ set(HTTP_SRC
         http/request.h
         http/parser.h)
 
-include_directories(../../sysapi/)
+include_directories(../../sysapi)
+include_directories(../../json)
 
 add_executable(tgserver
         main.cpp
