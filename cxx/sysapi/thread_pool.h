@@ -113,7 +113,7 @@ public:
             std::lock_guard<std::mutex> lg(m);
             queue.push({fa, r});
         }
-        cv.notify_one();
+        cv.notify_all();
         return fa;
     }
 
@@ -121,9 +121,9 @@ public:
         fawait fa;
         {
             std::lock_guard<std::mutex> lg(m);
-            queue.push({fa, std::move(r)});
+            queue.push({fa, r});
         }
-        cv.notify_one();
+        cv.notify_all();
         return fa;
     }
 };
