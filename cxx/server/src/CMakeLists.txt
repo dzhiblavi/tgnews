@@ -31,3 +31,6 @@ add_executable(tgserver
         ${SERV_SRC}
         ${HTTP_SRC})
 
+if (UNIX)
+    target_link_libraries(tgserver pthread)
+

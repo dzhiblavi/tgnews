@@ -3,7 +3,6 @@
 #include "socket.h"
 
 #if defined(__linux) || defined(__APPLE__)
-#include <sys/filio.h>
 #include <sys/ioctl.h>
 #endif
 

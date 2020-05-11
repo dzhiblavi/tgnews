@@ -46,9 +46,9 @@ public:
 
     int append(char* d, int size);
 
-    bool ready() const noexcept;
+    [[nodiscard]] bool ready() const noexcept;
 
-    http::request<true> get_request() const;
+    [[nodiscard]] http::request<true> get_request() const;
 };
 
 struct server::client_connection {
