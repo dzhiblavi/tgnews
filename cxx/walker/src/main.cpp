@@ -16,6 +16,8 @@ int main(int argc, char *argv[]) {
         argc--, argv++;
     }
 
-    walker w(starts);
+    walker w(starts, [](walker::fs_path_t path){
+        std::cout << path << std::endl;
+    });
     w.run();
 }

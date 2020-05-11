@@ -138,7 +138,7 @@ public:
         fawait fa;
         {
             std::lock_guard<std::mutex> lg(m);
-            queue.push({fa, r});
+            queue.push({fa, std::move(r)});
         }
         cv.notify_all();
         return fa;
