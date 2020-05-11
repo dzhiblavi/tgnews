@@ -1,0 +1,15 @@
+set(language
+        lang_detect/code_sequence.cpp
+        lang_detect/code_sequence.h
+        lang_detect/const.cpp
+        lang_detect/langdetect.cpp
+        lang_detect/langdetect.h
+        lang_detect/langdetect_c.h
+        lang_detect/ngram_storage.cpp
+        lang_detect/ngram_storage.h
+        lang_detect/normalizer.cpp
+        lang_detect/normalizer.h
+        lang_detect/unicode_data.cpp
+        lang_detect/unicode_data.h
+        detect.cpp
+        )
