@@ -75,10 +75,10 @@ public:
                 for (;;) {
                     std::unique_lock<std::mutex> lg(m);
                     cv.wait(lg, [this] {
-                        return !queue.empty() || finish;
+                        return !queue.empty() || finish || terminated;
                     });
 
-                    if (finish) {
+                    if (finish || (terminated && queue.empty())) {
                         break;
                     }
 
@@ -114,10 +114,14 @@ public:
     void await() {
         if (terminated)
             return;
+        {
+            std::lock_guard<std::mutex> lg(m);
+            terminated = true;
+        }
+        cv.notify_all();
         for (std::thread& t : th) {
             t.join();
         }
-        terminated = true;
     }
 
     fawait submit(runnable const& r) {
