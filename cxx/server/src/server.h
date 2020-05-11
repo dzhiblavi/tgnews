@@ -10,8 +10,10 @@
 #include "net/socket.h"
 #include "net/storage.h"
 
-#include "http/request.h"
-#include "http/parser.h"
+#include "request.h"
+#include "parser.h"
+
+#include "json.h"
 
 #include "sysapi.h"
 #include "thread_pool.h"
