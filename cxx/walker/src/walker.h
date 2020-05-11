@@ -3,23 +3,32 @@
 
 #include <string>
 #include <filesystem>
+#include <functional>
 #include <iostream>
 #include <queue>
 
 #include "thread_pool.h"
 
 class walker {
-    thread_pool<8> pool;
-    std::queue<std::filesystem::directory_entry> roots;
+public:
+    static const size_t pool_size = 8;
+    using fs_path_t = std::filesystem::path;
+    using thp_t = thread_pool<pool_size>;
+    using file_handler_t = std::function<void(fs_path_t)>;
+
+private:
+    thp_t pool;
+    file_handler_t fh;
+    std::vector<std::string> roots;
 
 public:
-    explicit walker(std::string const &path);
+    walker(std::string const &path, file_handler_t);
 
-    explicit walker(std::vector<std::string> const &paths);
+    walker(std::vector<std::string> const &paths, file_handler_t);
 
     void run();
 
-    static fawait walk(thread_pool<8> &thp, std::filesystem::path path);
+    static fawait walk(thp_t &thp, file_handler_t &fh, fs_path_t const &path);
 };
 
 #endif //TGSERVER_WALKER_H
