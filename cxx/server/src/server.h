@@ -30,6 +30,9 @@ private:
     ipv4::server_socket socket;
     std::map<client_connection*, std::unique_ptr<client_connection>> clients;
 
+private:
+    void on_connect(io_api::io_context& ctx);
+
 public:
     server(io_api::io_context& ctx, ipv4::endpoint const& ep);
 };
@@ -45,7 +48,7 @@ public:
 
     bool ready() const noexcept;
 
-
+    http::request<true> get_request() const;
 };
 
 struct server::client_connection {
@@ -53,7 +56,7 @@ private:
     server* srv;
     ipv4::socket socket;
     thread_pool<CLIENT_THP_SIZE> thp;
-    storage<http::request<false>> storage;
+    storage<std::string> storage;
 
     char buff[CLIENT_BUFF_SIZE]{0};
     http_buff req_buff;
