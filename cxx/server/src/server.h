@@ -19,6 +19,7 @@
 
 #define ERRLOG_LVL 15
 #define CLIENT_THP_SIZE 2
+#define CLIENT_BUFF_SIZE 1000
 
 
 class server {
@@ -33,12 +34,29 @@ public:
     server(io_api::io_context& ctx, ipv4::endpoint const& ep);
 };
 
+class http_buff {
+private:
+    std::string data;
+
+public:
+    http_buff() noexcept = default;
+
+    int append(char* d, int size);
+
+    bool ready() const noexcept;
+
+
+};
+
 struct server::client_connection {
 private:
     server* srv;
     ipv4::socket socket;
     thread_pool<CLIENT_THP_SIZE> thp;
     storage<http::request<false>> storage;
+
+    char buff[CLIENT_BUFF_SIZE]{0};
+    http_buff req_buff;
 
 private:
     void on_disconnect();
