@@ -39,20 +39,6 @@ public:
     server(io_api::io_context& ctx, ipv4::endpoint const& ep);
 };
 
-class http_buff {
-private:
-    std::string data;
-
-public:
-    http_buff() noexcept = default;
-
-    int append(char* d, int size);
-
-    [[nodiscard]] bool ready() const noexcept;
-
-    [[nodiscard]] http::request<true> get_request() const;
-};
-
 struct server::client_connection {
 private:
     server* srv;
@@ -61,7 +47,7 @@ private:
     storage<std::string> stor;
 
     char buff[CLIENT_BUFF_SIZE]{0};
-    http_buff req_buff;
+    http::parser<true> parser;
 
 private:
     void on_disconnect();

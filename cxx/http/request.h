@@ -17,10 +17,10 @@ template<>
 struct request<true> {
     std::string method;
     std::string path;
-    std::string version;
-    std::string content_type;
-    size_t cache_keepalive;
-    size_t content_length;
+    std::string version = "HTTP/1.1";
+    std::string content_type = "text/html";
+    size_t cache_keepalive = 0;
+    size_t content_length = 0;
     std::string content;
 
     [[nodiscard]] std::string to_string() const {
