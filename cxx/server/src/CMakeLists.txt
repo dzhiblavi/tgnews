@@ -25,6 +25,11 @@ set(JSON_SRC
         ../../json/json.cpp
         ../../json/json.h)
 
+set(GTEST
+        ../../gtest/gtest-all.cc
+        ../../gtest/gtest.h
+        ../../gtest/gtest_main.cc)
+
 include_directories(../../sysapi)
 include_directories(../../http)
 include_directories(../../json)

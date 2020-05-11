@@ -41,7 +41,9 @@ public:
     }
 
     ~fawait() = default;
+
     fawait(fawait const&) = default;
+
     fawait& operator=(fawait const&) = default;
 
     void await() {
@@ -113,7 +115,7 @@ public:
             std::lock_guard<std::mutex> lg(m);
             queue.push({fa, r});
         }
-        cv.notify_one();
+        cv.notify_all();
         return fa;
     }
 
@@ -123,7 +125,7 @@ public:
             std::lock_guard<std::mutex> lg(m);
             queue.push({fa, std::move(r)});
         }
-        cv.notify_one();
+        cv.notify_all();
         return fa;
     }
 };
