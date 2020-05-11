@@ -17,7 +17,8 @@
 #include <map>
 #include <queue>
 
-#define NET_APPLE_POLL
+
+#define NET_APPLE_KQUEUE
 
 #if defined(__APPLE__)
 #if defined(NET_APPLE_POLL)
@@ -34,6 +35,18 @@
 #elif defined(WIN32)
 #define NET_POLL_POLL
 static inline int poll(pollfd *pfd, int nfds, int timeout) { return WSAPoll(pfd, nfds, timeout); }
+#endif
+
+#ifdef WIN32
+typedef SOCKET sock_fd_t;
+#define NET_SOCK_CLOSE closesocket
+#define NET_BUFF_PTR char*
+#define NET_BUFF_CPTR char const*
+#elif defined(__linux) || defined(__APPLE__)
+typedef int sock_fd_t;
+#define NET_SOCK_CLOSE close
+#define NET_BUFF_PTR void*
+#define NET_BUFF_CPTR void const*
 #endif
 
 #include "unique_fd.h"
@@ -178,7 +191,7 @@ public:
 
 private:
 #if defined(NET_POLL_EPOLL) || defined(NET_POLL_KQUEUE)
-    unique_fd qfd_;
+    unique_fd<sock_fd_t, NET_SOCK_CLOSE> qfd_;
     std::array<event, 10000> events_;
 #endif
 
