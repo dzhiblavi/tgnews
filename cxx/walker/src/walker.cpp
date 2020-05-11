@@ -10,17 +10,30 @@ walker::walker(std::vector<std::string> const &paths) {
     }
 }
 
-void walker::walk() {
+void walker::run() {
     while (!roots.empty()) {
-        std::filesystem::directory_entry root = roots.front();
+        auto p = roots.front();
         roots.pop();
-
-        for (auto &p : std::filesystem::directory_iterator(root)) {
-            if (p.is_directory()) {
-                roots.push(p);
-            } else {
-                std::cout << p << "\n";
-            }
-        }
+        walker::walk(pool, p);
     }
+}
+
+void walker::walk(thread_pool<8> &thp, std::filesystem::directory_entry path) {
+    std::cout << "HERE";
+    thp.submit([&thp, path] {
+        try {
+            std::cout << "PROCESS " << path << '\n';
+            for (auto p : std::filesystem::directory_iterator(path)) {
+                if (p.is_directory()) {
+                    std::cout << "DIR " << p << '\n';
+                    walker::walk(thp, p);
+                    std::cout << "LOAD";
+                } else {
+                    std::cout << p << "\n";
+                }
+            }
+        } catch(...) {
+            std::cout << "ERROR";
+        }
+    });
 }

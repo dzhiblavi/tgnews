@@ -6,7 +6,10 @@
 #include <iostream>
 #include <queue>
 
+#include "thread_pool.h"
+
 class walker {
+    thread_pool<8> pool;
     std::queue<std::filesystem::directory_entry> roots;
 
 public:
@@ -14,7 +17,9 @@ public:
 
     explicit walker(std::vector<std::string> const &paths);
 
-    void walk();
+    void run();
+
+    static void walk(thread_pool<8> &thp, std::filesystem::directory_entry path);
 };
 
 #endif //TGSERVER_WALKER_H

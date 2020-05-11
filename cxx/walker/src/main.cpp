@@ -17,5 +17,5 @@ int main(int argc, char *argv[]) {
     }
 
     walker w(starts);
-    w.walk();
+    w.run();
 }
