@@ -33,4 +33,4 @@ add_executable(tgserver
 
 if (UNIX)
     target_link_libraries(tgserver pthread)
-
+endif(UNIX)
