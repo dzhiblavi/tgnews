@@ -19,7 +19,7 @@ public:
 
     void run();
 
-    static void walk(thread_pool<8> &thp, std::filesystem::directory_entry path);
+    static void walk(thread_pool<8> &thp, std::filesystem::path path);
 };
 
 #endif //TGSERVER_WALKER_H

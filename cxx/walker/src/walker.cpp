@@ -18,22 +18,24 @@ void walker::run() {
     }
 }
 
-void walker::walk(thread_pool<8> &thp, std::filesystem::directory_entry path) {
-    std::cout << "HERE";
+void walker::walk(thread_pool<8> &thp, std::filesystem::path path) {
+    std::cout << "HERE: " << path << std::endl;
     thp.submit([&thp, path] {
         try {
             std::cout << "PROCESS " << path << '\n';
             for (auto p : std::filesystem::directory_iterator(path)) {
                 if (p.is_directory()) {
-                    std::cout << "DIR " << p << '\n';
-                    walker::walk(thp, p);
+                    std::cout << "DIR " << p.path() << '\n';
+                    walker::walk(thp, p.path());
                     std::cout << "LOAD";
                 } else {
-                    std::cout << p << "\n";
+                    std::cout << p.path() << "\n";
                 }
             }
-        } catch(...) {
-            std::cout << "ERROR";
+        } catch (std::filesystem::filesystem_error const& er) {
+            std::cerr << "ERROR: " << er.what() << std::endl;
+        } catch (...) {
+            std::cerr << "ERROR" << std::endl;
         }
     });
 }
