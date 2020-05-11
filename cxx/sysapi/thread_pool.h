@@ -130,7 +130,7 @@ public:
             std::lock_guard<std::mutex> lg(m);
             queue.push({fa, r});
         }
-        cv.notify_all();
+        cv.notify_one();
         return fa;
     }
 
