@@ -10,8 +10,23 @@ set(NET_SRC
         net/socket.h
         net/timer.cpp
         net/timer.h
-        net/unique_fd.h)
+        net/unique_fd.h
+        net/storage.h
+        thread_pool.h)
+
+set(SERV_SRC
+        server.cpp
+        server.h)
+
+set(HTTP_SRC
+        http/request.h
+        http/parser.h)
+
+include_directories(../../sysapi/)
 
 add_executable(tgserver
         main.cpp
-        ${NET_SRC})
+        ${NET_SRC}
+        ${SERV_SRC}
+        ${HTTP_SRC})
+
