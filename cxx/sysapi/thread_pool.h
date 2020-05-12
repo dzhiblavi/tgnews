@@ -41,7 +41,9 @@ public:
     }
 
     ~fawait() = default;
+
     fawait(fawait const&) = default;
+
     fawait& operator=(fawait const&) = default;
 
     void await() {
@@ -64,6 +66,7 @@ private:
     std::mutex m;
     std::condition_variable cv;
     bool finish = false;
+    bool terminated = false;
 
 public:
     thread_pool() {
@@ -72,10 +75,10 @@ public:
                 for (;;) {
                     std::unique_lock<std::mutex> lg(m);
                     cv.wait(lg, [this] {
-                        return !queue.empty() || finish;
+                        return !queue.empty() || finish || terminated;
                     });
 
-                    if (finish) {
+                    if (finish || (terminated && queue.empty())) {
                         break;
                     }
 
@@ -87,7 +90,6 @@ public:
                     try {
                         p.second();
                     } catch (...) {
-
                     }
                     p.first.on_finish();
                 }
@@ -96,10 +98,25 @@ public:
     }
 
     ~thread_pool() {
+        if (terminated)
+            return;
         {
             std::lock_guard<std::mutex> lg(m);
             finish = true;
             queue = std::queue<std::pair<fawait, runnable>>();
+        }
+        cv.notify_all();
+        for (std::thread& t : th) {
+            t.join();
+        }
+    }
+
+    void await() {
+        if (terminated)
+            return;
+        {
+            std::lock_guard<std::mutex> lg(m);
+            terminated = true;
         }
         cv.notify_all();
         for (std::thread& t : th) {

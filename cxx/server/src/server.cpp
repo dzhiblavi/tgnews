@@ -18,6 +18,13 @@ void errlog(int lvl, Args&&... args) {
         errlog(std::forward<Args>(args)...);
     }
 }
+
+http::request<false> process_request(http::request<true> const& req) {
+    // TODO
+    errlog(0, std::string("STUB CALLED: ") + __func__);
+    errlog(0, req.to_string());
+    return {};
+}
 }
 
 
@@ -29,20 +36,6 @@ void server::on_connect(io_api::io_context& ctx) {
 
 server::server(io_api::io_context &ctx, ipv4::endpoint const &ep)
     : socket(ctx, ep, [this, &ctx] { on_connect(ctx); }) {}
-
-
-
-int http_buff::append(char *d, int size) {
-    return 0;
-}
-
-bool http_buff::ready() const noexcept {
-    return true;
-}
-
-http::request<true> http_buff::get_request() const {
-    return {};
-}
 
 
 server::client_connection::client_connection(io_api::io_context &ctx, server *srv)
@@ -69,13 +62,19 @@ void server::client_connection::on_read() {
     }
 
     errlog(15, std::string(__func__) + ": " + std::string(buff, buff + r));
-    req_buff.append(buff, r);
 
-    if (req_buff.ready()) {
-        thp.submit([request{req_buff.get_request()}] {
-            // work on request; ; TODO
-            errlog(0, "STUB: REQUEST WORK");
+    int offset = 0;
+    int s = parser.append(buff, offset, r);
+    r -= s;
+    offset += s;
+    while (parser.ready()) {
+        thp.submit([request{parser.get_request()}] {
+            process_request(request);
         });
+
+        s = parser.append(buff, offset, r);
+        r -= s;
+        offset += s;
     }
 }
 

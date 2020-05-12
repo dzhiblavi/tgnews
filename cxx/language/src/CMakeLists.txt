@@ -11,5 +11,4 @@ add_executable(language
         lang_detect/normalizer.h
         lang_detect/unicode_data.cpp
         lang_detect/unicode_data.h
-        detect.cpp
-        )
+        detect.cpp)
