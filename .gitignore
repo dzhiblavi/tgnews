@@ -1,5 +1,5 @@
 *cmake-build-debug/
 *.idea/
 *DS_Store
-*scripts/
+scripts/
 *Samples/
