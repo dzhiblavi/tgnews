@@ -22,6 +22,7 @@ void errlog(int lvl, Args&&... args) {
 http::request<false> process_request(http::request<true> const& req) {
     // TODO
     errlog(0, std::string("STUB CALLED: ") + __func__);
+    errlog(0, req.to_string());
     return {};
 }
 }

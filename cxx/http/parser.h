@@ -82,13 +82,12 @@ private:
             content_started = 1;
         } else if (equals(line, i, "Cache")) {
             req.cache_keepalive = get_int_after('=', line, i);
-        } else {
-            assert(line == "\r\n");
+        } else if (line == HTTP_ENDL) {
             if (content_started == 1) {
                 content_started = 2;
-            } else {
-                req.content += "\r\n";
             }
+        } else {
+            std::cerr << "http parser: skip line: " << line << std::endl;
         }
 
         line.clear();

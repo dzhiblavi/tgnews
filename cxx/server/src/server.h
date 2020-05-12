@@ -4,11 +4,11 @@
 #include <map>
 #include <memory>
 
-#include "net/io_api.h"
-#include "net/address.h"
-#include "net/timer.h"
-#include "net/socket.h"
-#include "net/storage.h"
+#include "io_api.h"
+#include "address.h"
+#include "timer.h"
+#include "socket.h"
+#include "storage.h"
 
 #include "request.h"
 #include "parser.h"
