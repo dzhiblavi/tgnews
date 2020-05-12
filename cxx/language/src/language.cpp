@@ -10,8 +10,6 @@
 using langdetect::Detector;
 using std::string;
 
-size_t const MAX_READ_SIZE = 4096;
-
 template <typename T>
 class cvector {
     std::vector<T> data;
@@ -57,7 +55,6 @@ int main(int argc, char** argv) {
     for (auto& p : mp) {
         std::map<std::string, json::obj_ptr> lmp;
         lmp["lang_code"] = json::string::create(p.first);
-
         std::vector<std::string> v = std::move(p.second.to_vector());
         std::vector<json::obj_ptr> vj(v.size());
         for (size_t i = 0; i < v.size(); ++i) {
