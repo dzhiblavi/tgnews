@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="tgserver"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\language\;CMake Files\language\src\;CMake Files\server\;CMake Files\server\src\;CMake Files\walker\;CMake Files\walker\src\;CMake Files\json\;CMake Files\http\;CMake Files\tgnews\;CMake Files\tgnews\src\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="language">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/language" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/../../json"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/../../walker/src"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/../../sysapi"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/Makefile&quot;  VERBOSE=1 language"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="language/fast">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/language" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/../../json"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/../../walker/src"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/../../sysapi"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/Makefile&quot;  VERBOSE=1 language/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/language/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tgserver">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/tgserver" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/../../sysapi"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/../../http"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/../../json"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/../../net"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/Makefile&quot;  VERBOSE=1 tgserver"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tgserver/fast">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/tgserver" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/../../sysapi"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/../../http"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/../../json"/>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/../../net"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/Makefile&quot;  VERBOSE=1 tgserver/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/server/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_files">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/list_files" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/walker/src/../../sysapi"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/Makefile&quot;  VERBOSE=1 list_files"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_files/fast">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/list_files" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/walker/src/../../sysapi"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/Makefile&quot;  VERBOSE=1 list_files/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/walker/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="json_test">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/json_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/json/../gtest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/Makefile&quot;  VERBOSE=1 json_test"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="json_test/fast">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/json_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/json/../gtest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/Makefile&quot;  VERBOSE=1 json_test/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/json/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="http_test">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/http_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/http/../gtest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/Makefile&quot;  VERBOSE=1 http_test"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="http_test/fast">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/http_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/http/../gtest"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/Makefile&quot;  VERBOSE=1 http_test/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/http/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tgnews">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/tgnews" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/tgnews/src/../../sysapi"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/Makefile&quot;  VERBOSE=1 tgnews"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tgnews/fast">
+				<Option output="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/tgnews" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/dzhiblavi/Documents/prog/tgnews/cxx/tgnews/src/../../sysapi"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/Makefile&quot;  VERBOSE=1 tgnews/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/dzhiblavi/Documents/prog/tgnews/cxx/cmake-build-release/tgnews/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/gtest/gtest-all.cc">
+			<Option target="json_test"/>
+			<Option target="http_test"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/gtest/gtest.h">
+			<Option target="json_test"/>
+			<Option target="http_test"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/gtest/gtest_main.cc">
+			<Option target="json_test"/>
+			<Option target="http_test"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/http/parser.h">
+			<Option target="tgserver"/>
+			<Option target="http_test"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/http/request.h">
+			<Option target="tgserver"/>
+			<Option target="http_test"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/http/test_http.cpp">
+			<Option target="http_test"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/json/json.cpp">
+			<Option target="language"/>
+			<Option target="tgserver"/>
+			<Option target="json_test"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/json/json.h">
+			<Option target="language"/>
+			<Option target="tgserver"/>
+			<Option target="json_test"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/json/test_json.cpp">
+			<Option target="json_test"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/code_sequence.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/code_sequence.h">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/const.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/langdetect.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/langdetect.h">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/langdetect_c.h">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/ngram_storage.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/ngram_storage.h">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/normalizer.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/normalizer.h">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/unicode_data.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/lang_detect/unicode_data.h">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/language.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/address.cpp">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/address.h">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/io_api.cpp">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/io_api.h">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/ipv4_error.h">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/poll.cpp">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/poll.h">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/socket.cpp">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/socket.h">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/storage.h">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/timer.cpp">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/timer.h">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/net/unique_fd.h">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/main.cpp">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/server.cpp">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/server.h">
+			<Option target="tgserver"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/sysapi/sysapi.cpp">
+			<Option target="language"/>
+			<Option target="tgnews"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/sysapi/sysapi.h">
+			<Option target="language"/>
+			<Option target="tgnews"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/sysapi/thread_pool.h">
+			<Option target="language"/>
+			<Option target="tgnews"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/tgnews/src/tgnews.cpp">
+			<Option target="tgnews"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/walker/src/list_files.cpp">
+			<Option target="list_files"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/walker/src/walker.cpp">
+			<Option target="language"/>
+			<Option target="list_files"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/walker/src/walker.h">
+			<Option target="language"/>
+			<Option target="list_files"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\language\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/language/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\language\src\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\server\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/server/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\server\src\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/walker/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\walker\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/walker/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\walker\src\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/json/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\json\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/http/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\http\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/tgnews/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tgnews\"/>
+		</Unit>
+		<Unit filename="/Users/dzhiblavi/Documents/prog/tgnews/cxx/tgnews/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tgnews\src\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
