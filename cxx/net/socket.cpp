@@ -136,7 +136,9 @@ std::function<void(poll::flag const&)> socket::configure_callback_() noexcept {
         bool* old_destroyed = destroyed_;
         destroyed_ = &cur_destroyed;
         try {
+//            std::cerr << "SOCKET CALLBACK: " << std::endl;
             if (ev.eof()) {
+//                std::cerr << "ON_DISCONNECT" << std::endl;
                 if (this->on_disconnect_)
                     this->on_disconnect_();
                 if (cur_destroyed)
@@ -144,11 +146,13 @@ std::function<void(poll::flag const&)> socket::configure_callback_() noexcept {
             }
 
             if (ev.read() && on_read_) {
+//                std::cerr << "ON_READ" << std::endl;
                 this->on_read_();
                 if (cur_destroyed)
                     return;
             }
             if (ev.write() && on_write_) {
+//                std::cerr << "ON_WRITE" << std::endl;
                 this->on_write_();
             }
         } catch (std::runtime_error const& re) {

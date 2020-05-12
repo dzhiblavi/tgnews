@@ -22,7 +22,7 @@ void errlog(int lvl, Args&&... args) {
 http::request<false> process_request(http::request<true> const& req) {
     // TODO
     errlog(0, std::string("STUB CALLED: ") + __func__);
-    errlog(0, req.to_string());
+    errlog(0, "'" + req.to_string() + "'");
     return {};
 }
 }
@@ -61,15 +61,16 @@ void server::client_connection::on_read() {
         IPV4_EXC();
     }
 
-    errlog(15, std::string(__func__) + ": " + std::string(buff, buff + r));
+    errlog(15, std::string(__func__) + ": '" + std::string(buff, buff + r) + "'");
 
     int offset = 0;
     int s = parser.append(buff, offset, r);
     r -= s;
     offset += s;
     while (parser.ready()) {
-        thp.submit([request{parser.get_request()}] {
+        thp.submit([this, request{parser.get_request()}] {
             process_request(request);
+            stor.push_front("STUB: " + request.to_string());
         });
 
         s = parser.append(buff, offset, r);

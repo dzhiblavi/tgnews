@@ -42,11 +42,13 @@ typedef SOCKET sock_fd_t;
 #define NET_SOCK_CLOSE closesocket
 #define NET_BUFF_PTR char*
 #define NET_BUFF_CPTR char const*
+#define NET_INVALID_SOCKET INVALID_SOCKET
 #elif defined(__linux) || defined(__APPLE__)
 typedef int sock_fd_t;
 #define NET_SOCK_CLOSE close
 #define NET_BUFF_PTR void*
 #define NET_BUFF_CPTR void const*
+#define NET_INVALID_SOCKET -1
 #endif
 
 #include "unique_fd.h"
@@ -191,7 +193,7 @@ public:
 
 private:
 #if defined(NET_POLL_EPOLL) || defined(NET_POLL_KQUEUE)
-    unique_fd<sock_fd_t, NET_SOCK_CLOSE> qfd_;
+    unique_fd<sock_fd_t, NET_INVALID_SOCKET, NET_SOCK_CLOSE> qfd_;
     std::array<event, 10000> events_;
 #endif
 

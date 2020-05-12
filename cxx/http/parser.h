@@ -118,6 +118,7 @@ public:
     }
 
     [[nodiscard]] request<true> get_request() {
+        assert(content_size == 0);
         content_size = -1;
         content_started = 0;
         request<true> ret = std::move(req);

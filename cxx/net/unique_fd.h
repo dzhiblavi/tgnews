@@ -5,9 +5,9 @@
 #include <algorithm>
 #include <iostream>
 
-template <typename T, int(*cls)(T)>
+template <typename T, T Default, int(*cls)(T)>
 class unique_fd {
-    T fd{};
+    T fd = Default;
 
 public:
     unique_fd() noexcept = default;
@@ -25,7 +25,7 @@ public:
 
     unique_fd(unique_fd&& uf) noexcept
         : fd(uf.fd) {
-        uf.fd = T{};
+        uf.fd = Default;
     }
 
     unique_fd& operator=(unique_fd&& uf) noexcept {

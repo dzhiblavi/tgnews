@@ -31,7 +31,7 @@ struct request<true> {
            << "Cache-Control: max-age=" << cache_keepalive << HTTP_ENDL
            << "Content-Length: " << content_length << HTTP_ENDL
            << HTTP_ENDL
-           << content;
+           << content << HTTP_ENDL;
 
         return ss.str();
     }
@@ -52,7 +52,7 @@ struct request<false> {
            << "Content-type: application/json" << HTTP_ENDL
            << "Content-length: " << content_length << HTTP_ENDL
            << HTTP_ENDL
-           << content;
+           << content << HTTP_ENDL;
 
         return ss.str();
     }
