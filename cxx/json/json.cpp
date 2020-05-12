@@ -20,7 +20,7 @@ std::string map::to_string(int tabs) const {
     ss << "{" << JSON_ENDL;
     size_t i = 0;
     for (auto const& p : mp) {
-        ss << tab << JSON_TAB << p.first << ": " << p.second->to_string(tabs + 1);
+        ss << tab << JSON_TAB << "\"" << p.first << "\": " << p.second->to_string(tabs + 1);
 
         if (i < mp.size() - 1)
             ss << ",";
@@ -78,6 +78,9 @@ obj_ptr number::create(int value) {
 }
 
 
+string::string(std::string&& value)
+    : value(std::move(value)) {}
+
 string::string(std::string const& value)
     : value(value) {}
 
@@ -85,7 +88,11 @@ std::string string::to_string(int tabs) const {
     return "\"" + value + "\"";
 }
 
-obj_ptr string::create(std::string const &value) {
+obj_ptr string::create(std::string&& value) {
+    return obj_ptr(new string(std::move(value)));
+}
+
+obj_ptr string::create(std::string const& value) {
     return obj_ptr(new string(value));
 }
 

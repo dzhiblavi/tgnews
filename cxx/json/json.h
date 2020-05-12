@@ -64,9 +64,13 @@ class string : object {
     std::string value;
 
 public:
+    string(std::string&& value);
+
     string(std::string const& value);
 
     std::string to_string(int tabs) const override;
+
+    static obj_ptr create(std::string&& value);
 
     static obj_ptr create(std::string const& value);
 };

@@ -13,6 +13,8 @@ int main(int argc, char** argv) {
         std::string server_binary = "../../server/src/tgserver";
         sysapi::executer(server_binary, server_binary, std::string(argv[1]));
     } else if (!strcmp(argv[0], "languages")) {
+        std::string languages_binary = "../../language/src/language";
+        sysapi::executer(languages_binary, languages_binary, std::string(argv[1]));
     } else if (!strcmp(argv[0], "news")) {
     } else if (!strcmp(argv[0], "categories")) {
     } else if (!strcmp(argv[0], "threads")) {
