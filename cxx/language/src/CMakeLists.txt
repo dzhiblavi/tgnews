@@ -1,4 +1,4 @@
-set(language
+add_executable(language
         lang_detect/code_sequence.cpp
         lang_detect/code_sequence.h
         lang_detect/const.cpp

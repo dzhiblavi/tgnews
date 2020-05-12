@@ -6,7 +6,6 @@
 #include "lang_detect/langdetect.h"
 
 using langdetect::Detector;
-using std::ifstream;
 using std::string;
 
 size_t const MAX_READ_SIZE = 4096;
@@ -15,10 +14,10 @@ void message(std::string const &msg, double const &score) {
   std::cout << ": " << msg << ", " << score << std::endl;
 }
 
-std::string detect(std::string const & input) {
-  // here we need to reuse
+int main(int argc, char ** argv) {
+  std::ifstream file(argv[1]);
+  std::string str{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
   Detector detector;
-  langdetect::Detected result = detector.detect(input.data(), input.size());
-  message(result.name(), result.score());
-  return result.name();
+  langdetect::Detected result = detector.detect(str.data(), str.size());
+  std::cout << result.name() << std::endl;
 }
