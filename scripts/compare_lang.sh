@@ -8,5 +8,4 @@ CXX_BINARY_DIR="../cxx/cmake-build-debug"
 while read -r line; do
   echo "$line"
   ./${CXX_BINARY_DIR}/language/src/language "$line" >> __out_cxx.txt
-  # python call here
 done < __files.txt

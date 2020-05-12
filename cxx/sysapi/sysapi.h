@@ -46,14 +46,18 @@ int wait(int pid, F&& pred) {
 }
 
 template <typename... Args>
+void executer(Args&&... args) {
+    if (0 > execl(std::forward<Args>(args).c_str()..., nullptr)) {
+        throw sysapi::error(std::strerror(errno));
+    }
+}
+
+template <typename... Args>
 int execute(Args&&... args) {
     int pid = fork();
 
     if (!pid) {
-        if (0 > execl(std::forward<Args>(args).c_str()..., nullptr)) {
-            throw sysapi::error(std::strerror(errno));
-        }
-
+        executer(std::forward<Args>(args)...);
         return 0;
     } else {
         return pid;

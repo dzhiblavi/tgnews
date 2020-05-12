@@ -9,3 +9,6 @@ add_subdirectory(walker)
 
 add_subdirectory(json)
 add_subdirectory(http)
+
+add_subdirectory(tgnews)
+
