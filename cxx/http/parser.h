@@ -121,7 +121,9 @@ public:
     [[nodiscard]] request<true> get_request() {
         content_size = -1;
         content_started = 0;
-        return std::move(req);
+        request<true> ret = std::move(req);
+        req = {};
+        return ret;
     }
 
     int append(char const* buff, int offset, int size) {
@@ -149,7 +151,7 @@ public:
             }
 
             if (idx + 1 == end) {
-                line += buff[idx];
+                line += buff[idx++];
                 return idx - begin;
             }
 
