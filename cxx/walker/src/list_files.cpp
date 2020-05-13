@@ -1,6 +1,7 @@
 #include "walker.h"
 
 #include <vector>
+#include <mutex>
 
 int main(int argc, char *argv[]) {
     const char *usage = "Usage: walker file_path";
@@ -16,7 +17,9 @@ int main(int argc, char *argv[]) {
         argc--, argv++;
     }
 
-    walker w(starts, [](walker::fs_path_t path){
+    std::mutex coutm;
+    walker w(starts, [&](const walker::fs_path_t& path){
+        std::lock_guard<std::mutex> lg(coutm);
         std::cout << path.string() << std::endl;
     });
     w.run();

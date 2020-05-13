@@ -28,69 +28,65 @@ class literal;
 
 typedef std::unique_ptr<object> obj_ptr;
 
-class map : object {
+struct map : object {
     std::map<std::string, obj_ptr> mp;
 
 public:
-    map(std::map<std::string, obj_ptr>&& mp);
+    explicit map(std::map<std::string, obj_ptr>&& mp);
 
-    std::string to_string(int tabs) const override;
+    [[nodiscard]] std::string to_string(int tabs) const override;
 
     static obj_ptr create(std::map<std::string, obj_ptr>&& mp);
 };
 
-class array : object {
+struct array : object {
     std::vector<obj_ptr> v;
 
 public:
-    array(std::vector<obj_ptr>&& v);
+    explicit array(std::vector<obj_ptr>&& v);
 
-    std::string to_string(int tabs) const override;
+    [[nodiscard]] std::string to_string(int tabs) const override;
 
     static obj_ptr create(std::vector<obj_ptr>&& v);
 };
 
-class number : object {
+struct number : object {
     int value;
 
 public:
-    number(int value);
+    explicit number(int value);
 
-    std::string to_string(int tabs) const override;
+    [[nodiscard]] std::string to_string(int tabs) const override;
 
     static obj_ptr create(int value);
 };
 
-class string : object {
+struct string : object {
     std::string value;
 
 public:
-    string(std::string&& value);
+    explicit string(std::string&& value);
 
-    string(std::string const& value);
+    explicit string(std::string const& value);
 
-    std::string to_string(int tabs) const override;
+    [[nodiscard]] std::string to_string(int tabs) const override;
 
     static obj_ptr create(std::string&& value);
 
     static obj_ptr create(std::string const& value);
 };
 
-class literal : object {
-public:
+struct literal : object {
     enum VALUE {
         NUL,
         TRUE,
         FALSE,
-    };
-
-private:
-    VALUE value;
+    } value;
 
 public:
-    literal(VALUE value);
+    explicit literal(VALUE value);
 
-    std::string to_string(int tabs) const override;
+    [[nodiscard]] std::string to_string(int tabs) const override;
 
     static obj_ptr create(VALUE value);
 };

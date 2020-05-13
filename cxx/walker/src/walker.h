@@ -17,7 +17,8 @@ public:
     using file_handler_t = std::function<void(fs_path_t)>;
 
 private:
-    thp_t pool;
+    thp_t poolDir;
+    thp_t poolFile;
     file_handler_t fh;
     std::vector<std::string> roots;
 
@@ -28,7 +29,7 @@ public:
 
     void run();
 
-    static fawait walk(thp_t &thp, file_handler_t &fh, fs_path_t const &path);
+    static fawait walk(thp_t &poolDir, thp_t& poolFile, file_handler_t &fh, fs_path_t const &path);
 };
 
 #endif //TGSERVER_WALKER_H

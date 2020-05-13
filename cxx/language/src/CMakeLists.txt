@@ -23,7 +23,7 @@ set(WALKER_SRC
 set(SYSAPI_SRC
         ../../sysapi/sysapi.cpp
         ../../sysapi/sysapi.h
-        ../../sysapi/thread_pool.h)
+        ../../sysapi/thread_pool.h detect.cpp detect.h)
 
 include_directories(../../json)
 include_directories(../../walker/src)
