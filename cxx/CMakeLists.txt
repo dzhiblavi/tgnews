@@ -12,5 +12,8 @@ add_subdirectory(language)
 add_subdirectory(server)
 add_subdirectory(walker)
 
-# MAIN EXECUTABLE
+add_subdirectory(json)
+add_subdirectory(http)
+add_subdirectory(html)
+
 add_subdirectory(tgnews)
