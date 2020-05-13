@@ -23,4 +23,6 @@ int main(int argc, char *argv[]) {
         std::cout << path.string() << std::endl;
     });
     w.run();
+
+    return 0;
 }

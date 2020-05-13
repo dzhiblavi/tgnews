@@ -1,10 +1,12 @@
 #include "walker.h"
 
-walker::walker(std::string const &path, file_handler_t func) : fh(func) {
+#include <utility>
+
+walker::walker(std::string const &path, file_handler_t func) : fh(std::move(func)) {
     roots.push_back(path);
 }
 
-walker::walker(std::vector<std::string> const &paths, file_handler_t func) : fh(func) {
+walker::walker(std::vector<std::string> const &paths, file_handler_t func) : fh(std::move(func)) {
     roots = paths;
 }
 
