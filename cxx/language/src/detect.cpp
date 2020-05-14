@@ -10,7 +10,7 @@ json::obj_ptr detect(std::filesystem::path const& p, std::set<std::string> const
         std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
         std::string result = detector.detect(str.data(), str.size()).name().substr(0, 2);
         std::lock_guard<std::mutex> lg(m);
-        mp[result].push_back(path.filename());
+        mp[result].push_back(path);
     });
     w.run();
 
