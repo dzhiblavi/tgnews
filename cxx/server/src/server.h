@@ -47,7 +47,7 @@ private:
     storage<std::string> stor;
 
     char buff[CLIENT_BUFF_SIZE]{0};
-    http::parser<true> parser;
+    http::parser<http::request> parser;
 
 private:
     void on_disconnect();
