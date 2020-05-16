@@ -14,6 +14,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::cout << detect(argv[1], std::set<std::string>())->to_string() << std::endl;
+    std::cout << detect(argv[1], std::set<std::string>({"en"}))->to_string() << std::endl;
     return 0;
 }
