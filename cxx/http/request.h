@@ -6,56 +6,53 @@
 #include <sstream>
 
 
-#define HTTP_ENDL "\r\n"
+#define HTTPCRLF "\r\n"
 
 
 namespace http {
-template<bool isRequest>
-struct request;
-
-template<>
-struct request<true> {
-    std::string method;
-    std::string path;
-    std::string version = "HTTP/1.1";
-    std::string content_type = "text/html";
-    size_t cache_keepalive = 0;
-    size_t content_length = 0;
-    std::string content;
-
-    [[nodiscard]] std::string to_string() const {
-        std::stringstream ss;
-
-        ss << method << ' ' << path << ' ' << version << HTTP_ENDL
-           << "Content-Type: " << content_type << HTTP_ENDL
-           << "Cache-Control: max-age=" << cache_keepalive << HTTP_ENDL
-           << "Content-Length: " << content_length << HTTP_ENDL
-           << HTTP_ENDL
-           << content << HTTP_ENDL;
-
-        return ss.str();
-    }
+enum method {
+    OPTIONS,
+    GET,
+    HEAD,
+    POST,
+    PUT,
+    DELETE,
+    TRACE,
+    CONNECT,
+    EXTENSION,
 };
 
-template<>
-struct request<false> {
-    std::string version;
-    int code;
-    std::string comment;
-    size_t content_length;
-    std::string content;
+enum version {
+    HTTP11,
+    UNKNOWN,
+};
 
-    [[nodiscard]] std::string to_string() const {
-        std::stringstream ss;
+[[nodiscard]] std::string strmethod(method m);
 
-        ss << version << " " << code << " " << comment << HTTP_ENDL
-           << "Content-type: application/json" << HTTP_ENDL
-           << "Content-length: " << content_length << HTTP_ENDL
-           << HTTP_ENDL
-           << content << HTTP_ENDL;
+[[nodiscard]] std::string strversion(version v);
 
-        return ss.str();
-    }
+struct response {
+    version ver{};
+    int code = 0;
+    std::string reason;
+
+    std::string body;
+    std::map<std::string, std::string> fields;
+
+public:
+    [[nodiscard]] std::string to_string() const;
+};
+
+struct request {
+    method meth{};
+    std::string uri;
+    version ver{};
+
+    std::string body;
+    std::map<std::string, std::string> fields;
+
+public:
+    [[nodiscard]] std::string to_string() const;
 };
 } // namespace http
 

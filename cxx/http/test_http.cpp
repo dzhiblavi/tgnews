@@ -5,18 +5,8 @@
 
 using namespace http;
 
-TEST(http_request, to_string) {
-    request<true> req{
-            "GET",
-            "/article.html",
-            "HTTP/1.1",
-            "text/html",
-            10999,
-            9,
-            "<content>"
-    };
-    std::cout << req.to_string() << std::endl;
-}
+typedef parser<request> req_parser;
+typedef parser<response> res_parser;
 
 TEST(http_request, parse_put) {
     std::string s = "PUT /article.html HTTP/1.1\r\n"
@@ -25,39 +15,39 @@ TEST(http_request, parse_put) {
                     "Content-Length: 9\r\n"
                     "\r\n"
                     "<content>";
-    parser<true> pars;
-    ASSERT_EQ(s.size(), pars.append(s.data(), 0, s.size()));
+    req_parser pars;
+    ASSERT_EQ(s.size(), pars.feed(s.data(), 0, s.size()));
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
+    std::cout << pars.get().to_string() << std::endl;
 }
 
 TEST(http_request, parse_get) {
-    std::string s = "GET /article.html HTTP/1.1";
-    parser<true> pars;
-    ASSERT_EQ(s.size(), pars.append(s.data(), 0, s.size()));
+    std::string s = "GET /article.html HTTP/1.1" HTTPCRLF HTTPCRLF;
+    req_parser pars;
+    ASSERT_EQ(s.size(), pars.feed(s.data(), 0, s.size()));
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
+    std::cout << pars.get().to_string() << std::endl;
 }
 
 TEST(http_request, parse_delete) {
-    std::string s = "DELETE /article.html HTTP/1.1";
-    parser<true> pars;
-    ASSERT_EQ(s.size(), pars.append(s.data(), 0, s.size()));
+    std::string s = "DELETE /article.html HTTP/1.1" HTTPCRLF HTTPCRLF;
+    req_parser pars;
+    ASSERT_EQ(s.size(), pars.feed(s.data(), 0, s.size()));
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
+    std::cout << pars.get().to_string() << std::endl;
 }
 
 TEST(http_request, parse_parts) {
     std::vector<std::string> s = {
             "DELETE /artic",
             "le.html HTT",
-            "P/1.1",
+            "P/1.1\r\n\r\n",
     };
-    parser<true> pars;
+    req_parser pars;
     for (auto const &str : s)
-        ASSERT_EQ(str.size(), pars.append(str.data(), 0, str.size()));
+        ASSERT_EQ(str.size(), pars.feed(str.data(), 0, str.size()));
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
+    std::cout << pars.get().to_string() << std::endl;
 }
 
 TEST(http_request, parse_parts3) {
@@ -68,13 +58,15 @@ TEST(http_request, parse_parts3) {
             "T",
             "T",
             "P/1",
-            ".1",
+            ".1\r",
+            "\n\r",
+            "\n",
     };
-    parser<true> pars;
+    req_parser pars;
     for (auto const &str : s)
-        ASSERT_EQ(str.size(), pars.append(str.data(), 0, str.size()));
+        ASSERT_EQ(str.size(), pars.feed(str.data(), 0, str.size()));
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
+    std::cout << pars.get().to_string() << std::endl;
 }
 
 TEST(http_request, parse_parts4) {
@@ -89,13 +81,15 @@ TEST(http_request, parse_parts4) {
             "/",
             "1",
             ".",
-            "1",
+            "1\r",
+            "\n",
+            "\r\n"
     };
-    parser<true> pars;
+    req_parser pars;
     for (auto const &str : s)
-        ASSERT_EQ(str.size(), pars.append(str.data(), 0, str.size()));
+        ASSERT_EQ(str.size(), pars.feed(str.data(), 0, str.size()));
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
+    std::cout << pars.get().to_string() << std::endl;
 }
 
 TEST(http_request, parse_put_parts) {
@@ -113,11 +107,11 @@ TEST(http_request, parse_put_parts) {
             "\n",
             "<content>"
     };
-    parser<true> pars;
+    req_parser pars;
     for (auto const &str : s)
-        ASSERT_EQ(str.size(), pars.append(str.data(), 0, str.size()));
+        ASSERT_EQ(str.size(), pars.feed(str.data(), 0, str.size()));
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
+    std::cout << pars.get().to_string() << std::endl;
 }
 
 TEST(http_request, parse_put_parts2) {
@@ -141,11 +135,11 @@ TEST(http_request, parse_put_parts2) {
             "\n",
             "<content>"
     };
-    parser<true> pars;
+    req_parser pars;
     for (auto const &str : s)
-        ASSERT_EQ(str.size(), pars.append(str.data(), 0, str.size()));
+        ASSERT_EQ(str.size(), pars.feed(str.data(), 0, str.size()));
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
+    std::cout << pars.get().to_string() << std::endl;
 }
 
 TEST(http_request, parse_long) {
@@ -161,11 +155,11 @@ TEST(http_request, parse_long) {
                     "Content-Length: 9\r\n"
                     "\r\n"
                     "<content>";
-    parser<true> pars;
-    int x = pars.append(s.data(), 0, s.size());
+    req_parser pars;
+    int x = pars.feed(s.data(), 0, s.size());
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
-    pars.append(s.data(), x, s.size());
+    std::cout << pars.get().to_string() << std::endl;
+    pars.feed(s.data(), x, s.size());
     ASSERT_TRUE(pars.ready());
-    std::cout << pars.get_request().to_string() << std::endl;
+    std::cout << pars.get().to_string() << std::endl;
 }

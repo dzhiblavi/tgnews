@@ -19,7 +19,9 @@ set(SERV_SRC
 
 set(HTTP_SRC
         ../../http/parser.h
-        ../../http/request.h)
+        ../../http/request.h
+        ../../http/parser.cpp
+        ../../http/request.cpp)
 
 set(JSON_SRC
         ../../json/json.cpp

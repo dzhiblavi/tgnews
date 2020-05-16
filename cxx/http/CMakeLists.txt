@@ -5,7 +5,9 @@ set(GTEST_SRC
 
 set(HTTP_SRC
         parser.h
-        request.h)
+        request.h
+        request.cpp
+        parser.cpp)
 
 include_directories(../gtest)
 
