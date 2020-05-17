@@ -32,17 +32,23 @@ set(GTEST
         ../../gtest/gtest.h
         ../../gtest/gtest_main.cc)
 
+set(DAEMON
+        ../../name_daemon/name_daemon.cpp
+        ../../name_daemon/name_daemon.h)
+
 include_directories(../../sysapi)
 include_directories(../../http)
 include_directories(../../json)
 include_directories(../../net)
+include_directories(../../name_daemon)
 
 add_executable(tgserver
         main.cpp
         ${NET_SRC}
         ${SERV_SRC}
         ${HTTP_SRC}
-        ${JSON_SRC})
+        ${JSON_SRC}
+        ${DAEMON})
 
 if (UNIX)
     target_link_libraries(tgserver pthread)

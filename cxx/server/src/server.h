@@ -18,6 +18,8 @@
 #include "sysapi.h"
 #include "thread_pool.h"
 
+#include "name_daemon.h"
+
 
 #define ERRLOG_LVL 15
 #define CLIENT_THP_SIZE 2
