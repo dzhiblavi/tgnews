@@ -1,6 +1,7 @@
 import nltk
 import pickle
 import pandas as pd
+import sys
 from sklearn.metrics import accuracy_score
 
 
@@ -27,10 +28,10 @@ def tokenize(s):
 
 def test(lang):
     stemmer = get_stemmer(lang)
-    vectorizer = load('assets/' + lang + '/vectorizer.pickle')
-    model = load('assets/' + lang + '/model.pickle')
+    vectorizer = load('assets/news/' + lang + '/vectorizer.pickle')
+    model = load('assets/news/' + lang + '/model.pickle')
 
-    df = pd.read_csv('assets/' + lang + '/test.csv', sep='\t')
+    df = pd.read_csv('assets/news/' + lang + '/test.csv', sep='\t')
     texts = df.text
     labels = df.label
 
@@ -43,9 +44,15 @@ def test(lang):
         number_labels.append(j)
 
     x_train_tfidf = vectorizer.transform(stemmed_texts)
-    y = model.predict(x_train_tfidf)
+
+    if lang == 'ru':
+        y = model.predict(x_train_tfidf)
+    else:
+        y = model.predict_proba(x_train_tfidf)
+        y = 0.45 < y[:, 1:]
+
     print(accuracy_score(number_labels, y))
 
 
 if __name__ == '__main__':
-    test('ru')
+    test(sys.argv[1])
