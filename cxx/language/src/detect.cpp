@@ -1,6 +1,6 @@
 #include "detect.h"
 
-json::obj_ptr detect(std::filesystem::path const& p, std::set<std::string> const& langs) {
+nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs) {
     std::mutex m;
     std::map<std::string, cvector<std::string>> mp;
 
@@ -14,21 +14,21 @@ json::obj_ptr detect(std::filesystem::path const& p, std::set<std::string> const
     });
     w.run();
 
-    std::vector<json::obj_ptr> jsvec;
+    nlohmann::json ret;
     for (auto& p : mp) {
         if (!langs.empty() && langs.find(p.first) == langs.end())
             continue;
 
-        std::map<std::string, json::obj_ptr> lmp;
-        lmp["lang_code"] = json::string::create(p.first);
-        std::vector<std::string> v = std::move(p.second.to_vector());
-        std::vector<json::obj_ptr> vj(v.size());
-        for (size_t i = 0; i < v.size(); ++i) {
-            vj[i] = json::string::create(v[i]);
+        ret.push_back({});
+        nlohmann::json& cur = ret.back();
+        cur["lang_code"] = p.first;
+        cur["articles"] = {};
+        nlohmann::json& arts = cur["articles"];
+
+        for (std::string& s : p.second.to_vector()) {
+            arts.push_back(std::move(s));
         }
-        lmp["articles"] = json::array::create(std::move(vj));
-        jsvec.push_back(json::map::create(std::move(lmp)));
     }
 
-    return json::array::create(std::move(jsvec));
+    return ret;
 }

@@ -24,7 +24,6 @@ set(HTTP_SRC
         ../../http/request.cpp)
 
 set(JSON_SRC
-        ../../json/json.cpp
         ../../json/json.h)
 
 set(GTEST

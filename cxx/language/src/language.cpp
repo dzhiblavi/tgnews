@@ -24,6 +24,6 @@ int main(int argc, char** argv) {
         --argc; ++argv;
     }
 
-    std::cout << detect(p, langs)->to_string() << std::endl;
+    std::cout << detect(p, langs).dump(2) << std::endl;
     return 0;
 }

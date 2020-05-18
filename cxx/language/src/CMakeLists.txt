@@ -13,7 +13,6 @@ set(DETECT_SRC
         lang_detect/unicode_data.h)
 
 set(JSON_SRC
-        ../../json/json.cpp
         ../../json/json.h)
 
 set(WALKER_SRC

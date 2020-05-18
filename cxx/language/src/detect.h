@@ -31,7 +31,7 @@ public:
     }
 };
 
-json::obj_ptr detect(std::filesystem::path const& p, std::set<std::string> const& langs);
+nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs);
 
 
 #endif //TGSERVER_DETECT_H
