@@ -43,7 +43,7 @@ public:
 
     bool remove(std::string const&);
 
-    bool contains(std::string const&) const;
+    bool contains(std::string const&);
 
     std::filesystem::path add(std::string const&, uint64_t);
 };

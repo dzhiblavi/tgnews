@@ -64,6 +64,7 @@ add_executable(tgserver
         ${WALKER_SRC}
         ${SYSAPI_SRC})
 
-if (UNIX)
-    target_link_libraries(tgserver pthread)
-endif (UNIX)
+
+if (UNIX AND NOT APPLE)
+    target_link_libraries(tgserver stdc++fs pthread)
+endif (UNIX AND NOT APPLE)
