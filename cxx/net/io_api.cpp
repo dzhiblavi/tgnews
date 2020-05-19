@@ -28,7 +28,6 @@ void io_context::exec() noexcept {
     for (;;) {
         if (quitf) return;
         int nfd = p.wait(call_and_timeout());
-
         if (quitf) return;
 
         if (nfd < 0) {
@@ -100,9 +99,14 @@ io_unit& io_unit::operator=(io_api::io_unit&& rhs) noexcept {
 }
 
 io_unit::~io_unit() {
+    close();
+}
+
+void io_unit::close() {
     if (!ctx_) return;
     poll::event_info info(fd_, this);
     ctx_->p.event_ctl(poll::REMOVE, info);
+    ctx_ = nullptr;
 }
 
 void io_unit::callback(poll::flag const& events) {

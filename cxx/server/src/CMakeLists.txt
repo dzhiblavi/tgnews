@@ -15,7 +15,9 @@ set(NET_SRC
 
 set(SERV_SRC
         server.cpp
-        server.h)
+        server.h
+        PyServer.cpp
+        PyServer.h)
 
 set(HTTP_SRC
         ../../http/parser.h
@@ -39,12 +41,18 @@ set(WALKER_SRC
         ../../walker/src/walker.h
         ../../walker/src/walker.cpp)
 
+set(SYSAPI_SRC
+        ../../sysapi/sysapi.cpp
+        ../../sysapi/sysapi.h
+        ../../sysapi/thread_pool.h)
+
 include_directories(../../sysapi)
 include_directories(../../http)
 include_directories(../../json)
 include_directories(../../net)
 include_directories(../../name_daemon)
 include_directories(../../walker)
+include_directories(../../sysapi)
 
 add_executable(tgserver
         main.cpp
@@ -53,7 +61,8 @@ add_executable(tgserver
         ${HTTP_SRC}
         ${JSON_SRC}
         ${DAEMON}
-        ${WALKER_SRC})
+        ${WALKER_SRC}
+        ${SYSAPI_SRC})
 
 if (UNIX)
     target_link_libraries(tgserver pthread)

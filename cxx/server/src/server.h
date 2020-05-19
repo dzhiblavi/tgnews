@@ -17,6 +17,7 @@
 #include "thread_pool.h"
 
 #include "name_daemon.h"
+#include "PyServer.h"
 
 
 #define ERRLOG_LVL 15
@@ -28,20 +29,19 @@ class server {
 private:
     struct client_connection;
 
-// network
 private:
     ipv4::server_socket socket;
     std::map<client_connection*, std::unique_ptr<client_connection>> clients;
-
-// daemon
-private:
     name_daemon daemon;
+    PyServer pyserver;
 
 private:
     void on_connect(io_api::io_context& ctx);
 
 public:
-    server(io_api::io_context& ctx, ipv4::endpoint const& ep);
+    server(io_api::io_context& ctx, ipv4::endpoint const& server_ep, ipv4::endpoint const& pyserver_ep);
+
+    void process(const http::request &request);
 };
 
 struct server::client_connection {

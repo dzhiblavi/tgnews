@@ -51,6 +51,7 @@ public:
 
     [[nodiscard]] uint32_t net_addr() const noexcept;
     [[nodiscard]] uint16_t port() const noexcept;
+    [[nodiscard]] uint16_t host_port() const noexcept;
     [[nodiscard]] std::string to_string() const;
 };
 

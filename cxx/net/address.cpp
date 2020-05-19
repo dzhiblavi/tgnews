@@ -89,8 +89,12 @@ uint16_t endpoint::port() const noexcept {
     return port_;
 }
 
+uint16_t endpoint::host_port() const noexcept {
+    return ntohs(port());
+}
+
 std::string endpoint::to_string() const {
-    return address(net_addr()).to_string() + ":" + std::to_string(port());
+    return address(net_addr()).to_string() + ":" + std::to_string(host_port());
 }
 
 std::ostream& operator<<(std::ostream& os, address const& addr) {

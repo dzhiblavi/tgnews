@@ -47,6 +47,8 @@ private:
     callback_t callback_{};
 
 public:
+    io_unit() = default;
+
     io_unit(io_context* ctx, poll::flag const& events, int fd, callback_t callback);
 
     ~io_unit();
@@ -68,6 +70,8 @@ public:
     void configure_callback(callback_t) noexcept;
 
     void callback(poll::flag const&);
+
+    void close();
 
     friend void swap(io_unit&, io_unit&) noexcept;
 };

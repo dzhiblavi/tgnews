@@ -2,6 +2,7 @@
 
 #include "io_api.h"
 #include "server.h"
+#include "sysapi.h"
 
 int main(int argc, char** argv) {
     if (argc != 2) {
@@ -12,7 +13,7 @@ int main(int argc, char** argv) {
     int port = atoi(argv[1]);
     try {
         io_api::io_context ctx;
-        server srv(ctx, ipv4::endpoint(ipv4::address::any(), port));
+        server srv(ctx, ipv4::endpoint(ipv4::address::any(), port), ipv4::endpoint(ipv4::address::any(), port + 1));
         ctx.exec();
     } catch (std::runtime_error const& e) {
         std::cerr << "main() failed: " << e.what() << std::endl;

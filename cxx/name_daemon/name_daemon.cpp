@@ -28,11 +28,6 @@ void name_daemon::load_file(std::filesystem::path&& path) {
 }
 
 void name_daemon::create_directories() {
-    std::filesystem::create_directories(BASE_DAEMON_DIR / "ru/news");
-    std::filesystem::create_directories(BASE_DAEMON_DIR / "ru/notnews");
-    std::filesystem::create_directories(BASE_DAEMON_DIR / "en/news");
-    std::filesystem::create_directories(BASE_DAEMON_DIR / "en/notnews");
-
     for (auto const& s : categories) {
         std::filesystem::create_directories(BASE_DAEMON_DIR / "ru/news" / s);
         std::filesystem::create_directories(BASE_DAEMON_DIR / "en/news" / s);

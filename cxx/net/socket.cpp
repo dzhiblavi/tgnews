@@ -122,6 +122,11 @@ basic_socket::basic_socket(endpoint const& ep)
     sock_connect(fd_.native_handle(), ep);
 }
 
+void basic_socket::set_nonblock() {
+    ::set_nonblock(fd_.native_handle());
+}
+
+
 poll::flag socket::events_() const noexcept {
     poll::flag fl{};
     fl.set_read(bool(on_read_));
@@ -176,7 +181,7 @@ socket::socket(io_api::io_context& ctx, ipv4::sock_ufd&& fd, callback_t on_disco
         , on_write_(std::move(on_write))
         , unit_(&ctx, events_(), fd_.native_handle(), configure_callback_())
         , destroyed_(nullptr) {
-    set_nonblock(this->fd_.native_handle());
+    set_nonblock();
 }
 
 socket::socket(io_api::io_context& ctx, endpoint const& ep, callback_t const& on_disconnect)
@@ -191,14 +196,15 @@ socket::socket(io_api::io_context& ctx, endpoint const& ep, callback_t const& on
         set_all(on_disconnect, on_read, on_write);
     } else {
         set_on_disconnect([this, on_disconnect] {
+            unit_.close();
             IPV4_EXC("connection failed: " + std::to_string(sock_geterr(fd_.native_handle())));
         });
 
         set_on_write([this, &ep, on_disconnect, on_read, on_write] {
             if (int r = sock_geterr(fd_.native_handle())) {
+                unit_.close();
                 IPV4_EXC("connection failed: " + std::to_string(r));
             }
-            sock_connect(fd_.native_handle(), ep);
             set_all(on_disconnect, on_read, on_write);
         });
     }

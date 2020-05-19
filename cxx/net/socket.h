@@ -42,6 +42,8 @@ protected:
     explicit basic_socket(sock_ufd&&);
 
 public:
+    basic_socket() = default;
+
     explicit basic_socket(endpoint const& ep);
 
     basic_socket(basic_socket const&) = delete;
@@ -55,6 +57,8 @@ public:
     int recv(NET_BUFF_PTR buff, size_t max_len) noexcept;
 
     int send(NET_BUFF_CPTR buff, size_t max_len) noexcept;
+
+    void set_nonblock();
 };
 
 class socket : private basic_socket {
@@ -76,6 +80,8 @@ private:
     [[nodiscard]] std::function<void(poll::flag const&)> configure_callback_() noexcept;
 
 public:
+    socket() = default;
+
     socket(io_api::io_context& ctx, sock_ufd&& fd, callback_t const& on_disconnect);
 
     socket(io_api::io_context& ctx, sock_ufd&& fd, callback_t on_disconnect

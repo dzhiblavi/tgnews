@@ -18,13 +18,6 @@ void errlog(int lvl, Args&&... args) {
         errlog(std::forward<Args>(args)...);
     }
 }
-
-http::response process_request(http::request const& req) {
-    // TODO
-    errlog(0, std::string("STUB CALLED: ") + __func__);
-    errlog(0, "'" + req.to_string() + "'");
-    return {};
-}
 }
 
 
@@ -34,8 +27,11 @@ void server::on_connect(io_api::io_context& ctx) {
     clients.emplace(cc, std::unique_ptr<client_connection>(cc));
 }
 
-server::server(io_api::io_context &ctx, ipv4::endpoint const &ep)
-    : socket(ctx, ep, [this, &ctx] { on_connect(ctx); }) {}
+server::server(io_api::io_context &ctx, ipv4::endpoint const &server_ep, ipv4::endpoint const& pyserver_ep)
+    : socket(ctx, server_ep, [this, &ctx] { on_connect(ctx); })
+    , pyserver(ctx, pyserver_ep) {
+    std::cerr << "Server booted" << std::endl;
+}
 
 
 server::client_connection::client_connection(io_api::io_context &ctx, server *srv)
@@ -69,7 +65,7 @@ void server::client_connection::on_read() {
     offset += s;
     while (parser.ready()) {
         thp.submit([this, request{parser.get()}] {
-            process_request(request);
+            srv->process(request);
             stor.push_front("STUB: " + request.to_string());
         });
         parser.clear();
@@ -84,7 +80,6 @@ void server::client_connection::on_write() {
     errlog(4, __func__);
 
     std::string res = stor.get();
-
     int r = socket.send(res.c_str(), res.size());
     if (r < 0) {
         if (errno == EINTR)
@@ -96,3 +91,8 @@ void server::client_connection::on_write() {
         stor.push_back(res.substr(r, res.size() - r));
 }
 
+void server::process(http::request const& request) {
+    errlog(0, "STUB CALLED");
+    errlog(0, "RESENDING REQUEST TO PYTHON SERVER");
+    pyserver.submit_request(request.to_string());
+}
