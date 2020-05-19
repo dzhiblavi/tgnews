@@ -56,3 +56,42 @@ name_daemon::name_daemon() {
 name_daemon::~name_daemon() {
     // ignore
 }
+
+bool name_daemon::compare_time(uint64_t timep) {
+    // milli -> just seconds?
+    // compare timep with now()
+    return false;
+}
+
+bool name_daemon::remove(std::string const &elem) {
+    std::lock_guard<std::mutex> lg(m);
+
+    if (contains(elem)) {
+        mt.erase(elem);
+        return true;
+    }
+    return false;
+}
+
+bool name_daemon::contains(std::string const &elem) {
+    std::lock_guard<std::mutex> lg(m);
+
+    auto it = mt.find(elem);
+    if (it == mt.end()) {
+        return false;
+    }
+    return compare_time(it->second.end);
+}
+
+std::filesystem::path name_daemon::add(std::string const &elem, uint64_t end_time) {
+    std::lock_guard<std::mutex> lg(m);
+
+    if (contains(elem)) {
+        return mt.find(elem)->second.json_file;
+    } else {
+        // TODO:
+        std::filesystem::path store_path;  // decide where to store
+        mt[elem] = {store_path, end_time};
+        return store_path;
+    }
+}
