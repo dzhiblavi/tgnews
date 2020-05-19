@@ -5,17 +5,14 @@
 #include <string>
 #include <unordered_map>
 #include <filesystem>
-<<<<<<< HEAD
 #include <fstream>
 #include <list>
 #include <mutex>
+#include <chrono>
 
 #include "../walker/src/walker.h"
 #include "../json/json.h"
 
-=======
-#include <chrono>
->>>>>>> 4ef66bedbe8aa24ef9818b3df6f19f27dd411269
 
 #define BASE_DAEMON_DIR std::filesystem::path("./__daemon")
 
