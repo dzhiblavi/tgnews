@@ -35,11 +35,16 @@ set(DAEMON
         ../../name_daemon/name_daemon.cpp
         ../../name_daemon/name_daemon.h)
 
+set(WALKER_SRC
+        ../../walker/src/walker.h
+        ../../walker/src/walker.cpp)
+
 include_directories(../../sysapi)
 include_directories(../../http)
 include_directories(../../json)
 include_directories(../../net)
 include_directories(../../name_daemon)
+include_directories(../../walker)
 
 add_executable(tgserver
         main.cpp
@@ -47,7 +52,8 @@ add_executable(tgserver
         ${SERV_SRC}
         ${HTTP_SRC}
         ${JSON_SRC}
-        ${DAEMON})
+        ${DAEMON}
+        ${WALKER_SRC})
 
 if (UNIX)
     target_link_libraries(tgserver pthread)

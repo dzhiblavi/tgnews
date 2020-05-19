@@ -27,10 +27,7 @@ void io_context::exec() noexcept {
 
     for (;;) {
         if (quitf) return;
-
-//        std::cerr << "wait start()" << std::endl;
         int nfd = p.wait(call_and_timeout());
-//        std::cerr << "wait: " << nfd << std::endl;
 
         if (quitf) return;
 
@@ -46,7 +43,7 @@ void io_context::exec() noexcept {
             try {
                 static_cast<io_unit *>(p.get_data(*it))->callback(poll::flag(*it));
             } catch (...) {
-
+                // ignore
             }
         }
     }

@@ -28,9 +28,14 @@ class server {
 private:
     struct client_connection;
 
+// network
 private:
     ipv4::server_socket socket;
     std::map<client_connection*, std::unique_ptr<client_connection>> clients;
+
+// daemon
+private:
+    name_daemon daemon;
 
 private:
     void on_connect(io_api::io_context& ctx);
