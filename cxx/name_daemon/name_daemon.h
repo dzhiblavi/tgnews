@@ -15,7 +15,7 @@
 
 
 #define BASE_DAEMON_DIR std::filesystem::path("./__daemon")
-
+#define METAINFO_FILE std::filesystem::path("./__daemon/META.json")
 
 struct meta {
     std::filesystem::path json_file;
@@ -40,6 +40,8 @@ public:
     name_daemon();
 
     ~name_daemon();
+
+    void dump();
 
     bool remove(std::string const&);
 
