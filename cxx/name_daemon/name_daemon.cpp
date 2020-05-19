@@ -1,6 +1,5 @@
 #include "name_daemon.h"
 
-
 std::list<std::string> name_daemon::categories = {
         "society",
         "economy",

@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <filesystem>
+<<<<<<< HEAD
 #include <fstream>
 #include <list>
 #include <mutex>
@@ -12,6 +13,9 @@
 #include "../walker/src/walker.h"
 #include "../json/json.h"
 
+=======
+#include <chrono>
+>>>>>>> 4ef66bedbe8aa24ef9818b3df6f19f27dd411269
 
 #define BASE_DAEMON_DIR std::filesystem::path("./__daemon")
 
@@ -32,10 +36,19 @@ private:
 
     static void create_directories();
 
+private:
+    static bool compare_time(uint64_t);
+
 public:
     name_daemon();
 
     ~name_daemon();
+
+    bool remove(std::string const&);
+
+    bool contains(std::string const&) const;
+
+    std::filesystem::path add(std::string const&, uint64_t);
 };
 
 
