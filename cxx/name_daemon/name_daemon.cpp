@@ -16,7 +16,6 @@ void name_daemon::load_file(std::filesystem::path &&path) {
         std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
         nlohmann::json js = nlohmann::json::parse(data);
 
-        std::lock_guard<std::mutex> lg(m);
         for (auto it = js.begin(); it != js.end(); it++) {
             mt[it.key()] = {it.value()["json_file"], it.value()["time"]};
         }
