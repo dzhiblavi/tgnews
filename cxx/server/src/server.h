@@ -50,12 +50,16 @@ private:
 private:
     void on_connect(io_api::io_context& ctx);
 
-    void process_put(http::request&& request);
+    http::response process_put(http::request&& request);
+
+    http::response process_delete(http::request&& request);
+
+    http::response process_get(http::request&& request);
 
 public:
     server(io_api::io_context& ctx, ipv4::endpoint const& server_ep, ipv4::endpoint const& pyserver_ep);
 
-    void process(http::request&& request);
+    http::response process(http::request&& request);
 };
 
 struct server::client_connection {

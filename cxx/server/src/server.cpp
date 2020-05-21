@@ -65,7 +65,7 @@ void server::client_connection::on_read() {
     offset += s;
     while (parser.ready()) {
         thp.submit([this, request{parser.get()}] () mutable {
-            srv->process(std::move(request));
+            stor.push_front(srv->process(std::move(request)).to_string());
         });
         parser.clear();
 
@@ -90,25 +90,28 @@ void server::client_connection::on_write() {
         stor.push_back(res.substr(r, res.size() - r));
 }
 
-void server::process(http::request&& request) {
+http::response server::process(http::request&& request) {
     switch (request.meth) {
         case http::PUT:
-            process_put(std::move(request));
-            break;
+            return process_put(std::move(request));
         case http::GET:
-            errlog(5, "GET request");
-            break;
+            return process_get(std::move(request));
         case http::DELETE:
-            errlog(5, "DELETE request");
-            break;
+            return process_delete(std::move(request));
         default:
             errlog(0, "BAD REQUEST");
     }
+    return {http::version::HTTP11, 400, "Bad Request"};
 }
 
-void server::process_put(http::request&& request) {
+http::response server::process_put(http::request&& request) {
+    errlog(8, __func__);
+
     std::unordered_map<std::string, std::string> meta;
     html::parser::extract(request.body, meta);
+
+    uint64_t time = html::parser::extract_time(meta["article:published_time"]);
+
     request.fields["Content-Length"] = std::to_string(request.body.size());
     errlog(15, "Extraction result: " + request.body);
 
@@ -122,6 +125,18 @@ void server::process_put(http::request&& request) {
     } else {
         errlog(10, "Ignoring request");
     }
+
+    return {http::version::HTTP11, 201, "Created"};
+}
+
+http::response server::process_delete(http::request&& request) {
+    errlog(8, __func__);
+    return {http::version::HTTP11, 204, "No Content"};
+}
+
+http::response server::process_get(http::request&& request) {
+    errlog(8, __func__);
+    return {http::version::HTTP11, 200, "OK"};
 }
 
 langdetect::Detected concurrent_detector::detect(std::string const& s) {
