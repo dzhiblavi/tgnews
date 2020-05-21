@@ -66,6 +66,7 @@ void server::client_connection::on_read() {
     while (parser.ready()) {
         thp.submit([this, request{parser.get()}] {
             srv->process(request);
+            errlog("SENDING: " + request.to_string());
             stor.push_front("STUB: " + request.to_string());
         });
         parser.clear();
@@ -93,5 +94,17 @@ void server::client_connection::on_write() {
 
 void server::process(http::request const& request) {
     errlog(0, "STUB CALLED");
-    pyserver.submit_request(request.to_string());
+    switch (request.meth) {
+        case http::PUT:
+            pyserver.submit_request(request.to_string());
+            break;
+        case http::GET:
+            errlog(5, "GET request");
+            break;
+        case http::DELETE:
+            errlog(5, "DELETE request");
+            break;
+        default:
+            errlog(0, "BAD REQUEST");
+    }
 }

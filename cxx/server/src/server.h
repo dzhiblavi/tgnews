@@ -20,7 +20,7 @@
 #include "PyServer.h"
 
 
-#define ERRLOG_LVL 15
+#define ERRLOG_LVL 3
 #define CLIENT_THP_SIZE 2
 #define CLIENT_BUFF_SIZE 1000
 

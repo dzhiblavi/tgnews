@@ -48,7 +48,7 @@ std::string strversion(version v) {
 std::string response::to_string() const {
     std::stringstream ss;
     ss << strversion(ver) << ' ' << code << ' ' << reason << HTTPCRLF
-       << form_header(fields) << HTTPCRLF
+       << form_header(fields)
        << HTTPCRLF
        << body;
     return ss.str();
@@ -58,7 +58,7 @@ std::string response::to_string() const {
 std::string request::to_string() const {
     std::stringstream ss;
     ss << strmethod(meth) << ' ' << uri << ' ' << strversion(ver) << HTTPCRLF
-       << form_header(fields) << HTTPCRLF
+       << form_header(fields)
        << HTTPCRLF
        << body;
     return ss.str();

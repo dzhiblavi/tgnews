@@ -14,8 +14,8 @@
 #include "../json/json.h"
 
 
-#define BASE_DAEMON_DIR std::filesystem::path("./__daemon")
-#define METAINFO_FILE std::filesystem::path("./__daemon/META.json")
+#define BASE_DAEMON_DIR std::filesystem::path("../__cache")
+#define METAINFO_FILE std::filesystem::path("./__cache/META.json")
 
 struct meta {
     std::filesystem::path json_file;
