@@ -6,8 +6,8 @@
 #include <fstream>
 #include <set>
 
-#include "json.h"
-#include "walker.h"
+#include "json/json.h"
+#include "walker/src/walker.h"
 #include "lang_detect/langdetect.h"
 
 template <typename T>

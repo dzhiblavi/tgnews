@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "sysapi.h"
+#include "sysapi/sysapi.h"
 
 int main(int argc, char** argv) {
     if (argc != 3) {

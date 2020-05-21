@@ -4,10 +4,10 @@
 #include <functional>
 #include <set>
 
-#include "socket.h"
-#include "io_api.h"
-#include "storage.h"
-#include "sysapi.h"
+#include "net/socket.h"
+#include "net/io_api.h"
+#include "net/storage.h"
+#include "sysapi/sysapi.h"
 
 
 class PyServer {

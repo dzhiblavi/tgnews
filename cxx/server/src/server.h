@@ -4,25 +4,36 @@
 #include <map>
 #include <memory>
 
-#include "io_api.h"
-#include "address.h"
-#include "timer.h"
-#include "socket.h"
-#include "storage.h"
+#include "net/io_api.h"
+#include "net/address.h"
+#include "net/timer.h"
+#include "net/socket.h"
+#include "net/storage.h"
 
-#include "request.h"
-#include "parser.h"
+#include "http/request.h"
+#include "http/parser.h"
 
-#include "sysapi.h"
-#include "thread_pool.h"
+#include "sysapi/sysapi.h"
+#include "sysapi/thread_pool.h"
 
-#include "name_daemon.h"
+#include "name_daemon/name_daemon.h"
 #include "PyServer.h"
+#include "html/parser.h"
+#include "language/src/lang_detect/langdetect.h"
 
 
-#define ERRLOG_LVL 3
+#define ERRLOG_LVL 10
 #define CLIENT_THP_SIZE 2
 #define CLIENT_BUFF_SIZE 1000
+
+
+struct concurrent_detector {
+    std::mutex m;
+    langdetect::Detector detector;
+
+public:
+    langdetect::Detected detect(std::string const& data);
+};
 
 
 class server {
@@ -34,14 +45,17 @@ private:
     std::map<client_connection*, std::unique_ptr<client_connection>> clients;
     name_daemon daemon;
     PyServer pyserver;
+    concurrent_detector detector;
 
 private:
     void on_connect(io_api::io_context& ctx);
 
+    void process_put(http::request&& request);
+
 public:
     server(io_api::io_context& ctx, ipv4::endpoint const& server_ep, ipv4::endpoint const& pyserver_ep);
 
-    void process(const http::request &request);
+    void process(http::request&& request);
 };
 
 struct server::client_connection {

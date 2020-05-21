@@ -1,5 +1,5 @@
-#ifndef TGSERVER_PARSER_H
-#define TGSERVER_PARSER_H
+#ifndef TGSERVER_HTML_PARSER_H
+#define TGSERVER_HTML_PARSER_H
 
 #include <string>
 #include <unordered_map>
@@ -101,4 +101,4 @@ namespace html {
 
 }
 
-#endif //TGSERVER_PARSER_H
+#endif //TGSERVER_HTML_PARSER_H

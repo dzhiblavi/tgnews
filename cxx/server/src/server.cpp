@@ -64,10 +64,8 @@ void server::client_connection::on_read() {
     r -= s;
     offset += s;
     while (parser.ready()) {
-        thp.submit([this, request{parser.get()}] {
-            srv->process(request);
-            errlog("SENDING: " + request.to_string());
-            stor.push_front("STUB: " + request.to_string());
+        thp.submit([this, request{parser.get()}] () mutable {
+            srv->process(std::move(request));
         });
         parser.clear();
 
@@ -92,11 +90,10 @@ void server::client_connection::on_write() {
         stor.push_back(res.substr(r, res.size() - r));
 }
 
-void server::process(http::request const& request) {
-    errlog(0, "STUB CALLED");
+void server::process(http::request&& request) {
     switch (request.meth) {
         case http::PUT:
-            pyserver.submit_request(request.to_string());
+            process_put(std::move(request));
             break;
         case http::GET:
             errlog(5, "GET request");
@@ -107,4 +104,27 @@ void server::process(http::request const& request) {
         default:
             errlog(0, "BAD REQUEST");
     }
+}
+
+void server::process_put(http::request&& request) {
+    std::unordered_map<std::string, std::string> meta;
+    html::parser::extract(request.body, meta);
+    request.fields["Content-Length"] = std::to_string(request.body.size());
+    errlog(15, "Extraction result: " + request.body);
+
+    std::string lang = detector.detect(request.body).name().substr(0, 2);
+    request.fields["Language"] = lang;
+    errlog(10, "Language detection result: " + lang);
+
+    if (lang == "ru" || lang == "en") {
+        errlog(10, "Submiting request");
+        pyserver.submit_request(request.to_string());
+    } else {
+        errlog(10, "Ignoring request");
+    }
+}
+
+langdetect::Detected concurrent_detector::detect(std::string const& s) {
+    std::lock_guard<std::mutex> lg(m);
+    return detector.detect(s.c_str(), s.size());
 }
