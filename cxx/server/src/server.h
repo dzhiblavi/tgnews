@@ -23,8 +23,9 @@
 
 
 #define ERRLOG_LVL 10
-#define CLIENT_THP_SIZE 2
-#define CLIENT_BUFF_SIZE 1000
+#define REQUEST_THP_SIZE 8
+#define WORKER_THP_SIZE 16
+#define CLIENT_BUFF_SIZE 1 << 16
 
 
 struct concurrent_detector {
@@ -41,7 +42,8 @@ private:
     struct client_connection;
 
 private:
-    thread_pool<CLIENT_THP_SIZE> thp;
+    thread_pool<REQUEST_THP_SIZE> request_thp;
+    thread_pool<WORKER_THP_SIZE> worker_thp;
     ipv4::server_socket socket;
     std::map<client_connection*, std::unique_ptr<client_connection>> clients;
     name_daemon daemon;

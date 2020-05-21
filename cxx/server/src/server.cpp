@@ -64,7 +64,7 @@ void server::client_connection::on_read() {
     r -= s;
     offset += s;
     while (parser.ready()) {
-        srv->thp.submit([this, request{parser.get()}] () mutable {
+        srv->request_thp.submit([this, request{parser.get()}] () mutable {
             stor.push_front(srv->process(std::move(request)).to_string());
         });
         parser.clear();
@@ -104,9 +104,8 @@ http::response server::process(http::request&& request) {
         case http::DELETE:
             return process_delete(std::move(request));
         default:
-            errlog(0, "BAD REQUEST");
+            return {http::version::HTTP11, 400, "Bad Request"};
     }
-    return {http::version::HTTP11, 400, "Bad Request"};
 }
 
 http::response server::process_put(http::request&& request) {
@@ -124,7 +123,7 @@ http::response server::process_put(http::request&& request) {
     }
 
     errlog(0, "threadpool1");
-    thp.submit([this, request{std::move(request)}] () mutable {
+    worker_thp.submit([this, request{std::move(request)}] () mutable {
         std::unordered_map<std::string, std::string> meta;
         html::parser::extract(request.body, meta);
 
@@ -159,7 +158,7 @@ http::response server::process_delete(http::request&& request) {
         result.reason = "Not Found";
     }
 
-    // TODO: add removing task to thread pool
+    // TODO: add removing task to the thread pool
 
     return result;
 }
