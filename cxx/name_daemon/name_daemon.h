@@ -25,6 +25,8 @@ private:
     void load_file(std::filesystem::path&& path);
 
 private:
+    static uint64_t current_time();
+
     static bool compare_time(uint64_t);
 
 public:

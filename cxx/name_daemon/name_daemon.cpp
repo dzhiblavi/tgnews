@@ -4,18 +4,29 @@ void name_daemon::load_file(std::filesystem::path &&path) {
     if (std::filesystem::exists(path)) {
         std::ifstream ifs(path);
         std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+        if (data.empty()) {
+            return;
+        }
         nlohmann::json js = nlohmann::json::parse(data);
+        uint64_t cur_time = current_time();
 
         for (auto it = js.begin(); it != js.end(); it++) {
-            mt[it.key()] = it.value()["time"];
+            uint64_t art_time = it.value()["time"];
+            if (cur_time < art_time) {
+                mt[it.key()] = art_time;
+            }
         }
     }
 }
 
+uint64_t name_daemon::current_time() {
+    return std::chrono::duration_cast<std::chrono::seconds>
+            (std::chrono::system_clock::now().time_since_epoch()).count();
+}
+
 bool name_daemon::compare_time(uint64_t timep) {
-    // TODO:
-    // compare timep with now()
-    return true;
+    uint64_t seconds_since_epoch = current_time();
+    return seconds_since_epoch < timep;
 }
 
 name_daemon::name_daemon() {
@@ -33,13 +44,16 @@ void name_daemon::dump() {
     std::ofstream fout(METAINFO_FILE);
 
     nlohmann::json js;
+    uint64_t cur_time = current_time();
 
     for (auto const &article : mt) {
-        if (compare_time(article.second)) {  // to be optimized
+        if (cur_time < article.second) {
             js[article.first]["time"] = article.second;
         }
     }
-    fout << js.dump();
+    if (!js.empty()) {
+        fout << js.dump();
+    }
 }
 
 bool name_daemon::remove(std::string const &elem) {

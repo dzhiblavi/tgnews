@@ -104,3 +104,21 @@ TEST(html_parser, full_meta) {
     ASSERT_EQ(meta["og:title"], "Prescription drugs stolen during Co Antrim burglary");
     ASSERT_EQ(meta["og:description"], "PRESCRIPTION drugs have been stolen during a burglary at a chemist in Co Antrim.");
 }
+
+TEST(html_parser, empty_time) {
+    std::string s;
+    uint64_t t1 = html::parser::extract_time(s);
+    ASSERT_EQ(t1, 0);
+    s = "2020-04-27T12:01:";
+    uint64_t t2 = html::parser::extract_time(s);
+    ASSERT_EQ(t2, 0);
+}
+
+TEST(html_parser, simple_time) {
+    std::string s = "2020-04-27T12:24:37+00:00";
+    uint64_t t1 = html::parser::extract_time(s);
+    ASSERT_EQ(t1, 1587990277);
+    s = "2020-05-21T19:52:23+00:00";
+    uint64_t t2 = html::parser::extract_time(s);
+    ASSERT_EQ(t2, 1590090743);
+}
