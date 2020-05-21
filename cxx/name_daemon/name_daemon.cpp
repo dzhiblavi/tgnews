@@ -12,10 +12,14 @@ void name_daemon::load_file(std::filesystem::path &&path) {
     }
 }
 
+uint64_t name_daemon::current_time() {
+    return std::chrono::duration_cast<std::chrono::seconds>
+            (std::chrono::system_clock::now().time_since_epoch()).count();
+}
+
 bool name_daemon::compare_time(uint64_t timep) {
-    // TODO:
-    // compare timep with now()
-    return true;
+    uint64_t seconds_since_epoch = current_time();
+    return seconds_since_epoch < timep;
 }
 
 name_daemon::name_daemon() {
@@ -33,9 +37,10 @@ void name_daemon::dump() {
     std::ofstream fout(METAINFO_FILE);
 
     nlohmann::json js;
+    uint64_t cur_time = current_time();
 
     for (auto const &article : mt) {
-        if (compare_time(article.second)) {  // to be optimized
+        if (cur_time < article.second) {
             js[article.first]["time"] = article.second;
         }
     }
