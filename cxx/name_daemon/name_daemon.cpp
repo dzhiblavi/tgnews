@@ -40,7 +40,7 @@ name_daemon::~name_daemon() {
 }
 
 void name_daemon::dump() {
-    std::lock_guard<std::mutex> lg(m);
+    std::lock_guard<std::recursive_mutex> lg(m);
     std::ofstream fout(METAINFO_FILE);
 
     nlohmann::json js;
@@ -57,7 +57,7 @@ void name_daemon::dump() {
 }
 
 bool name_daemon::remove(std::string const &elem) {
-    std::lock_guard<std::mutex> lg(m);
+    std::lock_guard<std::recursive_mutex> lg(m);
 
     if (contains(elem)) {
         mt.erase(elem);
@@ -67,7 +67,7 @@ bool name_daemon::remove(std::string const &elem) {
 }
 
 bool name_daemon::contains(std::string const &elem) {
-    std::lock_guard<std::mutex> lg(m);
+    std::lock_guard<std::recursive_mutex> lg(m);
 
     auto it = mt.find(elem);
     if (it == mt.end()) {
@@ -77,7 +77,7 @@ bool name_daemon::contains(std::string const &elem) {
 }
 
 bool name_daemon::add(std::string const &elem, uint64_t end_time) {
-    std::lock_guard<std::mutex> lg(m);
+    std::lock_guard<std::recursive_mutex> lg(m);
 
     if (contains(elem)) {
         return false;

@@ -64,7 +64,7 @@ void server::client_connection::on_read() {
     r -= s;
     offset += s;
     while (parser.ready()) {
-        thp.submit([this, request{parser.get()}] () mutable {
+        srv->thp.submit([this, request{parser.get()}] () mutable {
             stor.push_front(srv->process(std::move(request)).to_string());
         });
         parser.clear();
@@ -86,8 +86,13 @@ void server::client_connection::on_write() {
         IPV4_EXC();
     }
 
-    if (r < res.size())
+    if (r < res.size()) {
+        errlog(8, "write cached");
         stor.push_back(res.substr(r, res.size() - r));
+    } else {
+        // :NOTE: we assume that only one request is made per connection
+        on_disconnect();
+    }
 }
 
 http::response server::process(http::request&& request) {
@@ -107,35 +112,63 @@ http::response server::process(http::request&& request) {
 http::response server::process_put(http::request&& request) {
     errlog(8, __func__);
 
-    std::unordered_map<std::string, std::string> meta;
-    html::parser::extract(request.body, meta);
-
-    uint64_t time = html::parser::extract_time(meta["article:published_time"]);
-
-    request.fields["Content-Length"] = std::to_string(request.body.size());
-    errlog(15, "Extraction result: " + request.body);
-
-    std::string lang = detector.detect(request.body).name().substr(0, 2);
-    request.fields["Language"] = lang;
-    errlog(10, "Language detection result: " + lang);
-
-    if (lang == "ru" || lang == "en") {
-        errlog(10, "Submiting request");
-        pyserver.submit_request(request.to_string());
+//    uint64_t time = html::parser::extract_time(meta["article:published_time"]);
+    // TODO: extract time
+    http::response result {http::version::HTTP11};
+    if (daemon.add(request.uri, -1)) {
+        result.code = 201;
+        result.reason = "Created";
     } else {
-        errlog(10, "Ignoring request");
+        result.code = 204;
+        result.reason = "Updated";
     }
 
-    return {http::version::HTTP11, 201, "Created"};
+    errlog(0, "threadpool1");
+    thp.submit([this, request{std::move(request)}] () mutable {
+        std::unordered_map<std::string, std::string> meta;
+        html::parser::extract(request.body, meta);
+
+        request.fields["Content-Length"] = std::to_string(request.body.size());
+        errlog(15, "Extraction result: " + request.body);
+
+        std::string lang = detector.detect(request.body).name().substr(0, 2);
+        request.fields["Language"] = lang;
+        errlog(10, "Language detection result: " + lang);
+
+        if (lang == "ru" || lang == "en") {
+            errlog(10, "Submiting request");
+            pyserver.submit_request(request.to_string());
+        } else {
+            errlog(10, "Ignoring request");
+        }
+    });
+    errlog(0, "threadpool2");
+
+    return result;
 }
 
 http::response server::process_delete(http::request&& request) {
     errlog(8, __func__);
-    return {http::version::HTTP11, 204, "No Content"};
+
+    http::response result = {http::version::HTTP11};
+    if (daemon.remove(request.uri)) {
+        result.code = 204;
+        result.reason = "No Content";
+    } else {
+        result.code = 404;
+        result.reason = "Not Found";
+    }
+
+    // TODO: add removing task to thread pool
+
+    return result;
 }
 
 http::response server::process_get(http::request&& request) {
     errlog(8, __func__);
+
+    // TODO: process this type of request, lol
+
     return {http::version::HTTP11, 200, "OK"};
 }
 

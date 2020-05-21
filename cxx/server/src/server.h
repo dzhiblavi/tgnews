@@ -41,6 +41,7 @@ private:
     struct client_connection;
 
 private:
+    thread_pool<CLIENT_THP_SIZE> thp;
     ipv4::server_socket socket;
     std::map<client_connection*, std::unique_ptr<client_connection>> clients;
     name_daemon daemon;
@@ -66,7 +67,6 @@ struct server::client_connection {
 private:
     server* srv;
     ipv4::socket socket;
-    thread_pool<CLIENT_THP_SIZE> thp;
     storage<std::string> stor;
 
     char buff[CLIENT_BUFF_SIZE]{0};

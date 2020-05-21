@@ -19,7 +19,7 @@
 
 class name_daemon {
     std::unordered_map<std::string, uint64_t> mt;
-    std::mutex m;
+    std::recursive_mutex m;
 
 private:
     void load_file(std::filesystem::path&& path);
