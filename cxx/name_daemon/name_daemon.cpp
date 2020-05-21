@@ -4,10 +4,17 @@ void name_daemon::load_file(std::filesystem::path &&path) {
     if (std::filesystem::exists(path)) {
         std::ifstream ifs(path);
         std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+        if (data.empty()) {
+            return;
+        }
         nlohmann::json js = nlohmann::json::parse(data);
+        uint64_t cur_time = current_time();
 
         for (auto it = js.begin(); it != js.end(); it++) {
-            mt[it.key()] = it.value()["time"];
+            uint64_t art_time = it.value()["time"];
+            if (cur_time < art_time) {
+                mt[it.key()] = art_time;
+            }
         }
     }
 }
@@ -44,7 +51,9 @@ void name_daemon::dump() {
             js[article.first]["time"] = article.second;
         }
     }
-    fout << js.dump();
+    if (!js.empty()) {
+        fout << js.dump();
+    }
 }
 
 bool name_daemon::remove(std::string const &elem) {
