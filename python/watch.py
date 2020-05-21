@@ -1,17 +1,19 @@
 from flask import Flask
 from flask import request
-from flask_api import status
-from tgutil import Executor
 import sys
+from neural import *
+
 
 app = Flask(__name__)
-executor = Executor(8)
+executor = TGExecutor(16)
 
 
 @app.route('/<path:file_path>', methods=['PUT'])
 def process_put_request(file_path):
     print("processing put request: " + file_path)
-    print(str(request.data))
+    print("Language = " + request.headers.get("Language"))
+    print("Data = " + str(request.data)[:30])
+    executor.submit_data([file_path, request.headers.get("Language"), request.data])
     return ""
 
 

@@ -2,20 +2,41 @@ import nltk
 import pickle
 import pandas as pd
 import sys
+import json
+import queue
+import threading
 from sklearn.metrics import accuracy_score
 
 
-class NewsNet:
-    def __init__(self, lang):
-        self.lang = lang
-        self.stemmer = get_stemmer(lang)
-        self.vectorizer = load('assets/news/' + lang + '/vectorizer.pickle')
-        self.model = load('assets/news/' + lang + '/model.pickle')
+class TGExecutor:
+    def __init__(self, max_workers):
+        self.q = queue.Queue()
+        self.threads = [threading.Thread(target=self._work) for _ in range(max_workers)]
+        for t in self.threads:
+            t.start()
 
-    def check(self, text):
-        stemmed_text = stem_text(text, self.stemmer)
-        x_tfidf = self.vectorizer.transform([stemmed_text])
-        return predict(self.model, x_tfidf, self.lang)
+    def submit_data(self, data):
+        self.q.put(data)
+
+    def _work(self):
+        net_sys = NetSystem()
+        while True:
+            data = self.q.get()
+            print("Processing: " + data[0])
+            net_sys.process(data)
+
+
+class NetSystem:
+    def __init__(self):
+        self.stemmers = {'ru': get_stemmer('ru'), 'en': get_stemmer('en')}
+        self.models = {'ru': get_model('ru'), 'en': get_model('en')}
+        self.vectorizers = {'ru': get_vectorizer('ru'), 'en': get_vectorizer('en')}
+
+    def process(self, text):
+        pass
+        # stemmed_text = stem_text(text, self.stemmer)
+        # x_tfidf = self.vectorizer.transform([stemmed_text])
+        # return predict(self.model, x_tfidf, self.lang)
 
 
 def get_stemmer(lang):
@@ -23,6 +44,14 @@ def get_stemmer(lang):
         return nltk.stem.snowball.RussianStemmer()
     elif lang == 'en':
         return nltk.stem.snowball.EnglishStemmer()
+
+
+def get_vectorizer(lang):
+    return load('/Users/dzhiblavi/Documents/prog/tgnews/python/assets/news/' + lang + '/vectorizer.pickle')
+
+
+def get_model(lang):
+    return load('/Users/dzhiblavi/Documents/prog/tgnews/python/assets/news/' + lang + '/model.pickle')
 
 
 def stem_text(text, stemmer):
@@ -48,10 +77,10 @@ def predict(model, x_tfidf, lang):
 
 def test(lang):
     stemmer = get_stemmer(lang)
-    vectorizer = load('assets/news/' + lang + '/vectorizer.pickle')
-    model = load('assets/news/' + lang + '/model.pickle')
+    vectorizer = load('../assets/news/' + lang + '/vectorizer.pickle')
+    model = load('../assets/news/' + lang + '/model.pickle')
 
-    df = pd.read_csv('assets/news/' + lang + '/test.csv', sep='\t')
+    df = pd.read_csv('../assets/news/' + lang + '/test.csv', sep='\t')
     texts = df.text
     labels = df.label
 
@@ -70,4 +99,7 @@ def test(lang):
 
 
 if __name__ == '__main__':
-    test(sys.argv[1])
+    executor = TGExecutor(8)
+    while True:
+        pass
+    pass
