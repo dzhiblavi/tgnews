@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_api import status
 from tgutil import Executor
+import sys
 
 
 app = Flask(__name__)
@@ -14,5 +15,5 @@ def parse_html(file_path):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8889, debug=False)
+    app.run(host='0.0.0.0', port=int(sys.argv[1]), debug=False)
 

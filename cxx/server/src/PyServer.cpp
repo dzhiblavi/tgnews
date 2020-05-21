@@ -1,31 +1,38 @@
 #include "PyServer.h"
 
+#include <utility>
+
 PyServer::PyServer(io_api::io_context &ctx, const ipv4::endpoint &ep)
-    : st(&socket, [this] { on_write(); })
-    , socket(ctx, ep, [] {}) {
+    : ctx(ctx)
+    , serv_addr(ep) {
     std::cerr << "PyServer booted" << std::endl;
 }
 
-PyServer::~PyServer() {}
-
 void PyServer::submit_request(const std::string &s) {
-    std::cerr << "Submitting request..." << std::endl;
-
-    st.push_front(s);
+    auto c = new connection(ctx, serv_addr, s, this);
+    con.emplace(c, std::unique_ptr<connection>(c));
 }
 
-void PyServer::on_write() {
-    std::string send = st.get();
+PyServer::connection::connection(io_api::io_context& ctx, ipv4::endpoint const &ep, std::string  message, PyServer *serv)
+    : socket(ctx, ep,
+            [this] {
+                this->serv->con.erase(this);
+            }, {},
+            [this] { on_write(); })
+    , message(std::move(message))
+    , serv(serv) {}
 
-    std::cerr << "sending to pyserver...: " << send << std::endl;
-
-    int r = socket.send(send.c_str(), send.size());
+void PyServer::connection::on_write() {
+    int r = socket.send(message.c_str(), message.size());
     if (r < 0) {
         if (errno == EINTR)
             return;
         IPV4_EXC();
     }
 
-    if (r < send.size())
-        st.push_back(send.substr(r));
+    if (r < message.size()) {
+        message = message.substr(r);
+    } else {
+        serv->con.erase(this);
+    }
 }

@@ -93,6 +93,5 @@ void server::client_connection::on_write() {
 
 void server::process(http::request const& request) {
     errlog(0, "STUB CALLED");
-    errlog(0, "RESENDING REQUEST TO PYTHON SERVER");
     pyserver.submit_request(request.to_string());
 }
