@@ -15,23 +15,14 @@
 
 
 #define BASE_DAEMON_DIR std::filesystem::path("../__cache")
-#define METAINFO_FILE std::filesystem::path("./__cache/META.json")
-
-struct meta {
-    std::filesystem::path json_file;
-    uint64_t end;
-};
-
+#define METAINFO_FILE std::filesystem::path("../__cache/META.json")
 
 class name_daemon {
-    static std::list<std::string> categories;
-    std::unordered_map<std::string, meta> mt;
+    std::unordered_map<std::string, uint64_t> mt;
     std::mutex m;
 
 private:
     void load_file(std::filesystem::path&& path);
-
-    static void create_directories();
 
 private:
     static bool compare_time(uint64_t);
@@ -47,7 +38,7 @@ public:
 
     bool contains(std::string const&);
 
-    std::filesystem::path add(std::string const&, uint64_t);
+    bool add(std::string const&, uint64_t);
 };
 
 

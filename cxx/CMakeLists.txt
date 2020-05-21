@@ -7,5 +7,6 @@ add_subdirectory(language)
 add_subdirectory(server)
 add_subdirectory(walker)
 add_subdirectory(http)
+add_subdirectory(html)
 
 add_subdirectory(tgnews)
