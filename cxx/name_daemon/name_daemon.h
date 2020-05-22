@@ -24,11 +24,6 @@ class name_daemon {
 private:
     void load_file(std::filesystem::path&& path);
 
-private:
-    static uint64_t current_time();
-
-    static bool compare_time(uint64_t);
-
 public:
     name_daemon();
 
@@ -41,6 +36,10 @@ public:
     bool contains(std::string const&);
 
     bool add(std::string const&, uint64_t);
+
+    static uint64_t current_time();
+
+    static bool compare_time(uint64_t);
 };
 
 

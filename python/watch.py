@@ -11,8 +11,6 @@ executor = TGExecutor(16)
 @app.route('/<path:file_path>', methods=['PUT'])
 def process_put_request(file_path):
     print("processing put request: " + file_path)
-    print("Language = " + request.headers.get("Language"))
-    print("Data = " + str(request.data)[:30])
     executor.submit_data([file_path, request.headers.get("Language"), request.data])
     return ""
 

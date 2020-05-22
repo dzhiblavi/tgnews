@@ -111,10 +111,13 @@ http::response server::process(http::request&& request) {
 http::response server::process_put(http::request&& request) {
     errlog(8, __func__);
 
-//    uint64_t time = html::parser::extract_time(meta["article:published_time"]);
-    // TODO: extract time
+    uint64_t end_time = atoi(request.fields["Cache-Control"].substr(8).c_str())
+            + html::parser::extract_time_from_html(request.body);
+
+    errlog(0, "Cc: " + std::to_string(end_time));
+
     http::response result {http::version::HTTP11};
-    if (daemon.add(request.uri, -1)) {
+    if (daemon.add(request.uri, end_time)) {
         result.code = 201;
         result.reason = "Created";
     } else {
@@ -122,26 +125,30 @@ http::response server::process_put(http::request&& request) {
         result.reason = "Updated";
     }
 
-    errlog(0, "threadpool1");
-    worker_thp.submit([this, request{std::move(request)}] () mutable {
-        std::unordered_map<std::string, std::string> meta;
-        html::parser::extract(request.body, meta);
+    if (name_daemon::compare_time(end_time)) {
+        errlog(10, "article will last");
 
-        request.fields["Content-Length"] = std::to_string(request.body.size());
-        errlog(15, "Extraction result: " + request.body);
+        worker_thp.submit([this, request{std::move(request)}]() mutable {
+            std::unordered_map<std::string, std::string> meta;
+            html::parser::extract(request.body, meta);
 
-        std::string lang = detector.detect(request.body).name().substr(0, 2);
-        request.fields["Language"] = lang;
-        errlog(10, "Language detection result: " + lang);
+            request.fields["Content-Length"] = std::to_string(request.body.size());
+            errlog(15, "Extraction result: " + request.body);
 
-        if (lang == "ru" || lang == "en") {
-            errlog(10, "Submiting request");
-            pyserver.submit_request(request.to_string());
-        } else {
-            errlog(10, "Ignoring request");
-        }
-    });
-    errlog(0, "threadpool2");
+            std::string lang = detector.detect(request.body).name().substr(0, 2);
+            request.fields["Language"] = lang;
+            errlog(10, "Language detection result: " + lang);
+
+            if (lang == "ru" || lang == "en") {
+                errlog(10, "Submiting request");
+                pyserver.submit_request(request.to_string());
+            } else {
+                errlog(10, "Ignoring request");
+            }
+        });
+    } else {
+        errlog(10, "article is already rotten");
+    }
 
     return result;
 }
