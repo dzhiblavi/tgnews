@@ -51,8 +51,6 @@ private:
     concurrent_detector detector;
 
 private:
-    void on_connect(io_api::io_context& ctx);
-
     http::response process_put(http::request&& request);
 
     http::response process_delete(http::request&& request);
@@ -69,7 +67,7 @@ struct server::client_connection {
 private:
     server* srv;
     ipv4::socket socket;
-    storage<std::string> stor;
+    storage stor;
 
     char buff[CLIENT_BUFF_SIZE]{0};
     http::parser<http::request> parser;
@@ -77,12 +75,10 @@ private:
 private:
     void on_disconnect();
 
-    void on_read();
-
-    void on_write();
+    void on_read(int r);
 
 public:
-    client_connection(io_api::io_context& ctx, server* srv);
+    client_connection(server* srv, ipv4::socket&& sock);
 };
 
 

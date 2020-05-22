@@ -12,10 +12,13 @@
 #define NET_EINPROGRESS WSAEINPROGRESS
 #endif
 
-#define IPV4_EXC(X) throw ipv4::error(std::string("IPV4 ERROR: ") + X \
+#define IPV4_ERROR(X) ipv4::error(std::string("IPV4 ERROR: ") + X \
+                        + " in file: " + __FILE__ \
                         + " in function: " + __func__ + "(...)" \
                         + " on line: " + std::to_string(__LINE__) \
                         + ": " + std::to_string(gerrno))
+
+#define IPV4_EXC(X) throw IPV4_ERROR(X)
 
 namespace ipv4 {
 class error : public std::runtime_error {

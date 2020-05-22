@@ -33,7 +33,7 @@ struct PyServer::connection {
     PyServer* serv;
 
 private:
-    void on_write();
+    void on_write(int r);
 
 public:
     connection(io_api::io_context& ctx, ipv4::endpoint const& ep, std::string  message, PyServer* serv);

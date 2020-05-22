@@ -14,25 +14,21 @@ void PyServer::submit_request(const std::string &s) {
 }
 
 PyServer::connection::connection(io_api::io_context& ctx, ipv4::endpoint const &ep, std::string  message, PyServer *serv)
-    : socket(ctx, ep,
-            [this] {
-                this->serv->con.erase(this);
-            }, {},
-            [this] { on_write(); })
-    , message(std::move(message))
-    , serv(serv) {}
+    : message(std::move(message))
+    , serv(serv) {
+    socket.connect(ep, ipv4::handler<>([&, this] {
+        socket.write(message.data(), message.size(), ipv4::handler<int>([&, this] (int r) {
+            on_write(r);
+        }));
+    }), [this] {
+        this->serv->con.erase(this);
+    });
+}
 
-void PyServer::connection::on_write() {
-    int r = socket.send(message.c_str(), message.size());
-    if (r < 0) {
-        if (errno == EINTR)
-            return;
-        IPV4_EXC();
-    }
-
-    if (r < message.size()) {
-        message = message.substr(r);
+void PyServer::connection::on_write(int r) {
+    if (r == message.size()) {
+        this->serv->con.erase(this);
     } else {
-        serv->con.erase(this);
+        socket.write(message.data() + r, message.size() - r, ipv4::handler<int>([this] (int r) { on_write(r); }));
     }
 }
