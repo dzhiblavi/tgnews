@@ -312,6 +312,10 @@ bool poll::flag::eof() const {
 short poll::flag::events() const {
     return events_;
 }
+
+poll::flag::flag(const poll::flag &o)
+    : events_(o.events_) {}
+
 #endif
 
 #if defined(NET_POLL_POLL)
