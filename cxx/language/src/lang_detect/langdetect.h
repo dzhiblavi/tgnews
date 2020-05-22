@@ -1,6 +1,3 @@
-//
-// Created by Роман Агеев on 11.05.2020.
-//
 #ifndef __LANGDETECT_DETECTOR_H_
 #define __LANGDETECT_DETECTOR_H_
 

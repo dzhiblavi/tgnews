@@ -1,6 +1,3 @@
-//
-// Created by Роман Агеев on 11.05.2020.
-//
 #include "./normalizer.h"
 #include "./unicode_data.h"
 #include <vector>
