@@ -133,6 +133,9 @@ poll::sock_fd_t poll::event_info::fd() const {
 }
 
 #if defined(NET_POLL_EPOLL)
+poll::flag::flag(const poll::flag &o)
+    : events_(o.events_) {}
+
 void poll::event_info::event_ctl_apply(CTL ctl, poll& p) {
     event ev{get_flag().events(), data_};
     api_epoll_ctl(p.native_handle(), ctl, fd_, &ev);
