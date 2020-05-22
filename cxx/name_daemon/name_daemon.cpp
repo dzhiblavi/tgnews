@@ -30,9 +30,8 @@ bool name_daemon::compare_time(uint64_t timep) {
 }
 
 name_daemon::name_daemon() {
-    std::cerr << "DAEMON: Boot" << std::endl;
     load_file(METAINFO_FILE);
-    std::cerr << "DAEMON: OK" << std::endl;
+    std::cout << "DAEMON: Boot" << std::endl;
 }
 
 name_daemon::~name_daemon() {

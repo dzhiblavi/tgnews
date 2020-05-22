@@ -22,9 +22,11 @@
 #include "language/src/lang_detect/langdetect.h"
 
 
-#define ERRLOG_LVL 10
-#define REQUEST_THP_SIZE 8
-#define WORKER_THP_SIZE 16
+#define ERRLOG_LVL 8
+#define REQUEST_THP_SIZE 4
+#define WORKER_THP_SIZE 4
+#define MAX_DELETE_DELAY 3
+#define DELETER_THP_SIZE 4
 #define CLIENT_BUFF_SIZE 1 << 16
 
 
@@ -37,6 +39,23 @@ public:
 };
 
 
+class deleter {
+    std::mutex m;
+    std::vector<std::pair<uint8_t, std::filesystem::path>> q;
+    thread_pool<DELETER_THP_SIZE> thp;
+
+private:
+    void remove(std::pair<uint8_t, std::filesystem::path> p);
+
+public:
+    deleter() = default;
+
+    void submit(std::filesystem::path const& path);
+
+    void wakeup();
+};
+
+
 class server {
 private:
     struct client_connection;
@@ -44,6 +63,7 @@ private:
 private:
     thread_pool<REQUEST_THP_SIZE> request_thp;
     thread_pool<WORKER_THP_SIZE> worker_thp;
+    deleter del;
     ipv4::server_socket socket;
     std::map<client_connection*, std::unique_ptr<client_connection>> clients;
     name_daemon daemon;

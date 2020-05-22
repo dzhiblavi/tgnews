@@ -5,7 +5,15 @@
 PyServer::PyServer(io_api::io_context &ctx, const ipv4::endpoint &ep)
     : ctx(ctx)
     , serv_addr(ep) {
-    std::cerr << "PyServer booted" << std::endl;
+    std::string s = "/usr/bin/python3";
+    pid = sysapi::execute(s, s, std::string("/Users/dzhiblavi/Documents/prog/tgnews/python/watch.py"), std::to_string(ep.host_port()));
+    sleep(1);
+
+    std::cout << "PyServer booted" << std::endl;
+}
+
+PyServer::~PyServer() {
+    sysapi::kill(pid);
 }
 
 void PyServer::submit_request(const std::string &s) {
@@ -13,14 +21,18 @@ void PyServer::submit_request(const std::string &s) {
     con.emplace(c, std::unique_ptr<connection>(c));
 }
 
-PyServer::connection::connection(io_api::io_context& ctx, ipv4::endpoint const &ep, std::string  message, PyServer *serv)
-    : message(std::move(message))
+PyServer::connection::connection(io_api::io_context& ctx, ipv4::endpoint const &ep, std::string message, PyServer *serv)
+    : socket(ctx)
+    , message(std::move(message))
     , serv(serv) {
-    socket.connect(ep, ipv4::handler<>([&, this] {
+
+    socket.connect(ep, ipv4::handler<>([message, this] () mutable {
         socket.write(message.data(), message.size(), ipv4::handler<int>([&, this] (int r) {
             on_write(r);
         }));
-    }), [this] {
+        }, [] (std::runtime_error re) {
+            std::cerr << "Failed to connect to PyServer: " << re.what() << std::endl;
+        }), [this] {
         this->serv->con.erase(this);
     });
 }

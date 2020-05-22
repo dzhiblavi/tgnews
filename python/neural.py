@@ -2,6 +2,7 @@ import nltk
 import pickle
 import pandas as pd
 import sys
+import json
 import queue
 import threading
 from sklearn.metrics import accuracy_score
@@ -29,6 +30,17 @@ class TGExecutor:
             net_sys.process(data)
 
 
+def form_path(lang, category, name):
+    return out_path + '/' + lang + '/' + category + '/' + name
+
+
+def dump_info(js):
+    path = form_path(js['lang'], js['category'], js['file_name'])
+    print("Dumping: " + path + ": " + json.dumps(js))
+    with open(path, 'w') as file:
+        file.write(json.dumps(js))
+
+
 class NetSystem:
     def __init__(self):
         self.stemmers = {'ru': get_stemmer('ru'), 'en': get_stemmer('en')}
@@ -46,8 +58,10 @@ class NetSystem:
         text = data[2]
         if self.predict_news(str(text), lang):
             print("News detected: " + name)
+            cat = "Sports"
+            dump_info({"file_name": name, "lang": lang, "category": cat})
         else:
-            print("Non-news detected: " + name)
+            print("Non-news detected: " + name + ", skipping")
 
 
 def get_stemmer(lang):

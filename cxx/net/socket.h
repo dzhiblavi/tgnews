@@ -127,7 +127,7 @@ private:
     socket(io_api::io_context& ctx, int fd);
 
 public:
-    socket() = default;
+    socket(io_api::io_context& ctx);
 
     ~socket();
 

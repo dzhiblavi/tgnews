@@ -7,7 +7,7 @@ void errlog() {}
 
 template <typename A, typename... Args>
 void errlog(A&& a, Args&&... args) {
-    std::cerr << a << std::endl;
+    std::cout << a << std::endl;
     errlog(std::forward<Args>(args)...);
 }
 
@@ -21,19 +21,71 @@ void errlog(int lvl, Args&&... args) {
 }
 
 
+void deleter::remove(std::pair<uint8_t, std::filesystem::path> p) {
+    static std::set<std::string> categories = {
+            "Entertainment",
+            "Society",
+            "Technology",
+            "Sports",
+            "Science",
+            "Economy",
+    };
+    static std::set<std::string> languages = {
+            "ru",
+            "en",
+    };
+    static std::filesystem::path base = "../python/out/";
+
+    std::filesystem::path const &path = p.second;
+    errlog(9, "Removing file: ", path);
+
+    for (auto &lang : languages) {
+        for (auto &cat : categories) {
+            std::string full_path = base.string() + "/" + lang + "/" + cat + "/" + path.string();
+            if (std::filesystem::is_regular_file(full_path)) {
+                errlog(9, "found file: removing file: ", full_path);
+                std::filesystem::remove(full_path);
+                return;
+            }
+        }
+    }
+
+    std::lock_guard<std::mutex> lg(m);
+    if (--p.first > 0) {
+        errlog(9, "retrying to remove the file next time!");
+        q.push_back(p);
+    }
+}
+
+void deleter::submit(const std::filesystem::path &path) {
+    std::lock_guard<std::mutex> lg(m);
+    q.push_back({MAX_DELETE_DELAY, path});
+}
+
+void deleter::wakeup() {
+    std::lock_guard<std::mutex> lg(m);
+
+    while (!q.empty()) {
+        thp.submit([p{q.back()}, this] {
+            remove(p);
+        });
+        q.pop_back();
+    }
+}
+
+
 server::server(io_api::io_context &ctx, ipv4::endpoint const &server_ep, ipv4::endpoint const& pyserver_ep)
     : socket(ctx)
     , pyserver(ctx, pyserver_ep) {
     socket.bind(server_ep);
     socket.accept(ipv4::handler<ipv4::socket>([&, this] (ipv4::socket sock) {
-        errlog(2, "on_connect");
+        errlog(10, "on_connect");
         client_connection* cc = new client_connection(this, std::move(sock));
         clients.emplace(cc, std::unique_ptr<client_connection>(cc));
     }));
 
-    std::cerr << "Server booted" << std::endl;
+    std::cout << "Server booted" << std::endl;
 }
-
 
 server::client_connection::client_connection(server* srv, ipv4::socket&& sock)
     : srv(srv)
@@ -44,12 +96,12 @@ server::client_connection::client_connection(server* srv, ipv4::socket&& sock)
 }
 
 void server::client_connection::on_disconnect() {
-    errlog(2, __func__);
+    errlog(10, __func__);
     srv->clients.erase(this);
 }
 
 void server::client_connection::on_read(int r) {
-    errlog(4, __func__);
+    errlog(10, __func__);
     errlog(15, std::string(__func__) + ": '" + std::string(buff, buff + r) + "'");
 
     int offset = 0;
@@ -86,8 +138,6 @@ http::response server::process_put(http::request&& request) {
 
     uint64_t end_time = atoi(request.fields["Cache-Control"].substr(8).c_str())
             + html::parser::extract_time_from_html(request.body);
-
-    errlog(0, "Cc: " + std::to_string(end_time));
 
     http::response result {http::version::HTTP11};
     if (daemon.add(request.uri, end_time)) {
@@ -133,20 +183,20 @@ http::response server::process_delete(http::request&& request) {
     if (daemon.remove(request.uri)) {
         result.code = 204;
         result.reason = "No Content";
+        del.submit(request.uri);
     } else {
         result.code = 404;
         result.reason = "Not Found";
     }
 
-    // TODO: add removing task to the thread pool
-
+    del.wakeup();
     return result;
 }
 
 http::response server::process_get(http::request&& request) {
     errlog(8, __func__);
 
-    // TODO: process this type of request, lol
+    // TODO
 
     return {http::version::HTTP11, 200, "OK"};
 }

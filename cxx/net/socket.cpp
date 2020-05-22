@@ -154,6 +154,10 @@ std::function<void(poll::flag const&)> socket::configure_callback_() noexcept {
     };
 }
 
+socket::socket(io_api::io_context& ctx)
+    : socket(ctx, sock_create(AF_INET, SOCK_STREAM, 0)) {}
+
+
 socket::socket(io_api::io_context& ctx, int fd)
     : basic_socket(sock_ufd(fd))
     , destroyed_(nullptr)
@@ -203,16 +207,17 @@ void socket::set_on_write(callback_t const& on_write) {
 }
 
 void socket::connect(const endpoint &ep, const con_callback_t &on_connect, const socket::dc_callback_t &on_disconnect) {
-    if (!sock_connect(fd_.native_handle(), ep)) {
+    int r = sock_connect(fd_.native_handle(), ep);
+    if (0 == r) {
         set_on_disconnect(on_disconnect);
         on_connect.success();
-    } else {
-        set_on_disconnect([&, this] {
+    } else if (errno == EAGAIN || gerrno == NET_EINPROGRESS){
+        set_on_disconnect([on_connect, this] {
             unit_.close();
             on_connect.fail(IPV4_ERROR("Disconnected"));
         });
 
-        set_on_write([&, this] {
+        set_on_write([on_connect, on_disconnect, this] {
             if (int r = sock_geterr(fd_.native_handle())) {
                 unit_.close();
                 on_connect.fail(IPV4_ERROR(std::to_string(r)));
@@ -220,7 +225,10 @@ void socket::connect(const endpoint &ep, const con_callback_t &on_connect, const
             set_on_disconnect(on_disconnect);
             on_connect.success();
         });
-    }}
+    } else {
+        on_connect.on_fail(IPV4_ERROR());
+    }
+}
 
 void socket::read(char* buff, size_t size, rw_callback_t const& on_read) {
     if (on_read) {

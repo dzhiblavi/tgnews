@@ -18,11 +18,12 @@ private:
     std::map<connection*, std::unique_ptr<connection>> con;
     ipv4::endpoint serv_addr;
     io_api::io_context& ctx;
+    int pid = 0;
 
 public:
     PyServer(io_api::io_context& ctx, ipv4::endpoint const& ep);
 
-    ~PyServer() = default;
+    ~PyServer();
 
     void submit_request(std::string const& s);
 };
