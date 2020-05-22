@@ -53,12 +53,7 @@ int sock_connect(int fd, ipv4::endpoint const& ep) {
     ad.sin_port = ep.port();
     ad.sin_addr.s_addr = ep.net_addr();
 
-    int r = connect(fd, reinterpret_cast<sockaddr const*>(&ad), sizeof ad);
-    if (!r || errno == EAGAIN || gerrno == NET_EINPROGRESS) {
-        return r;
-    }
-
-    IPV4_EXC();
+    return connect(fd, reinterpret_cast<sockaddr const*>(&ad), sizeof ad);
 }
 
 void sock_bind(int fd, ipv4::endpoint const& ep) {
@@ -80,12 +75,7 @@ void sock_listen(int fd, int maxq) {
 }
 
 int sock_accept(int fd) {
-    int s = accept(fd, nullptr, nullptr);
-    if (s < 0) {
-        IPV4_EXC();
-    }
-    set_nonblock(fd);
-    return s;
+    return accept(fd, nullptr, nullptr);
 }
 
 int sock_geterr(int fd) {
@@ -141,9 +131,7 @@ std::function<void(poll::flag const&)> socket::configure_callback_() noexcept {
         bool* old_destroyed = destroyed_;
         destroyed_ = &cur_destroyed;
         try {
-//            std::cerr << "SOCKET CALLBACK: " << std::endl;
             if (ev.eof()) {
-//                std::cerr << "ON_DISCONNECT" << std::endl;
                 if (this->on_disconnect_)
                     this->on_disconnect_();
                 if (cur_destroyed)
@@ -151,63 +139,26 @@ std::function<void(poll::flag const&)> socket::configure_callback_() noexcept {
             }
 
             if (ev.read() && on_read_) {
-//                std::cerr << "ON_READ" << std::endl;
                 this->on_read_();
                 if (cur_destroyed)
                     return;
             }
             if (ev.write() && on_write_) {
-//                std::cerr << "ON_WRITE" << std::endl;
                 this->on_write_();
             }
-        } catch (std::runtime_error const& re) {
-            std::cerr << "ERROR: " << re.what() << std::endl;
         } catch (...) {
             std::cerr << "ERROR: " << std::strerror(errno) << std::endl;
+            std::terminate();
         }
         destroyed_ = old_destroyed;
     };
 }
 
-socket::socket(io_api::io_context& ctx, ipv4::sock_ufd&& fd, callback_t const& on_disconnect)
-        : socket(ctx, std::move(fd), on_disconnect, callback_t{}, callback_t{})
-{}
-
-socket::socket(io_api::io_context& ctx, ipv4::sock_ufd&& fd, callback_t on_disconnect
-        , callback_t on_read, callback_t on_write)
-        : basic_socket(std::move(fd))
-        , on_disconnect_(std::move(on_disconnect))
-        , on_read_(std::move(on_read))
-        , on_write_(std::move(on_write))
-        , unit_(&ctx, events_(), fd_.native_handle(), configure_callback_())
-        , destroyed_(nullptr) {
+socket::socket(io_api::io_context& ctx, int fd)
+    : basic_socket(sock_ufd(fd))
+    , destroyed_(nullptr)
+    , unit_(&ctx, events_(), fd, configure_callback_()) {
     set_nonblock();
-}
-
-socket::socket(io_api::io_context& ctx, endpoint const& ep, callback_t const& on_disconnect)
-        : socket(ctx, ep, on_disconnect, callback_t{}, callback_t{})
-{}
-
-socket::socket(io_api::io_context& ctx, endpoint const& ep, callback_t const& on_disconnect
-        , callback_t const& on_read
-        , callback_t const& on_write)
-        : socket(ctx, ipv4::sock_ufd(sock_create(AF_INET, SOCK_STREAM, 0)), {}, {}, {}) {
-    if (!sock_connect(fd_.native_handle(), ep)) {
-        set_all(on_disconnect, on_read, on_write);
-    } else {
-        set_on_disconnect([this, on_disconnect] {
-            unit_.close();
-            IPV4_EXC("connection failed: " + std::to_string(sock_geterr(fd_.native_handle())));
-        });
-
-        set_on_write([this, &ep, on_disconnect, on_read, on_write] {
-            if (int r = sock_geterr(fd_.native_handle())) {
-                unit_.close();
-                IPV4_EXC("connection failed: " + std::to_string(r));
-            }
-            set_all(on_disconnect, on_read, on_write);
-        });
-    }
 }
 
 socket::~socket() {
@@ -236,26 +187,75 @@ socket& socket::operator=(ipv4::socket&& rhs) noexcept {
     return *this;
 }
 
-void socket::set_on_disconnect(callback_t on_disconnect) {
-    on_disconnect_.swap(on_disconnect);
+void socket::set_on_disconnect(callback_t const& on_disconnect) {
+    on_disconnect_ = on_disconnect;
     unit_.reconfigure_events(events_());
 }
 
-void socket::set_on_read(callback_t on_read) {
-    on_read_.swap(on_read);
+void socket::set_on_read(callback_t const& on_read) {
+    on_read_ = on_read;
     unit_.reconfigure_events(events_());
 }
 
-void socket::set_on_write(callback_t on_write) {
-    on_write_.swap(on_write);
+void socket::set_on_write(callback_t const& on_write) {
+    on_write_ = on_write;
     unit_.reconfigure_events(events_());
 }
 
-void socket::set_all(callback_t on_disconnect, callback_t on_read, callback_t on_write) {
-    on_disconnect_.swap(on_disconnect);
-    on_read_.swap(on_read);
-    on_write_.swap(on_write);
-    unit_.reconfigure_events(events_());
+void socket::connect(const endpoint &ep, const con_callback_t &on_connect, const socket::dc_callback_t &on_disconnect) {
+    if (!sock_connect(fd_.native_handle(), ep)) {
+        set_on_disconnect(on_disconnect);
+        on_connect.success();
+    } else {
+        set_on_disconnect([&, this] {
+            unit_.close();
+            on_connect.fail(IPV4_ERROR("Disconnected"));
+        });
+
+        set_on_write([&, this] {
+            if (int r = sock_geterr(fd_.native_handle())) {
+                unit_.close();
+                on_connect.fail(IPV4_ERROR(std::to_string(r)));
+            }
+            set_on_disconnect(on_disconnect);
+            on_connect.success();
+        });
+    }}
+
+void socket::read(char* buff, size_t size, rw_callback_t const& on_read) {
+    if (on_read) {
+        set_on_read([buff, size, on_read, this] {
+            int r = recv(buff, size);
+            if (r < 0) {
+                if (gerrno == EINTR) {
+                    return;
+                } else {
+                    on_read.fail(IPV4_ERROR());
+                }
+            }
+            on_read.success(r);
+        });
+    } else {
+        set_on_read({});
+    }
+}
+
+void socket::write(char* buff, size_t size, rw_callback_t on_write) {
+    if (on_write) {
+        set_on_write([buff, size, on_write, this] {
+            int r = send(buff, size);
+            if (r < 0) {
+                if (errno == EINTR) {
+                    return;
+                } else {
+                    on_write.fail(IPV4_ERROR());
+                }
+            }
+            on_write.success(r);
+        });
+    } else {
+        set_on_write({});
+    }
 }
 
 bool socket::has_on_disconnect() const noexcept {
@@ -281,29 +281,28 @@ void swap(socket& a, socket& b) noexcept {
     b.unit_.configure_callback(b.configure_callback_());
 }
 
-server_socket::server_socket(io_api::io_context& ctx, endpoint const& addr, callback_t on_connected)
-        : fd_(sock_create(AF_INET, SOCK_STREAM, 0))
-        , on_connected_(std::move(on_connected))
-        , unit_(&ctx, poll::flag(true, false, false), fd_.native_handle(), [this](poll::flag const& ev) {
-            if (ev.read()) {
-                on_connected_();
-            }
-        }) {
+server_socket::server_socket(io_api::io_context &ctx)
+        : ctx(ctx) {}
+
+void server_socket::bind(const ipv4::endpoint &ep) {
+    fd_ = sock_ufd(sock_create(AF_INET, SOCK_STREAM, 0));
     set_nonblock(fd_.native_handle());
     sock_enable_resuseaddr(fd_.native_handle());
-    sock_bind(fd_.native_handle(), addr);
+    sock_bind(fd_.native_handle(), ep);
     sock_listen(fd_.native_handle(), SSOCK_MAX_LISTEN);
 }
 
-socket server_socket::accept(callback_t const& on_disconnect) {
-    int fd = sock_accept(fd_.native_handle());
-    return socket(*unit_.context(), ipv4::sock_ufd(fd), on_disconnect);
-}
-
-socket server_socket::accept(callback_t const& on_disconnect
-        , callback_t const& on_read
-        , callback_t const& on_write) {
-    int fd = sock_accept(fd_.native_handle());
-    return socket(*unit_.context(), ipv4::sock_ufd(fd), on_disconnect, on_read, on_write);
+void server_socket::accept(const con_callback_t &on_connect) {
+    unit_ = io_api::io_unit(&ctx, poll::flag(true, false, false), fd_.native_handle(), [on_connect, this] (poll::flag const& ev) {
+        if (ev.read()) {
+            try {
+                int fd = sock_accept(fd_.native_handle());
+                socket s(ctx, fd);
+                on_connect.success(std::move(s));
+            } catch (std::runtime_error& re) {
+                on_connect.fail(re);
+            }
+        }
+    });
 }
 } // namespace ipv4

@@ -61,17 +61,61 @@ public:
     void set_nonblock();
 };
 
+template <typename... Args>
+struct handler {
+    typedef std::function<void(Args...)> on_success_fn_t;
+    typedef std::function<void(std::runtime_error)> on_fail_fn_t;
+
+    friend class socket;
+    friend class server_socket;
+
+private:
+    on_success_fn_t on_suc;
+    on_fail_fn_t on_fail;
+
+private:
+    template <typename... ArgsI>
+    void success(ArgsI&&... args) const {
+        on_suc(std::forward<ArgsI>(args)...);
+    }
+
+    void fail(const std::runtime_error& re) const {
+        if (on_fail) {
+            on_fail(re);
+        } else {
+            std::cerr << "Suspended failure: " <<  re.what() << std::endl;
+        }
+    }
+
+public:
+    handler() = default;
+
+    handler(on_success_fn_t on_suc)
+        : handler(std::move(on_suc), {}) {}
+
+    handler(on_success_fn_t on_suc, on_fail_fn_t on_fail)
+        : on_suc(std::move(on_suc)), on_fail(std::move(on_fail)) {}
+
+    operator bool() const noexcept {
+        return bool(on_suc);
+    }
+};
+
 class socket : private basic_socket {
     friend class server_socket;
 
 public:
-    typedef std::function<void()> callback_t;
+    typedef handler<int> rw_callback_t;
+    typedef handler<> con_callback_t;
+    typedef std::function<void()> dc_callback_t;
 
 private:
-    callback_t on_disconnect_;
+    typedef std::function<void()> callback_t;
     callback_t on_read_{};
     callback_t on_write_{};
-    io_api::io_unit unit_;
+    callback_t on_disconnect_{};
+
+    io_api::io_unit unit_{};
     bool *destroyed_ = nullptr;
 
 private:
@@ -79,20 +123,11 @@ private:
 
     [[nodiscard]] std::function<void(poll::flag const&)> configure_callback_() noexcept;
 
+private:
+    socket(io_api::io_context& ctx, int fd);
+
 public:
     socket() = default;
-
-    socket(io_api::io_context& ctx, sock_ufd&& fd, callback_t const& on_disconnect);
-
-    socket(io_api::io_context& ctx, sock_ufd&& fd, callback_t on_disconnect
-            , callback_t on_read
-            , callback_t on_write);
-
-    socket(io_api::io_context& ctx, endpoint const& ep, callback_t const& on_disconnect);
-
-    socket(io_api::io_context& ctx, endpoint const& ep, callback_t const& on_disconnect
-            , callback_t const& on_read
-            , callback_t const& on_write);
 
     ~socket();
 
@@ -104,13 +139,17 @@ public:
 
     socket& operator=(socket&&) noexcept;
 
-    void set_on_disconnect(callback_t on_disconnect);
+    void connect(ipv4::endpoint const& ep, con_callback_t const& on_connect, dc_callback_t const& on_disconnect);
 
-    void set_on_read(callback_t on_read);
+    void read(char* buff, size_t size, rw_callback_t const& on_read);
 
-    void set_on_write(callback_t on_write);
+    void write(char* buff, size_t size, rw_callback_t on_write);
 
-    void set_all(callback_t on_disconnect, callback_t on_read, callback_t on_write);
+    void set_on_write(callback_t const& cb);
+
+    void set_on_read(callback_t const& cb);
+
+    void set_on_disconnect(callback_t const& cb);
 
     [[nodiscard]] bool has_on_disconnect() const noexcept;
 
@@ -128,20 +167,21 @@ public:
 class server_socket {
 public:
     typedef std::function<void()> callback_t;
+    typedef std::function<void()> dc_callback_t;
+    typedef handler<ipv4::socket> con_callback_t;
 
 private:
-    sock_ufd fd_;
-    callback_t on_connected_;
-    io_api::io_unit unit_;
+    sock_ufd fd_{};
+    callback_t on_connected_{};
+    io_api::io_context& ctx;
+    io_api::io_unit unit_{};
 
 public:
-    server_socket(io_api::io_context& ctx, endpoint const& addr, callback_t on_connect);
+    server_socket(io_api::io_context& ctx);
 
-    socket accept(callback_t const& on_disconnect);
+    void bind(ipv4::endpoint const& ep);
 
-    socket accept(callback_t const& on_disconnect
-            , callback_t const& on_read
-            , callback_t const& on_write);
+    void accept(con_callback_t const& on_connect);
 };
 } // namespace ipv4
 

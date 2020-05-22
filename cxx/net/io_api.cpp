@@ -84,7 +84,7 @@ void io_unit::reconfigure_events(poll::flag const& fl) {
 }
 
 io_unit::io_unit(io_api::io_context *ctx, poll::flag const& fl, int fd, io_api::io_unit::callback_t callback)
-        : ctx_(ctx) , fd_(fd), callback_(std::move(callback)) {
+        : ctx_(ctx) , fd_(fd), events_(fl), callback_(std::move(callback)) {
     poll::event_info info(fd_, this, fl);
     ctx_->p.event_ctl(poll::ADD, info);
 }
@@ -119,6 +119,7 @@ void io_unit::configure_callback(io_api::io_unit::callback_t fn) noexcept {
 }
 
 void swap(io_unit& a, io_unit& b) noexcept {
+    assert(b.ctx_ != nullptr);
     std::swap(a.ctx_, b.ctx_);
     std::swap(a.events_, b.events_);
     std::swap(a.fd_, b.fd_);

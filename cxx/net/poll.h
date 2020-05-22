@@ -107,6 +107,8 @@ public:
 
         explicit flag(event const&);
 
+        flag(flag const& o);
+
         flag(bool, bool, bool);
 
         void set_read(bool);
@@ -144,7 +146,9 @@ public:
 
         event_info(int fd, void* data, flag const& f);
 
-        event_info(event_info const& ev) = default;
+        event_info(event_info const& ev) = delete;
+
+        event_info(event_info&& ev) = default;
 
         [[nodiscard]] sock_fd_t fd() const;
 
