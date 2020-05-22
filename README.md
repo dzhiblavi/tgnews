@@ -22,35 +22,40 @@ Full description (ENG): https://contest.com/docs/data_clustering2/
 
 1.1. Grouping by language
 
-```bash
+```
 tgnews languages <source_dir>
 ```
 
 1.2. Isolating news articles
 
-```bash
+```
 tgnews news <source_dir>
 ```
 
 1.3. Grouping by category
 
-TODO
+```
+tgnews categories <source_dir>
+```
 
 1.4. Grouping similar news into threads
 
-TODO
+```
+tgnews threads <source_dir>
+```
 
 ## Stage 2. Indexing and Ranking
 
 2.0. Start server
 
-```bash
+```
 tgnews server <port>
 ```
 
 2.1. Indexing
 
 HTTP request:
+
 ```
 PUT /article.html HTTP/1.1
 Content-Type: text/html
@@ -70,4 +75,8 @@ DELETE /article.html HTTP/1.1
 
 2.3. Thread ranking
 
-TODO
+HTTP request:
+
+```
+GET /threads?period=<period>&lang_code=<lang_code>&category=<category> HTTP/1.1
+```
