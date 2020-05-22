@@ -8,6 +8,7 @@
 
 struct storage {
     ipv4::socket* socket;
+    std::function<void()> on_end;
     std::deque<std::string> data;
     std::mutex m;
 
@@ -20,13 +21,16 @@ struct storage {
 
         if (data.empty()) {
             socket->write(nullptr, 0, {});
+            on_end();
         } else {
             set_on_write();
         }
     }
 
     void set_on_write() {
-        socket->write(data.back().data(), data.back().size(), ipv4::handler<int>([this] (int r) { on_write(r); }));
+        if (data.size() == 1) {
+            socket->write(data.back().data(), data.back().size(), ipv4::handler<int>([this] (int r) { on_write(r); }));
+        }
     }
 
 private:
@@ -43,8 +47,8 @@ private:
     }
 
 public:
-    storage(ipv4::socket* cc)
-            : socket(cc) {}
+    storage(ipv4::socket* cc, std::function<void()> const& on_end)
+            : socket(cc), on_end(on_end) {}
 
     void push(std::string const& value) {
         std::lock_guard<std::mutex> lg(m);

@@ -29,6 +29,7 @@ void PyServer::connection::on_write(int r) {
     if (r == message.size()) {
         this->serv->con.erase(this);
     } else {
-        socket.write(message.data() + r, message.size() - r, ipv4::handler<int>([this] (int r) { on_write(r); }));
+        message = message.substr(r);
+        socket.write(message.data(), message.size(), ipv4::handler<int>([this] (int r) { on_write(r); }));
     }
 }

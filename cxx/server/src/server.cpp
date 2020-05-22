@@ -26,7 +26,7 @@ server::server(io_api::io_context &ctx, ipv4::endpoint const &server_ep, ipv4::e
     , pyserver(ctx, pyserver_ep) {
     socket.bind(server_ep);
     socket.accept(ipv4::handler<ipv4::socket>([&, this] (ipv4::socket sock) {
-        errlog(2, "accept");
+        errlog(2, "on_connect");
         client_connection* cc = new client_connection(this, std::move(sock));
         clients.emplace(cc, std::unique_ptr<client_connection>(cc));
     }));
@@ -38,7 +38,7 @@ server::server(io_api::io_context &ctx, ipv4::endpoint const &server_ep, ipv4::e
 server::client_connection::client_connection(server* srv, ipv4::socket&& sock)
     : srv(srv)
     , socket(std::move(sock))
-    , stor(&socket) {
+    , stor(&socket, [this] { on_disconnect(); }) {
     socket.set_on_disconnect([this] { on_disconnect(); });
     socket.read(buff, CLIENT_BUFF_SIZE, ipv4::handler<int>([this] (int r) { on_read(r); }));
 }

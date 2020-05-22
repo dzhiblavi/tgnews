@@ -127,7 +127,6 @@ poll::flag socket::events_() const noexcept {
 
 std::function<void(poll::flag const&)> socket::configure_callback_() noexcept {
     return [this](poll::flag const& ev) {
-        std::cerr << "CALLBACK" << std::endl;
         bool cur_destroyed = false;
         bool* old_destroyed = destroyed_;
         destroyed_ = &cur_destroyed;
@@ -157,7 +156,8 @@ std::function<void(poll::flag const&)> socket::configure_callback_() noexcept {
 
 socket::socket(io_api::io_context& ctx, int fd)
     : basic_socket(sock_ufd(fd))
-    , destroyed_(nullptr) {
+    , destroyed_(nullptr)
+    , unit_(&ctx, events_(), fd, configure_callback_()) {
     set_nonblock();
 }
 
@@ -224,7 +224,7 @@ void socket::connect(const endpoint &ep, const con_callback_t &on_connect, const
 
 void socket::read(char* buff, size_t size, rw_callback_t const& on_read) {
     if (on_read) {
-        set_on_read([&, this] {
+        set_on_read([buff, size, on_read, this] {
             int r = recv(buff, size);
             if (r < 0) {
                 if (gerrno == EINTR) {
@@ -242,7 +242,7 @@ void socket::read(char* buff, size_t size, rw_callback_t const& on_read) {
 
 void socket::write(char* buff, size_t size, rw_callback_t on_write) {
     if (on_write) {
-        set_on_write([&, this] {
+        set_on_write([buff, size, on_write, this] {
             int r = send(buff, size);
             if (r < 0) {
                 if (errno == EINTR) {
@@ -293,8 +293,7 @@ void server_socket::bind(const ipv4::endpoint &ep) {
 }
 
 void server_socket::accept(const con_callback_t &on_connect) {
-    std::cerr << "socket : " << fd_.native_handle() << std::endl;
-    unit_ = io_api::io_unit(&ctx, poll::flag(true, false, false), fd_.native_handle(), [&, this] (poll::flag const& ev) {
+    unit_ = io_api::io_unit(&ctx, poll::flag(true, false, false), fd_.native_handle(), [on_connect, this] (poll::flag const& ev) {
         if (ev.read()) {
             try {
                 int fd = sock_accept(fd_.native_handle());

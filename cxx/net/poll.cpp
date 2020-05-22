@@ -201,6 +201,11 @@ void poll::event_info::event_ctl_apply(CTL ctl, poll& p) {
     }
 }
 
+poll::flag::flag(const flag &o)
+    : read_(o.read_)
+    , write_(o.write_)
+    , eof_(o.eof_) {}
+
 poll::flag::flag(event const& ev) {
     if (ev.flags & EV_EOF) {
         eof_ = true;
