@@ -49,13 +49,14 @@ TEST(html_parser, empty_meta) {
 
 TEST(html_parser, simple_meta) {
     std::unordered_map<std::string, std::string> meta;
-    std::string e =
+    const std::string article =
         "   <meta charset=\"utf-8\"/>"
         "   <meta property=\"og:url\" content=\"http://www.irishnews.com/news/northernirelandnews/2020/04/27/news/prescription-drugs-stolen-during-co-antrim-burglary-1916724/\"/>\n"
         "   <meta property=\"og:site_name\" content=\"The Irish News\"/>\n"
-        "   <meta property=\"article:published_time\" content=\"2020-04-27T01:00:00+00:00\"/>\n"
+        "   <meta property=\"article:published_time\" content=\"2020-05-03T04:28:11+00:00\"/>\n"
         "   <meta property=\"og:title\" content=\"Prescription drugs stolen during Co Antrim burglary\"/>\n"
         "   <meta property=\"og:description\" content=\"PRESCRIPTION drugs have been stolen during a burglary at a chemist in Co Antrim.\"/>";
+    std::string e = article;
     html::parser::extract(e, meta);
     ASSERT_EQ(e, "");
     ASSERT_EQ(meta.size(), 5);
@@ -64,9 +65,13 @@ TEST(html_parser, simple_meta) {
     }
     ASSERT_EQ(meta["og:url"], "http://www.irishnews.com/news/northernirelandnews/2020/04/27/news/prescription-drugs-stolen-during-co-antrim-burglary-1916724/");
     ASSERT_EQ(meta["og:site_name"], "The Irish News");
-    ASSERT_EQ(meta["article:published_time"], "2020-04-27T01:00:00+00:00");
+    ASSERT_EQ(meta["article:published_time"], "2020-05-03T04:28:11+00:00");
     ASSERT_EQ(meta["og:title"], "Prescription drugs stolen during Co Antrim burglary");
     ASSERT_EQ(meta["og:description"], "PRESCRIPTION drugs have been stolen during a burglary at a chemist in Co Antrim.");
+
+    e = article;
+    uint64_t pt = html::parser::extract_time_from_html(e);
+    ASSERT_EQ(pt, 1588480091);
 }
 
 TEST(html_parser, full_meta) {
@@ -103,6 +108,10 @@ TEST(html_parser, full_meta) {
     ASSERT_EQ(meta["article:published_time"], "2020-04-27T01:00:00+00:00");
     ASSERT_EQ(meta["og:title"], "Prescription drugs stolen during Co Antrim burglary");
     ASSERT_EQ(meta["og:description"], "PRESCRIPTION drugs have been stolen during a burglary at a chemist in Co Antrim.");
+
+    e = article;
+    uint64_t pt = html::parser::extract_time_from_html(e);
+    ASSERT_EQ(pt, 1587949200);
 }
 
 TEST(html_parser, empty_time) {

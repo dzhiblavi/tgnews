@@ -3,16 +3,20 @@
 
 #include <string>
 #include <unordered_map>
+#include <iomanip>
 
 namespace html {
-    static const std::string META_PREFIX = "<meta property=";
+    static const std::string_view META_PREFIX =
+            "<meta property=";
+    static const std::string_view PUBLISH_PREFIX =
+            "<meta property=\"article:published_time\" content=\"";
 
     class parser {
     private:
         using siter = std::string::iterator;
 
     private:
-        static bool starts_with(siter it, siter end, std::string const &prefix) {
+        static bool starts_with(siter it, siter end, std::string_view const &prefix) {
             size_t p = 0;
             while (p < prefix.size() && it < end && *it == prefix[p]) {
                 p++;
@@ -122,7 +126,23 @@ namespace html {
             s.resize(left - beg);
         }
 
-        static uint64_t extract_time(std::string const &s) {
+        [[nodiscard]] static uint64_t extract_time_from_html(std::string &s) {
+            siter right = s.begin();
+            siter end = s.end();
+
+            while (right != end) {
+                if (*right == '<' && starts_with(right, end, PUBLISH_PREFIX)) {
+                    std::advance(right, PUBLISH_PREFIX.size());
+                    siter rb = skip_until(right, end, '"');
+                    return extract_time(std::string(right, rb));
+                }
+                right++;
+            }
+
+            return 0;
+        }
+
+        [[nodiscard]] static uint64_t extract_time(std::string const &s) {
             std::tm t = {};
             std::istringstream ss(s);
 
