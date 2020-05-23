@@ -1,6 +1,7 @@
 #ifndef TGSERVER_SERVER_H
 #define TGSERVER_SERVER_H
 
+
 #include <map>
 #include <memory>
 
@@ -25,8 +26,8 @@
 #define ERRLOG_LVL 8
 #define REQUEST_THP_SIZE 4
 #define WORKER_THP_SIZE 4
-#define MAX_DELETE_DELAY 3
 #define DELETER_THP_SIZE 4
+#define MAX_DELETE_DELAY 3
 #define CLIENT_BUFF_SIZE 1 << 16
 
 

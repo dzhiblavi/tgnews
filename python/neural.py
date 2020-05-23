@@ -5,7 +5,6 @@ import sys
 import json
 import queue
 import threading
-from sklearn.metrics import accuracy_score
 
 
 root_path = '/Users/dzhiblavi/Documents/prog/tgnews/python'
@@ -14,8 +13,9 @@ out_path = root_path + '/out'
 
 
 class TGExecutor:
-    def __init__(self, max_workers):
-        self.q = queue.Queue()
+    def __init__(self, lang, max_workers):
+        self.lang = lang
+        self.q = queue.SimpleQueue()
         self.threads = [threading.Thread(target=self._work) for _ in range(max_workers)]
         for t in self.threads:
             t.start()
@@ -24,10 +24,62 @@ class TGExecutor:
         self.q.put(data)
 
     def _work(self):
-        net_sys = NetSystem()
+        net_sys = NetSystem(self.lang)
         while True:
             data = self.q.get()
             net_sys.process(data)
+
+
+class NetSystem:
+    def __init__(self, lang):
+        self.lang = lang
+        self.nets = TNetPack(lang)
+
+    def process(self, datalist):
+        names = [data[0] for data in datalist]
+        texts = [self.nets.stemmer.stem(data[1]) for data in datalist]
+        news_test = self.nets.news_net.predict(texts)
+
+        for i in range(len(texts)):
+            print('i = ' + str(i) + ', news_test=' + news_test[i])
+            if news_test[i]:
+                print('News detected, dumping')
+                cat = 'Sports'
+                dump_info({"file_name": names[i], "lang": self.lang, "category": cat})
+
+
+class TNetPack:
+    def __init__(self, lang):
+        self.stemmer = TStemmer(lang)
+        self.news_net = TNet('news', lang) if lang == 'ru' else ENNewsNet()
+        self.class_net = TNet('classifier', lang)
+
+
+class TStemmer:
+    def __init__(self, lang):
+        self.stemmer = get_stemmer(lang)
+
+    def stem(self, text):
+        return ' '.join(map(lambda w: self.stemmer.stem(w), text.split()))
+
+
+class TNet:
+    def __init__(self, net_type, lang):
+        self.model = get_model(lang, net_type)
+        self.vectorizer = get_vectorizer(lang, net_type)
+
+    def predict(self, stemmed_texts):
+        x_tfidf = self.vectorizer.transform(stemmed_texts)
+        return self.model.predict(x_tfidf)
+
+
+class ENNewsNet(TNet):
+    def __init__(self):
+        super(ENNewsNet, self).__init__('news', 'en')
+
+    def predict(self, stemmed_texts):
+        x_tfidf = self.vectorizer.transform(stemmed_texts)
+        return 0.45 < self.model.predict_proba(x_tfidf)[:, 1:]
 
 
 def form_path(lang, category, name):
@@ -41,29 +93,6 @@ def dump_info(js):
         file.write(json.dumps(js))
 
 
-class NetSystem:
-    def __init__(self):
-        self.stemmers = {'ru': get_stemmer('ru'), 'en': get_stemmer('en')}
-        self.models = {'ru': get_model('ru'), 'en': get_model('en')}
-        self.vectorizers = {'ru': get_vectorizer('ru'), 'en': get_vectorizer('en')}
-
-    def predict_news(self, text, lang):
-        stemmed_text = stem_text(text, self.stemmers[lang])
-        x_tfidf = self.vectorizers[lang].transform([stemmed_text])
-        return predict(self.models[lang], x_tfidf, lang)
-
-    def process(self, data):
-        name = data[0]
-        lang = data[1]
-        text = data[2]
-        if self.predict_news(str(text), lang):
-            print("News detected: " + name)
-            cat = "Sports"
-            dump_info({"file_name": name, "lang": lang, "category": cat})
-        else:
-            print("Non-news detected: " + name + ", skipping")
-
-
 def get_stemmer(lang):
     if lang == 'ru':
         return nltk.stem.snowball.RussianStemmer()
@@ -71,16 +100,12 @@ def get_stemmer(lang):
         return nltk.stem.snowball.EnglishStemmer()
 
 
-def get_vectorizer(lang):
-    return load(assets_path + '/news/' + lang + '/vectorizer.pickle')
+def get_vectorizer(lang, net):
+    return load(assets_path + '/' + net + '/' + lang + '/vectorizer.pickle')
 
 
-def get_model(lang):
-    return load(assets_path + '/news/' + lang + '/model.pickle')
-
-
-def stem_text(text, stemmer):
-    return ' '.join(map(lambda w: stemmer.stem(w), text.split()))
+def get_model(lang, net):
+    return load(assets_path + '/' + net + '/' + lang + '/model.pickle')
 
 
 def load(path):
@@ -90,38 +115,3 @@ def load(path):
 
 def tokenize(s):
     return s.split()
-
-
-def predict(model, x_tfidf, lang):
-    if lang == 'ru':
-        return model.predict(x_tfidf)
-    else:
-        return 0.45 < model.predict_proba(x_tfidf)[:, 1:]
-
-
-def test(lang):
-    stemmer = get_stemmer(lang)
-    vectorizer = load('assets/news/' + lang + '/vectorizer.pickle')
-    model = load('assets/news/' + lang + '/model.pickle')
-
-    df = pd.read_csv('assets/news/' + lang + '/test.csv', sep='\t')
-    texts = df.text
-    labels = df.label
-
-    stemmed_texts = []
-    number_labels = []
-    for i in texts:
-        print(type(i))
-        stemmed_texts.append(stem_text(i, stemmer))
-    for i in labels:
-        j = int(i == "News")
-        number_labels.append(j)
-
-    x_train_tfidf = vectorizer.transform(stemmed_texts)
-
-    y1 = predict(model, x_train_tfidf, lang)
-    print(accuracy_score(number_labels, y1))
-
-
-if __name__ == '__main__':
-    test(sys.argv[1])
