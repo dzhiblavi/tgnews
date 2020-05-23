@@ -7,8 +7,6 @@ from neural import *
 
 app = Flask(__name__)
 executors = {'ru': TGExecutor(8, 'ru'), 'en': TGExecutor(8, 'en')}
-langs = ['ru', 'en']
-categories = ["Entertainment", "Society", "Technology", "Sports", "Science", "Economy",]
 
 
 def make_dirs():
@@ -23,7 +21,7 @@ def make_dirs():
 @app.route('/<path:file_path>', methods=['PUT'])
 def process_put_request(file_path):
     print("PyServer: processing put request: " + file_path)
-    executors[request.headers.get("Language")].submit_data([file_path, request.data])
+    executors[request.headers.get("Language")].submit_data([file_path, str(request.data)])
     return ""
 
 

@@ -23,7 +23,7 @@
 #include "language/src/lang_detect/langdetect.h"
 
 
-#define ERRLOG_LVL 8
+#define ERRLOG_LVL 10
 #define REQUEST_THP_SIZE 4
 #define WORKER_THP_SIZE 4
 #define DELETER_THP_SIZE 4

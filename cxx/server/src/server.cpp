@@ -29,6 +29,7 @@ void deleter::remove(std::pair<uint8_t, std::filesystem::path> p) {
             "Sports",
             "Science",
             "Economy",
+            "Other",
     };
     static std::set<std::string> languages = {
             "ru",
@@ -140,7 +141,7 @@ http::response server::process_put(http::request&& request) {
             + html::parser::extract_time_from_html(request.body);
 
     http::response result {http::version::HTTP11};
-    if (daemon.add(request.uri, end_time)) {
+    if (daemon.add(request.uri.substr(1), end_time)) {
         result.code = 201;
         result.reason = "Created";
     } else {
@@ -180,10 +181,11 @@ http::response server::process_delete(http::request&& request) {
     errlog(8, __func__);
 
     http::response result = {http::version::HTTP11};
-    if (daemon.remove(request.uri)) {
+    std::string filename = request.uri.substr(1);
+    if (daemon.remove(filename)) {
         result.code = 204;
         result.reason = "No Content";
-        del.submit(request.uri);
+        del.submit(filename);
     } else {
         result.code = 404;
         result.reason = "Not Found";
