@@ -1,7 +1,5 @@
 import nltk
 import pickle
-import pandas as pd
-import sys
 import json
 import queue
 import threading

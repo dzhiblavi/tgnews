@@ -90,7 +90,9 @@ public:
                     try {
                         p.second();
                     } catch (...) {
+                        std::terminate();
                     }
+
                     p.first.on_finish();
                 }
             });

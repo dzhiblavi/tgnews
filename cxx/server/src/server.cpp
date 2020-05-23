@@ -80,7 +80,7 @@ server::server(io_api::io_context &ctx, ipv4::endpoint const &server_ep, ipv4::e
     , pyserver(ctx, pyserver_ep) {
     socket.bind(server_ep);
     socket.accept(ipv4::handler<ipv4::socket>([&, this] (ipv4::socket sock) {
-        errlog(10, "on_connect");
+        errlog(5, "on_connect");
         client_connection* cc = new client_connection(this, std::move(sock));
         clients.emplace(cc, std::unique_ptr<client_connection>(cc));
     }));
@@ -138,9 +138,9 @@ http::response server::process_put(http::request&& request) {
     errlog(8, __func__);
 
     uint64_t end_time = atoi(request.fields["Cache-Control"].substr(8).c_str())
-            + html::parser::extract_time_from_html(request.body);
+                        + html::parser::extract_time_from_html(request.body);
 
-    http::response result {http::version::HTTP11};
+    http::response result{http::version::HTTP11};
     if (daemon.add(request.uri.substr(1), end_time)) {
         result.code = 201;
         result.reason = "Created";
@@ -150,15 +150,18 @@ http::response server::process_put(http::request&& request) {
     }
 
     if (name_daemon::compare_time(end_time)) {
-        errlog(12, "article will last");
+        errlog(10, "article will last");
 
         worker_thp.submit([this, request{std::move(request)}]() mutable {
             std::unordered_map<std::string, std::string> meta;
             html::parser::extract(request.body, meta);
 
             request.fields["Content-Length"] = std::to_string(request.body.size());
+            errlog(15, "Extraction result: " + request.body);
+
             std::string lang = detector.detect(request.body).name().substr(0, 2);
             request.fields["Language"] = lang;
+            errlog(10, "Language detection result: " + lang);
 
             if (lang == "ru" || lang == "en") {
                 errlog(10, "Submiting request");
@@ -168,7 +171,7 @@ http::response server::process_put(http::request&& request) {
             }
         });
     } else {
-        errlog(12, "article is already rotten");
+        errlog(10, "article is already rotten");
     }
 
     return result;

@@ -23,12 +23,12 @@ struct storage {
             socket->write(nullptr, 0, {});
             on_end();
         } else {
-            set_on_write();
+            set_on_write(true);
         }
     }
 
-    void set_on_write() {
-        if (data.size() == 1) {
+    void set_on_write(bool next = false) {
+        if (data.size() == 1 || next) {
             socket->write(data.back().data(), data.back().size(), ipv4::handler<int>([this] (int r) { on_write(r); }));
         }
     }
