@@ -1,8 +1,8 @@
 #include "sysapi.h"
 
 namespace sysapi {
-void kill(pid_t pid) {
-    ::kill(pid, SIGKILL);
+void kill(pid_t pid, int sig) {
+    ::kill(pid, sig);
 }
 
 void chdir(std::filesystem::path const& path) {

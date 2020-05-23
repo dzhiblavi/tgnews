@@ -1,6 +1,6 @@
 #include "detect.h"
 
-nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs) {
+nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs, bool filenames_only) {
     std::mutex m;
     std::map<std::string, cvector<std::string>> mp;
 
@@ -10,7 +10,7 @@ nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> cons
         std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
         std::string result = detector.detect(str.data(), str.size()).name().substr(0, 2);
         std::lock_guard<std::mutex> lg(m);
-        mp[result].push_back(path);
+        mp[result].push_back(filenames_only ? path.filename() : path);
     });
     w.run();
 

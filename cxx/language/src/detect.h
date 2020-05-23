@@ -31,7 +31,7 @@ public:
     }
 };
 
-nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs);
+nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs, bool filenames_only = false);
 
 
 #endif //TGSERVER_DETECT_H

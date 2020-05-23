@@ -17,7 +17,7 @@ struct error : std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 
-void kill(int pid);
+void kill(pid_t pid, int sig = SIGKILL);
 
 int wait(int pid);
 

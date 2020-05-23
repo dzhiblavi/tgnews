@@ -24,7 +24,7 @@
 
 define('CURL_VERBOSE',    false);
 define('BINARY_OUTPUT',   true);
-define('HTTP_SERVER_LOG', '/dev/null');
+define('HTTP_SERVER_LOG', 'log.txt');
 
 
 
@@ -43,11 +43,11 @@ if (substr($binary, 0, 1) != '.' && substr($binary, 0, 1) != '/') {
 $file_result = shell_exec('file '.escapeshellarg($binary));
 list(, $file_result) = explode(': ', $file_result);
 $file_result = trim(strtolower($file_result));
-if (strpos($file_result, 'mach-o ') === 0) {
-  exitWithError("Binary file is in unsupported format (MacOS)");
-} elseif (strpos($file_result, 'elf 32-bit ') === 0) {
-  exitWithError("Binary file is in unsupported format (32-bit)");
-}
+//if (strpos($file_result, 'mach-o ') === 0) {
+//  exitWithError("Binary file is in unsupported format (MacOS)");
+//} elseif (strpos($file_result, 'elf 32-bit ') === 0) {
+//  exitWithError("Binary file is in unsupported format (32-bit)");
+//}
 
 if ($action == 'server' || $action == 'all') {
   list(, , , $port, $source_dir) = $argv;
@@ -268,12 +268,12 @@ function tgNewsTestServer($binary, $port, $source_files) {
   $ch  = tgNewsServerInitRequest();
   $pid = tgNewsRunServer($binary, $port);
   tgNewsTestIndexing($ch, $port, $source_files);
-  tgNewsTestRanking($ch, $port);
+  //tgNewsTestRanking($ch, $port);
   tgNewsStopServer($pid);
   $pid = tgNewsRunServer($binary, $port);
-  tgNewsTestRanking($ch, $port);
+  //tgNewsTestRanking($ch, $port);
   tgNewsTestDeleting($ch, $port, $source_files);
-  tgNewsTestRanking($ch, $port);
+  //tgNewsTestRanking($ch, $port);
   tgNewsStopServer($pid);
   debugLogSuccess('Test completed successfully.');
 }
@@ -307,7 +307,7 @@ function tgNewsStopServer($pid) {
 function tgNewsTestIndexing($ch, $port, $source_files) {
   foreach ($source_files as $short_filename => $full_filename) {
     $path         = '/'.$short_filename;
-    $max_age      = mt_rand(300, 2592000);
+    $max_age      = mt_rand(2580000, 2592000);
     $max_age     -= $max_age % 300;
     $file_content = file_get_contents($full_filename);
     $result       = tgNewsServerPerformRequest($ch, $port, 'PUT', $path, $file_content, [
