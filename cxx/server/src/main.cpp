@@ -9,10 +9,11 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    std::filesystem::path cur = std::filesystem::path(argv[0]).parent_path();
     int port = atoi(argv[1]);
     try {
         io_api::io_context ctx;
-        server srv(ctx, ipv4::endpoint(ipv4::address::any(), port), ipv4::endpoint(ipv4::address::any(), port + 1));
+        server srv(cur, ctx, ipv4::endpoint(ipv4::address::any(), port), ipv4::endpoint(ipv4::address::any(), port + 1));
         ctx.exec();
     } catch (std::runtime_error const& e) {
         std::cerr << "main() failed: " << e.what() << std::endl;

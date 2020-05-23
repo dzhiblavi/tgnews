@@ -8,13 +8,13 @@
 void launch_py(std::filesystem::path const& cur, std::string const& arg, char** argv) {
     {
         nlohmann::json js = detect(argv[1], {"ru", "en"});
-        std::ofstream ofs("tmp/__news.json");
+        std::ofstream ofs(cur / "tmp/__news.json");
         ofs << js.dump(2);
     }
 
-    std::filesystem::path binary = cur / "/usr/bin/python3";
+    std::filesystem::path binary = "/usr/bin/python3";
     std::filesystem::path pyexe = cur / "bin/python/neural.pyc";
-    sysapi::executer(binary, binary, pyexe, arg, std::string("tmp/__news.json"));
+    sysapi::executer(binary, binary, pyexe, arg, std::string(cur / "tmp/__news.json"));
 }
 
 int main(int argc, char** argv) {

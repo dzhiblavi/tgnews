@@ -21,6 +21,9 @@ void errlog(int lvl, Args&&... args) {
 }
 
 
+deleter::deleter(const std::filesystem::path &base)
+    : base(base) {}
+
 void deleter::remove(std::pair<uint8_t, std::filesystem::path> p) {
     static std::set<std::string> categories = {
             "entertainment",
@@ -35,14 +38,14 @@ void deleter::remove(std::pair<uint8_t, std::filesystem::path> p) {
             "ru",
             "en",
     };
-    static std::filesystem::path base = "out/";
+    static std::filesystem::path pbase = base / "../../../out/";
 
     std::filesystem::path const &path = p.second;
     errlog(9, "Removing file: ", path);
 
     for (auto &lang : languages) {
         for (auto &cat : categories) {
-            std::string full_path = base.string() + "/" + lang + "/" + cat + "/" + path.string();
+            std::string full_path = pbase.string() + "/" + lang + "/" + cat + "/" + path.string();
             if (std::filesystem::is_regular_file(full_path)) {
                 errlog(9, "found file: removing file: ", full_path);
                 std::filesystem::remove(full_path);
@@ -75,9 +78,11 @@ void deleter::wakeup() {
 }
 
 
-server::server(io_api::io_context &ctx, ipv4::endpoint const &server_ep, ipv4::endpoint const& pyserver_ep)
-    : socket(ctx)
-    , pyserver(ctx, pyserver_ep) {
+server::server(std::filesystem::path const& base, io_api::io_context &ctx,
+        ipv4::endpoint const &server_ep, ipv4::endpoint const& pyserver_ep)
+    : del(base)
+    , socket(ctx)
+    , pyserver(base, ctx, pyserver_ep) {
     socket.bind(server_ep);
     socket.accept(ipv4::handler<ipv4::socket>([&, this] (ipv4::socket sock) {
         errlog(8, "on_connect");

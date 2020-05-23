@@ -41,6 +41,7 @@ public:
 
 
 class deleter {
+    std::filesystem::path base;
     std::mutex m;
     std::vector<std::pair<uint8_t, std::filesystem::path>> q;
     thread_pool<DELETER_THP_SIZE> thp;
@@ -49,7 +50,7 @@ private:
     void remove(std::pair<uint8_t, std::filesystem::path> p);
 
 public:
-    deleter() = default;
+    deleter(std::filesystem::path const& base);
 
     void submit(std::filesystem::path const& path);
 
@@ -79,7 +80,8 @@ private:
     http::response process_get(http::request&& request);
 
 public:
-    server(io_api::io_context& ctx, ipv4::endpoint const& server_ep, ipv4::endpoint const& pyserver_ep);
+    server(std::filesystem::path const& base, io_api::io_context& ctx,
+            ipv4::endpoint const& server_ep, ipv4::endpoint const& pyserver_ep);
 
     http::response process(http::request&& request);
 };

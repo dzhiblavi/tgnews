@@ -6,14 +6,13 @@ from neural import *
 
 
 app = Flask(__name__)
-executors = {'ru': TGServerExecutor(8, 'ru'), 'en': TGServerExecutor(8, 'en')}
 
 
-def make_dirs():
+def make_dirs(base):
     for lang in langs:
         for cat in categories:
             try:
-                os.makedirs(form_path(lang, cat, ''))
+                os.makedirs(form_path(base, lang, cat, ''))
             except Exception:
                 pass
 
@@ -26,5 +25,7 @@ def process_put_request(file_path):
 
 
 if __name__ == '__main__':
-    make_dirs()
+    base = str(Path(sys.argv[0]).parent) + '/'
+    executors = {'ru': TGServerExecutor(base, 8, 'ru'), 'en': TGServerExecutor(base, 8, 'en')}
+    make_dirs(base)
     app.run(host='0.0.0.0', port=int(sys.argv[1]), debug=False)

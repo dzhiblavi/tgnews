@@ -21,7 +21,7 @@ private:
     int pid = 0;
 
 public:
-    PyServer(io_api::io_context& ctx, ipv4::endpoint const& ep);
+    PyServer(std::filesystem::path const& base, io_api::io_context& ctx, ipv4::endpoint const& ep);
 
     ~PyServer();
 

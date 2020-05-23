@@ -6,21 +6,27 @@ from abc import abstractmethod
 import sys
 import threading
 import warnings
+from pathlib import Path
 
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
-root_path = '.'
-assets_path = root_path + '/assets'
-out_path = root_path + '/out'
 langs = ['ru', 'en']
 categories = ["entertainment", "society", "technology", "sports", "science", "economy", "other"]
 
 
+def assets_path(base):
+    return base + '../../assets/'
+
+
+def out_path(base):
+    return base + '../../out/'
+
+
 class TGExecutor:
-    def __init__(self, max_workers):
+    def __init__(self, base, max_workers):
         self.q = queue.SimpleQueue()
-        self.threads = [threading.Thread(target=self._work) for i in range(max_workers)]
+        self.threads = [threading.Thread(target=self._work, args=[base]) for i in range(max_workers)]
 
     def start(self):
         for t in self.threads:
@@ -43,27 +49,29 @@ class TGExecutor:
         return data
 
     @abstractmethod
-    def _work(self):
+    def _work(self, base):
         pass
 
 
 class TGServerExecutor(TGExecutor):
-    def __init__(self, max_workers, lang):
+    def __init__(self, base, max_workers, lang):
         self.lang = lang
-        super(TGServerExecutor, self).__init__(max_workers)
+        self.base = base
+        super(TGServerExecutor, self).__init__(base, max_workers)
         self.start()
 
-    def _work(self):
-        net_sys = NetSystem(self.lang)
+    def _work(self, base):
+        net_sys = NetSystem(self.base, self.lang)
         while True:
             datalist = self.get_data(10)
             net_sys.process(datalist)
 
 
 class NetSystem:
-    def __init__(self, lang):
+    def __init__(self, base, lang):
         self.lang = lang
-        self.nets = TNetPack(lang)
+        self.base = base
+        self.nets = TNetPack(base, lang)
 
     def process(self, datalist):
         names = [data[0] for data in datalist]
@@ -81,23 +89,23 @@ class NetSystem:
 
         for i in range(len(texts)):
             cat = categories[int(categories_test[i])]
-            dump_info({"file_name": names[i], "lang": self.lang, "category": cat})
+            dump_info(self.base, {"file_name": names[i], "lang": self.lang, "category": cat})
 
 
 class TNetPack:
-    def __init__(self, lang):
+    def __init__(self, base, lang):
         self.stemmer = TStemmer(lang)
-        self.news_net = TNet('news', lang) if lang == 'ru' else ENNewsNet()
-        self.class_net = TNet('categories', lang)
+        self.news_net = TNet(base, 'news', lang) if lang == 'ru' else ENNewsNet(base)
+        self.class_net = TNet(base, 'categories', lang)
 
 
 class SimNet:
-    def __init__(self, net_type, lang):
+    def __init__(self, base, net_type, lang):
         self.stemmer = TStemmer(lang)
         if net_type == 'news' and lang == 'en':
-            self.net = ENNewsNet()
+            self.net = ENNewsNet(base)
         else:
-            self.net = TNet(net_type, lang)
+            self.net = TNet(base, net_type, lang)
 
     def predict(self, texts):
         texts = [self.stemmer.stem(text) for text in texts]
@@ -113,9 +121,9 @@ class TStemmer:
 
 
 class TNet:
-    def __init__(self, net_type, lang):
-        self.model = get_model(lang, net_type)
-        self.vectorizer = get_vectorizer(lang, net_type)
+    def __init__(self, base, net_type, lang):
+        self.model = get_model(base, lang, net_type)
+        self.vectorizer = get_vectorizer(base, lang, net_type)
 
     def predict(self, stemmed_texts):
         x_tfidf = self.vectorizer.transform(stemmed_texts)
@@ -123,8 +131,8 @@ class TNet:
 
 
 class ENNewsNet(TNet):
-    def __init__(self):
-        super(ENNewsNet, self).__init__('news', 'en')
+    def __init__(self, base):
+        super(ENNewsNet, self).__init__(base, 'news', 'en')
 
     def predict(self, stemmed_texts):
         x_tfidf = self.vectorizer.transform(stemmed_texts)
@@ -136,12 +144,12 @@ def flatten(lst):
     return [item for sublist in lst for item in sublist]
 
 
-def form_path(lang, category, name):
-    return out_path + '/' + lang + '/' + category + '/' + name
+def form_path(base, lang, category, name):
+    return out_path(base) + '/' + lang + '/' + category + '/' + name
 
 
-def dump_info(js):
-    path = form_path(js['lang'], js['category'], js['file_name'])
+def dump_info(base, js):
+    path = form_path(base, js['lang'], js['category'], js['file_name'])
     with open(path, 'w') as file:
         file.write(json.dumps(js))
 
@@ -153,12 +161,12 @@ def get_stemmer(lang):
         return nltk.stem.snowball.EnglishStemmer()
 
 
-def get_vectorizer(lang, net):
-    return load(assets_path + '/' + net + '/' + lang + '/vectorizer.pickle')
+def get_vectorizer(base, lang, net):
+    return load(assets_path(base) + '/' + net + '/' + lang + '/vectorizer.pickle')
 
 
-def get_model(lang, net):
-    return load(assets_path + '/' + net + '/' + lang + '/model.pickle')
+def get_model(base, lang, net):
+    return load(assets_path(base) + '/' + net + '/' + lang + '/model.pickle')
 
 
 def load(path):
@@ -174,14 +182,14 @@ def tokenize(s):
 
 
 class SimExecutor(TGExecutor):
-    def __init__(self, max_workers, net_type, lang):
+    def __init__(self, base, max_workers, net_type, lang):
         self.lang = lang
         self.net_type = net_type
         self.result = queue.SimpleQueue()
-        super(SimExecutor, self).__init__(max_workers)
+        super(SimExecutor, self).__init__(base, max_workers)
 
-    def _work(self):
-        net = SimNet(self.net_type, self.lang)
+    def _work(self, base):
+        net = SimNet(base, self.net_type, self.lang)
         res = []
         while not self.q.empty():
             texts = []
@@ -199,10 +207,11 @@ class SimExecutor(TGExecutor):
 
 
 if __name__ == '__main__':
+    base = str(Path(sys.argv[0]).parent) + '/'
     net_type = sys.argv[1]
     path = sys.argv[2]
 
-    executors = {'ru': SimExecutor(8, net_type, 'ru'), 'en': SimExecutor(8, net_type, 'en')}
+    executors = {'ru': SimExecutor(base, 8, net_type, 'ru'), 'en': SimExecutor(base, 8, net_type, 'en')}
 
     with open(path, 'r') as file:
         js = json.load(file)
