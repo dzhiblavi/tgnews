@@ -7,6 +7,7 @@ import sys
 import threading
 import warnings
 from pathlib import Path
+import threading
 
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -25,8 +26,12 @@ def out_path(base):
 
 class TGExecutor:
     def __init__(self, base, max_workers):
-        self.q = queue.SimpleQueue()
-        self.threads = [threading.Thread(target=self._work, args=[base]) for i in range(max_workers)]
+        self.cv = threading.Condition()
+        self.q = []
+        self.exit = False
+
+        self.base = base
+        self.threads = [threading.Thread(target=self._work, args=[base]) for _ in range(max_workers)]
 
     def start(self):
         for t in self.threads:
@@ -36,16 +41,25 @@ class TGExecutor:
         for t in self.threads:
             t.join()
 
+    def shutdown(self):
+        with self.cv:
+            self.exit = True
+            self.cv.notifyAll()
+        self.join()
+
     def submit_data(self, data):
-        self.q.put(data)
+        with self.cv:
+            self.q.append(data)
+            self.cv.notify()
 
     def get_data(self, limit):
-        data = [self.q.get()]
-        for i in range(limit):
-            try:
-                data.append(self.q.get(False))
-            except queue.Empty:
-                break
+        data = []
+
+        with self.cv:
+            self.cv.wait_for(lambda: len(self.q) > 0 or self.exit)
+            if not self.exit:
+                data.append(self.q.pop())
+
         return data
 
     @abstractmethod
@@ -74,6 +88,8 @@ class NetSystem:
         self.nets = TNetPack(base, lang)
 
     def process(self, datalist):
+        if len(datalist) == 0:
+            return
         names = [data[0] for data in datalist]
         texts = [self.nets.stemmer.stem(data[1]) for data in datalist]
         news_test = self.nets.news_net.predict(texts)
@@ -82,9 +98,12 @@ class NetSystem:
         texts = [texts[i] for i in range(len(texts)) if news_test[i]]
 
         try:
-            categories_test = self.nets.class_net.predict(texts)
+            if len(texts) > 0:
+                categories_test = self.nets.class_net.predict(texts)
+            else:
+                return
         except Exception:
-            print(self.lang + ':: Error: Categorization failed')
+            print(self.lang + ':: Error: Categorization failed: ' + str(len(texts)))
             return
 
         for i in range(len(texts)):
@@ -188,12 +207,31 @@ class SimExecutor(TGExecutor):
         self.result = queue.SimpleQueue()
         super(SimExecutor, self).__init__(base, max_workers)
 
+    def get_data(self, limit):
+        data = []
+
+        with self.cv:
+            if len(self.q) == 0:
+                self.exit = True
+            else:
+                for i in range(limit):
+                    if len(self.q) > 0:
+                        data.append(self.q.pop())
+                    else:
+                        break
+
+        return data
+
     def _work(self, base):
         net = SimNet(base, self.net_type, self.lang)
         res = []
-        while not self.q.empty():
+        while not self.exit:
             texts = []
             files = self.get_data(10)
+
+            if len(files) == 0:
+                break
+
             for art in files:
                 with open(art, 'r') as art_file:
                     texts.append(art_file.read())

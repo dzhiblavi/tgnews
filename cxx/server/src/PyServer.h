@@ -8,6 +8,7 @@
 #include "net/io_api.h"
 #include "net/storage.h"
 #include "sysapi/sysapi.h"
+#include "http/request.h"
 
 
 class PyServer {

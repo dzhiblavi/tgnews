@@ -14,7 +14,7 @@ PyServer::PyServer(std::filesystem::path const& base, io_api::io_context &ctx, c
 }
 
 PyServer::~PyServer() {
-    sysapi::kill(pid, SIGINT);
+    sysapi::kill(pid);
 }
 
 void PyServer::submit_request(const std::string &s) {
