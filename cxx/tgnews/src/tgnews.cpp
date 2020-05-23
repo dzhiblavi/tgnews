@@ -13,7 +13,7 @@ void launch_py(std::filesystem::path const& cur, std::string const& arg, char** 
     }
 
     std::filesystem::path binary = cur / "/usr/bin/python3";
-    std::filesystem::path pyexe = cur / "src/python/neural.py";
+    std::filesystem::path pyexe = cur / "bin/python/neural.cpython-37.pyc";
     sysapi::executer(binary, binary, pyexe, arg, std::string("tmp/__news.json"));
 }
 
