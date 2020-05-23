@@ -114,7 +114,7 @@ def form_path(lang, category, name):
 
 def dump_info(js):
     path = form_path(js['lang'], js['category'], js['file_name'])
-    print("Dumping: " + path + ": " + json.dumps(js))
+    print("Dumping: " + path)
     with open(path, 'w') as file:
         file.write(json.dumps(js))
 

@@ -150,18 +150,15 @@ http::response server::process_put(http::request&& request) {
     }
 
     if (name_daemon::compare_time(end_time)) {
-        errlog(10, "article will last");
+        errlog(12, "article will last");
 
         worker_thp.submit([this, request{std::move(request)}]() mutable {
             std::unordered_map<std::string, std::string> meta;
             html::parser::extract(request.body, meta);
 
             request.fields["Content-Length"] = std::to_string(request.body.size());
-            errlog(15, "Extraction result: " + request.body);
-
             std::string lang = detector.detect(request.body).name().substr(0, 2);
             request.fields["Language"] = lang;
-            errlog(10, "Language detection result: " + lang);
 
             if (lang == "ru" || lang == "en") {
                 errlog(10, "Submiting request");
@@ -171,7 +168,7 @@ http::response server::process_put(http::request&& request) {
             }
         });
     } else {
-        errlog(10, "article is already rotten");
+        errlog(12, "article is already rotten");
     }
 
     return result;
