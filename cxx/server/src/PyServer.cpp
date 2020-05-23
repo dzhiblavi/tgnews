@@ -6,7 +6,7 @@ PyServer::PyServer(io_api::io_context &ctx, const ipv4::endpoint &ep)
     : ctx(ctx)
     , serv_addr(ep) {
     std::string s = "/usr/bin/python3";
-    pid = sysapi::execute(s, s, std::string("/Users/dzhiblavi/Documents/prog/tgnews/python/watch.py"),
+    pid = sysapi::execute(s, s, std::string("bin/python/watch.pyc"),
             std::to_string(ep.host_port()));
     sleep(1);
 
