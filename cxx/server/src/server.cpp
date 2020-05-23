@@ -23,19 +23,19 @@ void errlog(int lvl, Args&&... args) {
 
 void deleter::remove(std::pair<uint8_t, std::filesystem::path> p) {
     static std::set<std::string> categories = {
-            "Entertainment",
-            "Society",
-            "Technology",
-            "Sports",
-            "Science",
-            "Economy",
-            "Other",
+            "entertainment",
+            "society",
+            "technology",
+            "sports",
+            "science",
+            "economy",
+            "other",
     };
     static std::set<std::string> languages = {
             "ru",
             "en",
     };
-    static std::filesystem::path base = "python/out/";
+    static std::filesystem::path base = "out/";
 
     std::filesystem::path const &path = p.second;
     errlog(9, "Removing file: ", path);
@@ -80,7 +80,7 @@ server::server(io_api::io_context &ctx, ipv4::endpoint const &server_ep, ipv4::e
     , pyserver(ctx, pyserver_ep) {
     socket.bind(server_ep);
     socket.accept(ipv4::handler<ipv4::socket>([&, this] (ipv4::socket sock) {
-        errlog(5, "on_connect");
+        errlog(8, "on_connect");
         client_connection* cc = new client_connection(this, std::move(sock));
         clients.emplace(cc, std::unique_ptr<client_connection>(cc));
     }));
