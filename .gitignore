@@ -1,7 +1,6 @@
 *.idea/
 *DS_Store
 *Samples/
-*scripts/
 *venv/
 *__cache/
 solution/

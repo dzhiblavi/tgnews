@@ -25,10 +25,10 @@
 
 #define ERRLOG_LVL 5
 #define REQUEST_THP_SIZE 4
-#define WORKER_THP_SIZE 4
-#define DELETER_THP_SIZE 4
+#define WORKER_THP_SIZE 8
+#define DELETER_THP_SIZE 2
 #define MAX_DELETE_DELAY 3
-#define CLIENT_BUFF_SIZE 1 << 16
+#define CLIENT_BUFF_SIZE 1 << 14
 
 
 struct concurrent_detector {
@@ -90,7 +90,7 @@ private:
     ipv4::socket socket;
     storage stor;
 
-    char buff[CLIENT_BUFF_SIZE]{0};
+    char buff[CLIENT_BUFF_SIZE];
     http::parser<http::request> parser;
 
 private:

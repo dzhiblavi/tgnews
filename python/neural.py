@@ -2,7 +2,7 @@ import nltk
 import pickle
 import json
 import queue
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 import sys
 import threading
 import warnings
