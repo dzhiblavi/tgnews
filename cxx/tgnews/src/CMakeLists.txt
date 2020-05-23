@@ -7,5 +7,5 @@ add_executable(tgnews
 
 
 if (UNIX AND NOT APPLE)
-    target_link_libraries(tgnews stdc++fs)
+    target_link_libraries(tgnews stdc++fs pthread)
 endif (UNIX AND NOT APPLE)
