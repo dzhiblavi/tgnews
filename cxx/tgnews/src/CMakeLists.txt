@@ -1,5 +1,8 @@
 add_executable(tgnews
         tgnews.cpp
+        ${LANGDETECT_SRC}
+        ${WALKER_SRC}
+        ${JSON_SRC}
         ${SYSAPI_SRC})
 
 

@@ -14,8 +14,8 @@
 #include "../json/json.h"
 
 
-#define BASE_DAEMON_DIR std::filesystem::path("../__cache")
-#define METAINFO_FILE std::filesystem::path("../__cache/META.json")
+#define METAINFO_FILE std::filesystem::path("tmp/META.json")
+
 
 class name_daemon {
     std::unordered_map<std::string, uint64_t> mt;

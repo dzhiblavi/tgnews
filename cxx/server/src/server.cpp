@@ -35,7 +35,7 @@ void deleter::remove(std::pair<uint8_t, std::filesystem::path> p) {
             "ru",
             "en",
     };
-    static std::filesystem::path base = "../python/out/";
+    static std::filesystem::path base = "python/out/";
 
     std::filesystem::path const &path = p.second;
     errlog(9, "Removing file: ", path);

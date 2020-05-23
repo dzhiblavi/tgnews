@@ -6,7 +6,7 @@ from neural import *
 
 
 app = Flask(__name__)
-executors = {'ru': TGExecutor(8, 'ru'), 'en': TGExecutor(8, 'en')}
+executors = {'ru': TGServerExecutor(8, 'ru'), 'en': TGServerExecutor(8, 'en')}
 
 
 def make_dirs():

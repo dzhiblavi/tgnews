@@ -1,6 +1,21 @@
 #include <iostream>
+#include <fstream>
 
 #include "sysapi/sysapi.h"
+#include "json/json.h"
+#include "language/src/detect.h"
+
+void launch_py(std::filesystem::path const& cur, std::string const& arg, char** argv) {
+    {
+        nlohmann::json js = detect(argv[1], {"ru", "en"});
+        std::ofstream ofs("tmp/__news.json");
+        ofs << js.dump(2);
+    }
+
+    std::filesystem::path binary = cur / "/usr/bin/python3";
+    std::filesystem::path pyexe = cur / "src/python/neural.py";
+    sysapi::executer(binary, binary, pyexe, arg, std::string("tmp/__news.json"));
+}
 
 int main(int argc, char** argv) {
     if (argc != 3) {
@@ -12,14 +27,17 @@ int main(int argc, char** argv) {
         std::filesystem::path cur = std::filesystem::path(argv[0]).parent_path();
         --argc, ++argv;
         if (!strcmp(argv[0], "server")) {
-            std::filesystem::path server_binary = cur / "../../server/src/tgserver";
+            std::filesystem::path server_binary = cur / "bin/server/src/tgserver";
             sysapi::executer(server_binary, server_binary, std::string(argv[1]));
         } else if (!strcmp(argv[0], "languages")) {
-            std::filesystem::path languages_binary = cur / "../../language/src/language";
+            std::filesystem::path languages_binary = cur / "bin/language/src/language";
             sysapi::executer(languages_binary, languages_binary, std::string(argv[1]));
         } else if (!strcmp(argv[0], "news")) {
+            launch_py(cur, argv[0], argv);
         } else if (!strcmp(argv[0], "categories")) {
+            launch_py(cur, argv[0], argv);
         } else if (!strcmp(argv[0], "threads")) {
+            std::cerr << "Not yet implemented" << std::endl;
         } else {
             std::cerr << "Could not recognize mode: '" << argv[0] << "'" << std::endl;
             return 1;

@@ -36,6 +36,7 @@ name_daemon::name_daemon() {
 
 name_daemon::~name_daemon() {
     dump();
+    std::cout << "DAEMON: flush" << std::endl;
 }
 
 void name_daemon::dump() {
