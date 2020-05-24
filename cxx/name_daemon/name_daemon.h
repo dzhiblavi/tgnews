@@ -38,7 +38,7 @@ public:
 
     bool contains(std::string const&);
 
-    bool add(std::string const&, uint64_t published_time, uint64_t ttl);
+    bool add(std::string const&, uint64_t published_time, uint64_t end_time);
 
     uint64_t current_time();
 

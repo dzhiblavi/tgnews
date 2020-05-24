@@ -90,13 +90,13 @@ bool name_daemon::contains(std::string const &elem) {
     return compare_time(it->second.second);
 }
 
-bool name_daemon::add(std::string const &elem, uint64_t published_time, uint64_t ttl) {
+bool name_daemon::add(std::string const &elem, uint64_t published_time, uint64_t end_time) {
     std::lock_guard<std::recursive_mutex> lg(m);
 
     if (contains(elem)) {
         return false;
     } else {
-        mt[elem] = {published_time, published_time + ttl};
+        mt[elem] = {published_time, end_time};
         publtimes.push_back(published_time);
         std::push_heap(publtimes.begin(), publtimes.end());
         return true;
