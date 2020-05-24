@@ -5,7 +5,7 @@ import rank
 
 
 def process(base, path, netclass):
-    js = load_js(path)
+    js = load_js(base + '/../../' + path)
     executors = {'ru': netclass(base, 8, 'ru'), 'en': netclass(base, 8, 'en')}
     for entry in js:
         lang = entry['lang_code']
