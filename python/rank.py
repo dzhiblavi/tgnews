@@ -1,8 +1,11 @@
+from utility import *
+
 def extract_url_domain(site):
     dom = site.split('/')[2]
     if dom.startswith("www."):
         dom = dom[4:]
     return dom
+
 
 def url_rank_weight(site, agencies):
     dom = extract_url_domain(site)
@@ -11,25 +14,54 @@ def url_rank_weight(site, agencies):
     return 0.000015
 
 
-def calc_rank_score(group, agencies):
+
+def calc_article_score(meta, agencies, nowtime):
+    url_w = url_rank_weight(meta["og:url"], agencies)
+    return url_w * int(meta["published_time"]) / nowtime
+
+# sort articles in each thread
+def rank_articles(groups, agencies):
+    nowtime = current_time()
+
+    result = []
+
+    for group in groups:
+        newgroup = {"title": group["title"]}
+        scores = []
+        for article in group["articles"]:
+            for filename in article:
+                scores.append(calc_article_score(article[filename], agencies, nowtime))
+        print(scores)
+        newgroup["articles"] = [x for y, x in sorted(zip(scores, group["articles"]), key=lambda x: x[0], reverse=True)]
+        result.append(newgroup)
+    return result
+
+
+# TODO: nowtime usage
+# TODO: time percentile
+def calc_group_score(group, agencies, nowtime):
     print(group)
     cnt = len(group["articles"])
     agencies_weight = 0
     # index = int(0.9 * (cnt - 1))
-    index = cnt - 1
-    total_time = 0
+    total_time = 0  # replace with percentile
     for article in group["articles"]:
-        agencies_weight = agencies_weight + url_rank_weight(article["og:url"], agencies)
-        total_time = total_time + int(group["articles"][index]["time"])
+        for filename in article:
+            meta = article[filename]
+            agencies_weight = agencies_weight + url_rank_weight(meta["og:url"], agencies)
+            total_time = total_time + int(meta["published_time"])
     return agencies_weight * total_time * cnt
 
+# sort threads
+def rank_threads(groups, agencies):
+    nowtime = current_time()
 
-def rank(groups, agencies):
     scores = []
     for group in groups:
-        scores.append(calc_rank_score(group, agencies))
-    print(scores)
-    return [x for y, x in sorted(zip(scores, groups), key=lambda x: x[0], reverse=True)]
+        scores.append(calc_group_score(group, agencies, nowtime))
+    groups = [x for y, x in sorted(zip(scores, groups), key=lambda x: x[0], reverse=True)]
+    return rank_articles(groups, agencies)
+
 
 def load_pagerank(path):
     pagerank = {}
@@ -38,34 +70,66 @@ def load_pagerank(path):
         for site in sc:
             score, url = site.split('\t')
             url = url[:-1]
-            pagerank[url] = score
+            pagerank[url] = float(score)
     return pagerank
+
 
 if __name__ == '__main__':
     sample = \
         [
             {
-                "title": "Apple reveals new AirPods Pro",
+                "title": "TITLE1",
                 "articles": [
                     {
-                        "filename": "9436743547232134.html",
-                        "time": "123123",
-                        "og:url": "http://saharareporters.com/2020/04/27/update-president-buhari-extends-lockdown-lagos-ogun-fct-one-week-curfew-begin-after-then"
+                        "../Samples/tes/4938117986046875841.html": {
+                            "og:url": "https://car.ru/news/research/72509-pochemu-maz-proigral-gaz-66-v-gonke-za-pervoe-mesto-sredi-voennoy-tehniki-sssr/",
+                            "published_time": "1587945600"
+                        }
+                    },
+                    {
+                        "../Samples/tes/4321729651107501953.html": {
+                            "og:url": "https://hi-tech.ua/article/asus-rog-strix-impact-ii-test/",
+                            "published_time": "1587945677"
+                        }
                     }
                 ]
             },
             {
-                "title": "Apple sucks",
+                "title": "TITLE2",
                 "articles": [
                     {
-                        "filename": "1337.html",
-                        "time": "2020",
-                        "og:url": "https://www.uefa.com/uefaeuro-2020/news/025b-0f07234151fa-fe167d581509-1000--watch-classic-games-on-uefa-tv/"
+                        "../Samples/tes/4321729651117334193.html": {
+                            "og:url": "https://hi-tech.ua/miui-12-oficzialno-predstavlena-obyavleny-sroki-vyhoda-na-smartfonah-xiaomi-i-redmi/",
+                            "published_time": "1587945600"
+                        }
+                    },
+                    {
+                        "../Samples/tes/4536220075826701708.html": {
+                            "og:url": "https://andro-news.com/news/anons-xiaomi-mi-10-youth-edition-poluflagman-kompanii.html",
+                            "published_time": "1587945621"
+                        }
+                    }
+                ]
+            },
+            {
+                "title": "TITLE3",
+                "articles": [
+                    {
+                        "../Samples/tes/461959166760319816.html": {
+                            "og:url": "https://www.onlinetambov.ru/news/society/v-tambovskoy-oblasti-vyyavlen-61-novyy-sluchay-zabolevaniya-koronavirusom/",
+                            "published_time": "1587945600"
+                        }
+                    },
+                    {
+                        "../Samples/tes/461959166722026228.html": {
+                            "og:url": "https://www.onlinetambov.ru/news/society/tambovchanam-zapretili-provodit-pikniki-na-prirode-v-mayskie-prazdniki/",
+                            "published_time": "1587945633"
+                        }
                     }
                 ]
             }
         ]
 
     m = load_pagerank("assets/pagerank.txt")
-    print(rank(sample, m))
-
+    print(rank_threads(sample, m))
+    #print(rank_articles(sample, m))
