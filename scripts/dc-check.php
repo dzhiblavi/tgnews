@@ -267,7 +267,7 @@ function tgNewsTestThreads($binary, $source_dir) {
 function tgNewsTestServer($binary, $port, $source_files) {
   $ch  = tgNewsServerInitRequest();
   $pid = tgNewsRunServer($binary, $port);
-  tgNewsTestIndexing($ch, $port, $source_files);
+  //tgNewsTestIndexing($ch, $port, $source_files);
   tgNewsTestRanking($ch, $port);
   tgNewsStopServer($pid);
   $pid = tgNewsRunServer($binary, $port);

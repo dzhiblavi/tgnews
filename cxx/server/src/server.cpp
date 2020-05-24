@@ -236,13 +236,14 @@ http::response server::process_get(http::request&& request) {
     request.fields["max_indexed_time"] = std::to_string(daemon.max_indexed_time());
 
     std::string response = pyserver.submit_and_await(request.to_string());
+
     http::parser<http::response> parser;
+
     parser.feed(response.data(), 0, response.size());
     http::response rsp = parser.get();
-
     rsp.fields.clear();
     rsp.fields["Content-type"] = "application/json";
-    rsp.fields["Content-Length"] = rsp.body.size();
+    rsp.fields["Content-Length"] = std::to_string(rsp.body.size());
     rsp.ver = http::HTTP11;
 
     return rsp;

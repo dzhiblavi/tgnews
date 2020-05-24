@@ -126,7 +126,7 @@ def thread_process_get(result, base, min_time, lang, cat, m):
 
 def process_get(base, min_time, lang, cat):
     m = rank.load_pagerank(assets_path(base) + '/pagerank.txt')
-    if cat != 'all':
+    if cat != 'any':
         return {'threads': process_get_impl(base, min_time, lang, cat, m)}
 
     result = queue.SimpleQueue()
