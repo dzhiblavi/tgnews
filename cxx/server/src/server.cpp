@@ -154,7 +154,7 @@ http::response server::process_put(http::request&& request) {
         result.reason = "Updated";
     }
 
-    if (name_daemon::compare_time(end_time)) {
+    if (daemon.compare_time(end_time)) {
         errlog(10, "article will last");
 
         worker_thp.submit([this, request{std::move(request)}]() mutable {

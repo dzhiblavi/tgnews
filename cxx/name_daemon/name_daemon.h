@@ -9,6 +9,7 @@
 #include <list>
 #include <mutex>
 #include <chrono>
+#include <algorithm>
 
 #include "../walker/src/walker.h"
 #include "../json/json.h"
@@ -18,8 +19,10 @@
 
 
 class name_daemon {
-    std::unordered_map<std::string, uint64_t> mt;
+    std::unordered_map<std::string, std::pair<uint64_t, uint64_t>> mt;
     std::recursive_mutex m;
+    std::vector<uint64_t> publtimes = {0};
+    std::vector<uint64_t> del_publtimes = {};
 
 private:
     void load_file(std::filesystem::path&& path);
@@ -35,11 +38,11 @@ public:
 
     bool contains(std::string const&);
 
-    bool add(std::string const&, uint64_t);
+    bool add(std::string const&, uint64_t published_time, uint64_t ttl);
 
-    static uint64_t current_time();
+    uint64_t current_time();
 
-    static bool compare_time(uint64_t);
+    bool compare_time(uint64_t);
 };
 
 
