@@ -21,8 +21,12 @@ void name_daemon::load_file(std::filesystem::path &&path) {
 }
 
 uint64_t name_daemon::current_time() {
-    std::lock_guard<std::recursive_mutex> lg(m);
+    return std::chrono::duration_cast<std::chrono::seconds>
+            (std::chrono::system_clock::now().time_since_epoch()).count();
+}
 
+uint64_t name_daemon::max_indexed_time() {
+    std::lock_guard<std::recursive_mutex> lg(m);
     return publtimes.front();
 }
 

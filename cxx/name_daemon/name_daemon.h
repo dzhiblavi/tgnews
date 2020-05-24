@@ -42,6 +42,8 @@ public:
 
     uint64_t current_time();
 
+    uint64_t max_indexed_time();
+
     bool compare_time(uint64_t);
 };
 

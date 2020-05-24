@@ -125,7 +125,7 @@ def get_file_json_chunk(chunk, result):
         result.put(r)
 
 
-def get_files_jsons(files):
+def get_files_jsons(files, min_time):
     n = int(len(files) / 8) + 1
     result = queue.SimpleQueue()
     chunks = [files[i:i + n] for i in range(0, len(files), n)]
@@ -137,5 +137,6 @@ def get_files_jsons(files):
     res = {}
     while not result.empty():
         [path, js] = result.get()
-        res[path] = js
+        if int(js['published_time']) >= min_time:
+            res[path] = js
     return res

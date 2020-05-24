@@ -32,7 +32,9 @@ def process_get_request():
     period = request.headers.get('period')
     cat = request.headers.get('category')
     lang = request.headers.get('lang_code')
-    return json.dumps(process_get(base, period, lang, cat), indent=2)
+    max_time = request.headers.get('max_indexed_time')
+    min_time = int(max_time) - int(period)
+    return json.dumps(process_get(base, min_time, lang, cat), indent=2)
 
 
 if __name__ == '__main__':

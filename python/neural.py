@@ -88,12 +88,14 @@ def reparse_threads(result_js, m):
     return js
 
 
-def process_get_impl(base, period, lang, cat, m):
+def process_get_impl(base, min_time, lang, cat, m):
     dir_path = out_path(base) + '/' + lang + '/' + cat
     files = collect_files_in_directory(dir_path)
     if len(files) == 0:
         return {'threads': []}
-    fjs = get_files_jsons(files)
+    fjs = get_files_jsons(files, min_time)
+    if len(fjs) < 8:
+        return {'threads': []}
     stemmed_texts = []
     files = []
     for path in fjs:

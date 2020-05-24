@@ -233,7 +233,7 @@ http::response server::process_get(http::request&& request) {
     request.fields["period"] = period;
     request.fields["lang_code"] = lang_code;
     request.fields["category"] = category;
-    request.fields["max_indexed_time"] = "0";
+    request.fields["max_indexed_time"] = std::to_string(daemon.max_indexed_time());
 
     std::string response = pyserver.submit_and_await(request.to_string());
     http::parser<http::response> parser;
