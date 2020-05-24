@@ -2,7 +2,6 @@ from flask import Flask
 from flask import request
 import sys
 import os
-import signal
 from neural import *
 
 

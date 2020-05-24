@@ -8,7 +8,7 @@ FILES=$(ls $DIR)
 i=0
 for file in $FILES; do
     cp $DIR/$file .
-    ./make-request.sh -put -file "$file" -port "$2" &
+    ./make-request.sh -del -file "$file" -port "$2" &
 
     if [[ $i == 1000 ]]; then
         break
