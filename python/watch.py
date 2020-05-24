@@ -24,6 +24,11 @@ def process_put_request(file_path):
     return ""
 
 
+@app.route('/<path:file_path>', methods=['GET'])
+def process_get_request(file_path):
+    return ""
+
+
 if __name__ == '__main__':
     base = str(Path(sys.argv[0]).parent) + '/'
     executors = {'ru': TGServerExecutor(base, 8, 'ru'), 'en': TGServerExecutor(base, 8, 'en')}
