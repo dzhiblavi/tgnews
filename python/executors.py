@@ -94,6 +94,7 @@ class NewsExecutor(TOneWayExecutor):
         self.base = base
         self.lang = lang
         self.result = queue.SimpleQueue()
+        self.stemmer = get_stemmer(self.lang)
         super(NewsExecutor, self).__init__(max_workers)
 
     def _work(self):
@@ -103,10 +104,23 @@ class NewsExecutor(TOneWayExecutor):
             files, texts = self.get_texts(10)
             if len(files) == 0:
                 break
+            texts = [self.stemmer.stem(t) for t in texts]
             rs = net.predict(texts)
             res += [[files[i], rs[i]] for i in range(len(texts))]
         for r in res:
             self.result.put(r)
+
+
+def news_cat_scan(self, net_news, net_cat):
+    files, texts = self.get_texts(10)
+    if len(files) == 0:
+        return [], [], [], True
+    texts = [self.stemmer.stem(t) for t in texts]
+    news_test = net_news.predict(texts)
+    texts = [texts[i] for i in range(len(texts)) if news_test[i]]
+    files = [files[i] for i in range(len(files)) if news_test[i]]
+    cat_test = net_cat.predict(texts)
+    return files, texts, cat_test, False
 
 
 class CatExecutor(TOneWayExecutor):
@@ -114,6 +128,7 @@ class CatExecutor(TOneWayExecutor):
         self.base = base
         self.lang = lang
         self.result = queue.SimpleQueue()
+        self.stemmer = get_stemmer(self.lang)
         super(CatExecutor, self).__init__(max_workers)
 
     def _work(self):
@@ -121,13 +136,36 @@ class CatExecutor(TOneWayExecutor):
         net_cat = TNet(self.base, 'categories', self.lang)
         res = []
         while True:
-            files, texts = self.get_texts(10)
-            if len(files) == 0:
+            files, texts, cat_test, end = news_cat_scan(self, net_news, net_cat)
+            if end:
                 break
-            news_test = net_news.predict(texts)
-            texts = [texts[i] for i in range(len(texts)) if news_test[i]]
-            files = [files[i] for i in range(len(files)) if news_test[i]]
-            cat_test = net_cat.predict(texts)
             res += [[files[i], cat_test[i]] for i in range(len(texts))]
         for r in res:
             self.result.put(r)
+
+
+class ThreadingExecutor(TOneWayExecutor):
+    def __init__(self, base, max_workers, lang):
+        self.base = base
+        self.lang = lang
+        self.result = []
+        for _ in categories:
+            self.result.append(queue.SimpleQueue())
+        self.stemmer = get_stemmer(self.lang)
+        super(ThreadingExecutor, self).__init__(max_workers)
+
+    def _work(self):
+        net_news = TNet(self.base, 'news', self.lang)
+        net_cat = TNet(self.base, 'categories', self.lang)
+        res = []
+        for _ in categories:
+            res.append([])
+        while True:
+            files, texts, cat_test, end = news_cat_scan(self, net_news, net_cat)
+            if end:
+                break
+            for i in range(len(texts)):
+                res[cat_test[i]].append([files[i], texts[i]])
+        for i in range(len(res)):
+            for x in res[i]:
+                self.result[i].put(x)

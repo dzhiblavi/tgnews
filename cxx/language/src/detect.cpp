@@ -1,16 +1,20 @@
 #include "detect.h"
 
-nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs, bool filenames_only) {
+nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs, det_callable_t const& func) {
     std::mutex m;
-    std::map<std::string, cvector<std::string>> mp;
+    std::map<std::string, cvector<std::map<std::string, std::string>>> mp;
 
     walker w(p, [&](walker::fs_path_t const& path) {
         langdetect::Detector detector;
         std::ifstream ifs(path);
         std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
+        std::unordered_map<std::string, std::string> meta;
+        html::parser::extract(str, meta);
         std::string result = detector.detect(str.data(), str.size()).name().substr(0, 2);
+
         std::lock_guard<std::mutex> lg(m);
-        mp[result].push_back(filenames_only ? path.filename() : path);
+        mp[result].push_back(func(path, meta));
     });
     w.run();
 
@@ -25,10 +29,26 @@ nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> cons
         cur["articles"] = {};
         nlohmann::json& arts = cur["articles"];
 
-        for (std::string& s : p.second.to_vector()) {
-            arts.push_back(std::move(s));
+        for (auto& s : p.second.to_vector()) {
+            if (s.size() == 1) {
+                arts.push_back(std::move(s["filename"]));
+            } else {
+                auto name_it = s.find("filename");
+                std::string name = name_it->second;
+                s.erase(name_it);
+                arts[name] = std::move(s);
+            }
         }
     }
 
     return ret;
+}
+
+nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs) {
+    return detect(p, langs,
+           [] (std::filesystem::path const& p, std::unordered_map<std::string, std::string>& meta) {
+               std::map<std::string, std::string> mp;
+               mp["filename"] = p;
+               return mp;
+           });
 }

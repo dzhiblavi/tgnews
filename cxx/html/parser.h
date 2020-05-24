@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <sstream>
 #include <iomanip>
 
 namespace html {

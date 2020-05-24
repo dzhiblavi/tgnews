@@ -9,6 +9,7 @@
 #include "json/json.h"
 #include "walker/src/walker.h"
 #include "lang_detect/langdetect.h"
+#include "html/parser.h"
 
 template <typename T>
 class cvector {
@@ -31,7 +32,13 @@ public:
     }
 };
 
-nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs, bool filenames_only = false);
+typedef std::function<std::map<std::string, std::string> \
+        (std::filesystem::path const&, \
+        std::unordered_map<std::string, std::string>&)> det_callable_t;
+
+nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs, det_callable_t const& func);
+
+nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> const& langs);
 
 
 #endif //TGSERVER_DETECT_H

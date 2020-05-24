@@ -24,6 +24,11 @@ int main(int argc, char** argv) {
         --argc; ++argv;
     }
 
-    std::cout << detect(p, langs, true).dump(2) << std::endl;
+    std::cout << detect(p, langs,
+                        [] (std::filesystem::path const& p, std::unordered_map<std::string, std::string>& meta) {
+                            std::map<std::string, std::string> mp;
+                            mp["filename"] = p.filename();
+                            return mp;
+                        }).dump(2) << std::endl;
     return 0;
 }

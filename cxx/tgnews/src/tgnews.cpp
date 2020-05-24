@@ -4,17 +4,19 @@
 #include "sysapi/sysapi.h"
 #include "json/json.h"
 #include "language/src/detect.h"
+#include "html/parser.h"
 
-void launch_py(std::filesystem::path const& cur, std::string const& arg, char** argv) {
+
+void launch_py(nlohmann::json const& js, std::filesystem::path const& cur, std::string const& arg, char** argv) {
+    std::filesystem::path tmp_path = std::string("tmp/__tmp_") + std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
     {
-        nlohmann::json js = detect(argv[1], {"ru", "en"});
-        std::ofstream ofs(cur / "tmp/__news.json");
+        std::ofstream ofs(cur / tmp_path);
         ofs << js.dump(2);
     }
 
     std::filesystem::path binary = "/usr/bin/python3";
     std::filesystem::path pyexe = cur / "bin/python/neural.pyc";
-    sysapi::executer(binary, binary, pyexe, arg, std::string(cur / "tmp/__news.json"));
+    sysapi::executer(binary, binary, pyexe, arg, std::string(tmp_path));
 }
 
 int main(int argc, char** argv) {
@@ -33,11 +35,21 @@ int main(int argc, char** argv) {
             std::filesystem::path languages_binary = cur / "bin/language/src/language";
             sysapi::executer(languages_binary, languages_binary, std::string(argv[1]));
         } else if (!strcmp(argv[0], "news")) {
-            launch_py(cur, argv[0], argv);
+            nlohmann::json js = detect(argv[1], {"ru", "en"});
+            launch_py(js, cur, argv[0], argv);
         } else if (!strcmp(argv[0], "categories")) {
-            launch_py(cur, argv[0], argv);
+            nlohmann::json js = detect(argv[1], {"ru", "en"});
+            launch_py(js, cur, argv[0], argv);
         } else if (!strcmp(argv[0], "threads")) {
-            std::cerr << "Not yet implemented" << std::endl;
+            nlohmann::json js = detect(argv[1], {"ru", "en"},
+                                       [] (std::filesystem::path const& p, std::unordered_map<std::string, std::string>& meta) {
+                                           std::map<std::string, std::string> mp;
+                                           mp["filename"] = p;
+                                           mp["published_time"] = std::to_string(html::parser::extract_time(meta["article:published_time"].c_str()));
+                                           mp["og:url"] = meta["og:url"];
+                                           return mp;
+                                       });
+            launch_py(js, cur, argv[0], argv);
         } else {
             std::cerr << "Could not recognize mode: '" << argv[0] << "'" << std::endl;
             return 1;

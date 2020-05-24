@@ -1,3 +1,5 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import DBSCAN
 from utility import *
 
 
@@ -54,8 +56,29 @@ class TNet:
         self.vectorizer = get_vectorizer(base, lang, net_type)
 
     def predict(self, stemmed_texts):
+        if len(stemmed_texts) == 0:
+            return []
         x_tfidf = self.vectorizer.transform(stemmed_texts)
         if self.net_type == 'news' and self.lang == 'en':
             return flatten(0.45 < self.model.predict_proba(x_tfidf)[:, 1:])
         else:
             return self.model.predict(x_tfidf)
+
+
+class ThreadsNet:
+    def __init__(self, min_df, lang, category):
+        self.lang = lang
+        self.category = category
+        self.vectorizer = TfidfVectorizer(ngram_range=(1, 1), tokenizer=tokenize,
+                                          min_df=min_df, max_df=0.7, use_idf=1, lowercase=True,
+                                          smooth_idf=1, sublinear_tf=1, max_features=1000)
+
+    def predict(self, stemmed_texts):
+        if len(stemmed_texts) == 0:
+            return []
+        self.vectorizer.fit(stemmed_texts)
+        x_train_tfidf = self.vectorizer.transform(stemmed_texts)
+        dbscan = DBSCAN(eps=1.1, metric='euclidean', metric_params=None, algorithm='auto',
+                        leaf_size=30, min_samples=5)
+        dbscan.fit(x_train_tfidf)
+        return dbscan.labels_

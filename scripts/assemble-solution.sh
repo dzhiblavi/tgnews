@@ -23,12 +23,11 @@ mkdir ${ASSETS_PATH}
 
 cp -r ${CXX_PATH} ${OUT_SRC_PATH}
 rm -rf ${OUT_SRC_PATH}/cxx/_build ${OUT_SRC_PATH}/cxx/cmake-*
+
 cp ${CXX_PATH}/_build/tgnews/src/tgnews ${OUT_PATH}
 cp ${PYTHON_PATH}/*.py ${OUT_SRC_PATH}/python
-
 cp -r ${CXX_PATH}/_build/* ${BIN_PATH}
 cp -r ${PYTHON_PATH}/assets ${OUT_PATH}
-
 cp -r ${PYTHON_PATH}/__pycache__/*.pyc ${BIN_PATH}/python
 
 mv ${BIN_PATH}/python/neural*.pyc ${BIN_PATH}/python/neural.pyc
