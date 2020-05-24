@@ -92,10 +92,10 @@ def process_get_impl(base, min_time, lang, cat, m):
     dir_path = out_path(base) + '/' + lang + '/' + cat
     files = collect_files_in_directory(dir_path)
     if len(files) == 0:
-        return {'threads': []}
+        return []
     fjs = get_files_jsons(files, min_time)
     if len(fjs) < 8:
-        return {'threads': []}
+        return []
     stemmed_texts = []
     files = []
     for path in fjs:
@@ -117,15 +117,31 @@ def process_get_impl(base, min_time, lang, cat, m):
                     }
                 })
             grouping[cur_result[i]]["title"] = fjs[files[i]]['header']
-    grouping = reparse_threads(grouping, m)
-    return {'threads': grouping}
+    return reparse_threads(grouping, m)
 
 
-def process_get(base, period, lang, cat):
+def thread_process_get(result, base, min_time, lang, cat, m):
+    result.put(process_get_impl(base, min_time, lang, cat, m))
+
+
+def process_get(base, min_time, lang, cat):
     m = rank.load_pagerank(assets_path(base) + '/pagerank.txt')
-    if cat != 'any':
-        return process_get_impl(base, period, lang, cat, m)
-    return ['\'all\' is not supported yet']
+    if cat != 'all':
+        return {'threads': process_get_impl(base, min_time, lang, cat, m)}
+
+    result = queue.SimpleQueue()
+    threads = [threading.Thread(target=thread_process_get,
+                                args=[result, base, min_time, lang, cat, m]) for cat in categories]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    total = []
+    while not result.empty():
+        total += result.get()
+
+    return {'threads': total}
 
 
 if __name__ == '__main__':
