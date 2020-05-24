@@ -115,9 +115,9 @@ def news_cat_scan(self, net_news, net_cat):
     files, texts = self.get_texts(10)
     if len(files) == 0:
         return [], [], [], [], True
-    assert(type(texts[0]) == HParser)
     stemmed_texts = [self.stemmer.stem(t.result) for t in texts]
     news_test = net_news.predict(stemmed_texts)
+
     stemmed_texts = [stemmed_texts[i] for i in range(len(texts)) if news_test[i]]
     texts = [texts[i] for i in range(len(texts)) if news_test[i]]
     files = [files[i] for i in range(len(files)) if news_test[i]]

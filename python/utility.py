@@ -88,6 +88,7 @@ def load_file(path):
         # print(parser.result)
         # print(parser.header)
         return parser
+        # return file.read()
 
 
 def load(path):

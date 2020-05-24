@@ -1,8 +1,1 @@
-DAEMON: Boot
- * Serving Flask app "watch" (lazy loading)
- * Environment: production
-   WARNING: This is a development server. Do not use it in a production deployment.
-   Use a production WSGI server instead.
- * Debug mode: off
-PyServer booted
-Server booted
+/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.7/Resources/Python.app/Contents/MacOS/Python: can't open file './../cxx/_build/server/src/../../../bin/python/watch.pyc': [Errno 2] No such file or directory

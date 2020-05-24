@@ -1,5 +1,6 @@
 from utility import *
 
+
 def extract_url_domain(site):
     dom = site.split('/')[2]
     if dom.startswith("www."):
@@ -14,10 +15,10 @@ def url_rank_weight(site, agencies):
     return 0.000015
 
 
-
 def calc_article_score(meta, agencies, nowtime):
     url_w = url_rank_weight(meta["og:url"], agencies)
     return url_w * int(meta["published_time"]) / nowtime
+
 
 # sort articles in each thread
 def rank_articles(groups, agencies):
@@ -52,6 +53,7 @@ def calc_group_score(group, agencies, nowtime):
             total_time = total_time + int(meta["published_time"])
     return agencies_weight * total_time * cnt
 
+
 # sort threads
 def rank_threads(groups, agencies):
     nowtime = current_time()
@@ -61,7 +63,6 @@ def rank_threads(groups, agencies):
         scores.append(calc_group_score(group, agencies, nowtime))
     groups = [x for y, x in sorted(zip(scores, groups), key=lambda x: x[0], reverse=True)]
     return rank_articles(groups, agencies)
-
 
 
 def load_pagerank(path):
@@ -133,4 +134,4 @@ if __name__ == '__main__':
 
     m = load_pagerank("assets/pagerank.txt")
     print(rank_threads(sample, m))
-    #print(rank_articles(sample, m))
+    # print(rank_articles(sample, m))

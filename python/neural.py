@@ -46,14 +46,13 @@ def process_cat(base, path):
     print(json.dumps(result, indent=2))
 
 
-def process_threads(base, path):
+def process_threads_impl(base, path):
     executors, js = process(base, path, ThreadingExecutor)
     grouping = []
     en = 0 if js[0]['lang_code'] == 'en' else 1
     ru = 0 if js[0]['lang_code'] == 'ru' else 1
     ind = {'ru': ru, 'en': en}
     for lang in executors:
-        print('LANG: ' + lang)
         li = ind[lang]
         exr = executors[lang]
         result = exr.result
@@ -65,7 +64,6 @@ def process_threads(base, path):
                 continue
             net = ThreadsNet(min(8, int(0.1 * len(files))), lang, i)
             cur_result = net.predict([t[1] for t in files])
-            print(str(cur_result))
             base_ind = len(grouping)
             n_groups = max(cur_result) + 1
             for i in range(n_groups):
@@ -74,8 +72,19 @@ def process_threads(base, path):
                 if cur_result[i] != -1:
                     grouping[base_ind + cur_result[i]]["articles"].append({files[i][0]: js[li]['articles'][files[i][0]]})
                     grouping[base_ind + cur_result[i]]["title"] = files[i][2].header
-                    print(files[i][2].header)
-    print(json.dumps(grouping, indent=2))
+    return grouping
+
+
+def process_threads(base, path):
+    result_js = process_threads_impl(base, path)
+    js = []
+    for entry in result_js:
+        js.append({'title': entry['title']})
+        js[-1]['articles'] = []
+        for art in entry['articles']:
+            for file_name in art:
+                js[-1]['articles'].append(file_name.split('/')[-1])
+    print(json.dumps(js, indent=2))
 
 
 if __name__ == '__main__':
