@@ -27,6 +27,8 @@ public:
     ~PyServer();
 
     void submit_request(std::string const& s);
+
+    std::string submit_and_await(std::string const& s);
 };
 
 struct PyServer::connection {

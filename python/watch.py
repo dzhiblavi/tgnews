@@ -20,13 +20,19 @@ def make_dirs(base):
 @app.route('/<path:file_path>', methods=['PUT'])
 def process_put_request(file_path):
     print("PyServer: processing put request: " + file_path)
-    executors[request.headers.get("Language")].submit_data([file_path, str(request.data)])
+    executors[request.headers.get("Language")].submit_data([file_path, str(request.data),
+                                                            request.headers.get("header"),
+                                                            request.headers.get("published_time"),
+                                                            request.headers.get("og_url")])
     return ""
 
 
-@app.route('/<path:file_path>', methods=['GET'])
-def process_get_request(file_path):
-    return ""
+@app.route('/threads', methods=['GET'])
+def process_get_request():
+    period = request.headers.get('period')
+    cat = request.headers.get('category')
+    lang = request.headers.get('lang_code')
+    return json.dumps(process_get(base, period, lang, cat), indent=2)
 
 
 if __name__ == '__main__':

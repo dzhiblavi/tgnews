@@ -12,25 +12,41 @@ class NetSystem:
     def process(self, datalist):
         if len(datalist) == 0:
             return
-        names = [data[0] for data in datalist]
-        texts = [self.nets.stemmer.stem(data[1]) for data in datalist]
-        news_test = self.nets.news_net.predict(texts)
 
-        names = [names[i] for i in range(len(texts)) if news_test[i]]
-        texts = [texts[i] for i in range(len(texts)) if news_test[i]]
+        ptime = []
+        headers = []
+        names = []
+        stemmed_texts = []
+        urls = []
+        for data in datalist:
+            names.append(data[0])
+            stemmed_texts.append(self.nets.stemmer.stem(data[1]))
+            headers.append(data[2])
+            ptime.append(data[3])
+            urls.append(data[4])
+
+        news_test = self.nets.news_net.predict(stemmed_texts)
+
+        ptime = [ptime[i] for i in range(len(ptime)) if news_test[i]]
+        headers = [headers[i] for i in range(len(ptime)) if news_test[i]]
+        names = [names[i] for i in range(len(ptime)) if news_test[i]]
+        stemmed_texts = [stemmed_texts[i] for i in range(len(ptime)) if news_test[i]]
+        urls = [urls[i] for i in range(len(ptime)) if news_test[i]]
 
         try:
-            if len(texts) > 0:
-                categories_test = self.nets.class_net.predict(texts)
+            if len(stemmed_texts) > 0:
+                categories_test = self.nets.class_net.predict(stemmed_texts)
             else:
                 return
         except Exception:
-            print(self.lang + ':: Error: Categorization failed: ' + str(len(texts)))
+            print(self.lang + ':: Error: Categorization failed: ' + str(len(stemmed_texts)))
             return
 
-        for i in range(len(texts)):
+        for i in range(len(stemmed_texts)):
             cat = categories[int(categories_test[i])]
-            dump_info(self.base, {"file_name": names[i], "lang": self.lang, "category": cat})
+            dump_info(self.base, {"file_name": names[i], "lang": self.lang, "category": cat,
+                                  "header": headers[i], "og:url": urls[i], "published_time": ptime[i],
+                                  "stemmed_text": stemmed_texts[i]})
 
 
 class TNetPack:

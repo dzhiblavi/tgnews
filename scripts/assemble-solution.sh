@@ -35,4 +35,5 @@ mv ${BIN_PATH}/python/watch*.pyc ${BIN_PATH}/python/watch.pyc
 mv ${BIN_PATH}/python/nets*.pyc ${BIN_PATH}/python/nets.pyc
 mv ${BIN_PATH}/python/utility*.pyc ${BIN_PATH}/python/utility.pyc
 mv ${BIN_PATH}/python/executors*.pyc ${BIN_PATH}/python/executors.pyc
+mv ${BIN_PATH}/python/rank*.pyc ${BIN_PATH}/python/rank.pyc
 

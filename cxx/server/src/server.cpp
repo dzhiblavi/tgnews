@@ -165,7 +165,12 @@ http::response server::process_put(http::request&& request) {
             errlog(15, "Extraction result: " + request.body);
 
             std::string lang = detector.detect(request.body).name().substr(0, 2);
+
             request.fields["Language"] = lang;
+            request.fields["header"] = meta["og:title"];
+            request.fields["published_time"] = std::to_string(html::parser::extract_time(meta["article:published_time"]));
+            request.fields["og_url"] = meta["og:url"];
+
             errlog(10, "Language detection result: " + lang);
 
             if (lang == "ru" || lang == "en") {
@@ -203,9 +208,43 @@ http::response server::process_delete(http::request&& request) {
 http::response server::process_get(http::request&& request) {
     errlog(8, __func__);
 
-    // TODO
+    std::string uri = request.uri;
+    request.uri = "/threads";
 
-    return {http::version::HTTP11, 200, "OK"};
+    std::string period, lang_code, category;
+    size_t i = 0;
+    while (uri[i] != '=') ++i;
+    size_t j = ++i;
+    while (uri[j] != '&') ++j;
+    period = uri.substr(i, j - i);
+
+    i = j + 1;
+    while (uri[i] != '=') ++i;
+    j = ++i;
+    while (uri[j] != '&') ++j;
+    lang_code = uri.substr(i, j - i);
+
+    i = j + 1;
+    while (uri[i] != '=') ++i;
+    category = uri.substr(++i);
+
+    request.fields.clear();
+    request.fields["period"] = period;
+    request.fields["lang_code"] = lang_code;
+    request.fields["category"] = category;
+    request.fields["max_indexed_time"] = "0";
+
+    std::string response = pyserver.submit_and_await(request.to_string());
+    http::parser<http::response> parser;
+    parser.feed(response.data(), 0, response.size());
+    http::response rsp = parser.get();
+
+    rsp.fields.clear();
+    rsp.fields["Content-type"] = "application/json";
+    rsp.fields["Content-Length"] = rsp.body.size();
+    rsp.ver = http::HTTP11;
+
+    return rsp;
 }
 
 langdetect::Detected concurrent_detector::detect(std::string const& s) {

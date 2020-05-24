@@ -1,12 +1,14 @@
 from abc import ABC
-
 import nltk
+import queue
+import threading
 import pickle
 import warnings
 import json
 from html.parser import HTMLParser
 import calendar
 import time
+import os
 
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -63,7 +65,7 @@ def form_path(base, lang, category, name):
 def dump_info(base, js):
     path = form_path(base, js['lang'], js['category'], js['file_name'])
     with open(path, 'w') as file:
-        file.write(json.dumps(js))
+        file.write(json.dumps(js, indent=2))
 
 
 def get_stemmer(lang):
@@ -105,3 +107,35 @@ def tokenize(s):
 
 def current_time():
     return int(calendar.timegm(time.gmtime()))
+
+
+def collect_files_in_directory(path):
+    files = []
+    for r, d, f in os.walk(path):
+        for file in f:
+            files.append(os.path.join(r, file))
+    return files
+
+
+def get_file_json_chunk(chunk, result):
+    local_res = []
+    for file_path in chunk:
+        local_res.append([file_path, load_js(file_path)])
+    for r in local_res:
+        result.put(r)
+
+
+def get_files_jsons(files):
+    n = int(len(files) / 8) + 1
+    result = queue.SimpleQueue()
+    chunks = [files[i:i + n] for i in range(0, len(files), n)]
+    threads = [threading.Thread(target=get_file_json_chunk, args=[c, result]) for c in chunks]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    res = {}
+    while not result.empty():
+        [path, js] = result.get()
+        res[path] = js
+    return res

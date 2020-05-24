@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 from executors import *
+import rank
 
 
 def process(base, path, netclass):
@@ -75,8 +76,8 @@ def process_threads_impl(base, path):
     return grouping
 
 
-def process_threads(base, path):
-    result_js = process_threads_impl(base, path)
+def reparse_threads(result_js, m):
+    result_js = rank.rank_threads(result_js, m)
     js = []
     for entry in result_js:
         js.append({'title': entry['title']})
@@ -84,7 +85,45 @@ def process_threads(base, path):
         for art in entry['articles']:
             for file_name in art:
                 js[-1]['articles'].append(file_name.split('/')[-1])
-    print(json.dumps(js, indent=2))
+    return js
+
+
+def process_get_impl(base, period, lang, cat, m):
+    dir_path = out_path(base) + '/' + lang + '/' + cat
+    files = collect_files_in_directory(dir_path)
+    if len(files) == 0:
+        return {'threads': []}
+    fjs = get_files_jsons(files)
+    stemmed_texts = []
+    files = []
+    for path in fjs:
+        stemmed_texts.append(fjs[path]['stemmed_text'])
+        files.append(path)
+    net = ThreadsNet(min(8, int(0.1 * len(files))), lang, cat)
+    grouping = []
+    cur_result = net.predict(stemmed_texts)
+    n_groups = max(cur_result) + 1
+    for i in range(n_groups):
+        grouping.append({"articles": []})
+    for i in range(len(files)):
+        if cur_result[i] != -1:
+            grouping[cur_result[i]]["articles"].append(
+                {
+                    files[i]: {
+                        'og:url': fjs[files[i]]['og:url'],
+                        'published_time': fjs[files[i]]['published_time'],
+                    }
+                })
+            grouping[cur_result[i]]["title"] = fjs[files[i]]['header']
+    grouping = reparse_threads(grouping, m)
+    return {'threads': grouping}
+
+
+def process_get(base, period, lang, cat):
+    m = rank.load_pagerank(assets_path(base) + '/pagerank.txt')
+    if cat != 'any':
+        return process_get_impl(base, period, lang, cat, m)
+    return ['\'all\' is not supported yet']
 
 
 if __name__ == '__main__':
@@ -96,5 +135,6 @@ if __name__ == '__main__':
     elif net_type == 'categories':
         process_cat(base, path)
     elif net_type == 'threads':
-        process_threads(base, path)
+        m = rank.load_pagerank(assets_path(base) + '/pagerank.txt')
+        print(json.dumps(reparse_threads(process_threads_impl(base, path), m), indent=2))
 

@@ -37,6 +37,25 @@ PyServer::connection::connection(io_api::io_context& ctx, ipv4::endpoint const &
     });
 }
 
+std::string PyServer::submit_and_await(std::string const& ss) {
+    ipv4::basic_socket sock(serv_addr);
+    std::string s = ss;
+    while (!s.empty()) {
+        int r = sock.send(s.data(), s.size());
+        s = s.substr(r);
+    }
+    std::string resp;
+    char buff[1024];
+    for (;;) {
+        int r = sock.recv(buff, 1024);
+        if (r == 0) {
+            break;
+        }
+        resp += std::string(buff, buff + r);
+    }
+    return resp;
+}
+
 void PyServer::connection::on_write(int r) {
     if (r == message.size()) {
         this->serv->con.erase(this);

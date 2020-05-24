@@ -32,7 +32,7 @@ def rank_articles(groups, agencies):
         for article in group["articles"]:
             for filename in article:
                 scores.append(calc_article_score(article[filename], agencies, nowtime))
-        print(scores)
+        # print(scores)
         newgroup["articles"] = [x for y, x in sorted(zip(scores, group["articles"]), key=lambda x: x[0], reverse=True)]
         result.append(newgroup)
     return result
@@ -41,7 +41,7 @@ def rank_articles(groups, agencies):
 # TODO: nowtime usage
 # TODO: time percentile
 def calc_group_score(group, agencies, nowtime):
-    print(group)
+    # print(group)
     cnt = len(group["articles"])
     agencies_weight = 0
     # index = int(0.9 * (cnt - 1))
