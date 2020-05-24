@@ -5,6 +5,8 @@ import pickle
 import warnings
 import json
 from html.parser import HTMLParser
+import calendar
+import time
 
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -98,3 +100,7 @@ def load(path):
 
 def tokenize(s):
     return s.split()
+
+
+def current_time():
+    return int(calendar.timegm(time.gmtime()))
