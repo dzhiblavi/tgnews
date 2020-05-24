@@ -33,4 +33,7 @@ cp -r ${PYTHON_PATH}/__pycache__/*.pyc ${BIN_PATH}/python
 
 mv ${BIN_PATH}/python/neural*.pyc ${BIN_PATH}/python/neural.pyc
 mv ${BIN_PATH}/python/watch*.pyc ${BIN_PATH}/python/watch.pyc
+mv ${BIN_PATH}/python/nets*.pyc ${BIN_PATH}/python/nets.pyc
+mv ${BIN_PATH}/python/utility*.pyc ${BIN_PATH}/python/utility.pyc
+mv ${BIN_PATH}/python/executors*.pyc ${BIN_PATH}/python/executors.pyc
 

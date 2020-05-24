@@ -1,5 +1,4 @@
 #include "PyServer.h"
-
 #include <utility>
 
 PyServer::PyServer(std::filesystem::path const& base, io_api::io_context &ctx, const ipv4::endpoint &ep)

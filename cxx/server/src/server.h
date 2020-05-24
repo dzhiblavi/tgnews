@@ -2,6 +2,7 @@
 #define TGSERVER_SERVER_H
 
 
+#include <atomic>
 #include <map>
 #include <memory>
 
