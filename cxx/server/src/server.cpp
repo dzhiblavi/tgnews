@@ -142,11 +142,12 @@ http::response server::process(http::request&& request) {
 http::response server::process_put(http::request&& request) {
     errlog(8, __func__);
 
-    uint64_t end_time = atoi(request.fields["Cache-Control"].substr(8).c_str())
-                        + html::parser::extract_time_from_html(request.body);
+    uint64_t publish_time = html::parser::extract_time_from_html(request.body);
+    uint64_t ttl = atoi(request.fields["Cache-Control"].substr(8).c_str());
+    uint64_t end_time = publish_time + ttl;
 
     http::response result{http::version::HTTP11};
-    if (daemon.add(request.uri.substr(1), end_time)) {
+    if (daemon.add(request.uri.substr(1), publish_time, end_time)) {
         result.code = 201;
         result.reason = "Created";
     } else {
@@ -154,7 +155,7 @@ http::response server::process_put(http::request&& request) {
         result.reason = "Updated";
     }
 
-    if (name_daemon::compare_time(end_time)) {
+    if (daemon.compare_time(end_time)) {
         errlog(10, "article will last");
 
         worker_thp.submit([this, request{std::move(request)}]() mutable {
