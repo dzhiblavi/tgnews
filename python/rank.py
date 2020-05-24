@@ -4,6 +4,7 @@ def extract_url_domain(site):
         dom = dom[4:]
     return dom
 
+
 def url_rank_weight(site, agencies):
     dom = extract_url_domain(site)
     if dom in agencies:
@@ -31,6 +32,7 @@ def rank(groups, agencies):
     print(scores)
     return [x for y, x in sorted(zip(scores, groups), key=lambda x: x[0], reverse=True)]
 
+
 def load_pagerank(path):
     pagerank = {}
     with open(path) as pf:
@@ -40,6 +42,7 @@ def load_pagerank(path):
             url = url[:-1]
             pagerank[url] = score
     return pagerank
+
 
 if __name__ == '__main__':
     sample = \

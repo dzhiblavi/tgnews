@@ -49,9 +49,12 @@ def process_cat(base, path):
 def process_threads(base, path):
     executors, js = process(base, path, ThreadingExecutor)
     grouping = []
+    en = 0 if js[0]['lang_code'] == 'en' else 1
+    ru = 0 if js[0]['lang_code'] == 'ru' else 1
+    ind = {'ru': ru, 'en': en}
     for lang in executors:
-        li = 0 if lang == 'en' else 1
-        stemmer = get_stemmer(lang)
+        print('LANG: ' + lang)
+        li = ind[lang]
         exr = executors[lang]
         result = exr.result
         for i in range(len(categories)):
@@ -62,15 +65,16 @@ def process_threads(base, path):
                 continue
             net = ThreadsNet(min(8, int(0.1 * len(files))), lang, i)
             cur_result = net.predict([t[1] for t in files])
+            print(str(cur_result))
             base_ind = len(grouping)
             n_groups = max(cur_result) + 1
-            for _ in range(n_groups):
-                grouping.append({"title": "TITLE", "articles": []})
+            for i in range(n_groups):
+                grouping.append({"articles": []})
             for i in range(len(files)):
                 if cur_result[i] != -1:
-                    grouping[cur_result[i]]["articles"].append({files[i][0]: js[li]['articles'][files[i][0]]})
-
-            print(str(cur_result))
+                    grouping[base_ind + cur_result[i]]["articles"].append({files[i][0]: js[li]['articles'][files[i][0]]})
+                    grouping[base_ind + cur_result[i]]["title"] = files[i][2].header
+                    print(files[i][2].header)
     print(json.dumps(grouping, indent=2))
 
 

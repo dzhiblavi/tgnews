@@ -1,13 +1,40 @@
+from abc import ABC
+
 import nltk
 import pickle
 import warnings
 import json
+from html.parser import HTMLParser
 
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 langs = ['ru', 'en']
 categories = ["entertainment", "society", "technology", "sports", "science", "economy", "other"]
+
+
+class HParser(HTMLParser):
+    def __init__(self):
+        super(HParser, self).__init__()
+        self.result = ""
+        self.header = ""
+        self.is_header = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'h1':
+            self.is_header = True
+
+    def handle_endtag(self, tag):
+        if tag == 'h1':
+            self.is_header = False
+
+    def handle_data(self, data):
+        self.result += data
+        if self.is_header:
+            self.header += data
+
+    def error(self, message):
+        pass
 
 
 def assets_path(base):
@@ -50,6 +77,15 @@ def get_vectorizer(base, lang, net):
 
 def get_model(base, lang, net):
     return load(assets_path(base) + '/' + net + '/' + lang + '/model.pickle')
+
+
+def load_file(path):
+    with open(path, 'r') as file:
+        parser = HParser()
+        parser.feed(file.read())
+        # print(parser.result)
+        # print(parser.header)
+        return parser
 
 
 def load(path):
