@@ -69,7 +69,7 @@ def process_threads_impl(base, path):
             base_ind = len(grouping)
             n_groups = max(cur_result) + 1
             for i in range(n_groups):
-                grouping.append({"articles": []})
+                grouping.append({"articles": [], "category": categories[cat]})
             for i in range(len(files)):
                 if cur_result[i] != -1:
                     grouping[base_ind + cur_result[i]]["articles"].append(
@@ -78,18 +78,6 @@ def process_threads_impl(base, path):
                         })
         major_result.append({lang: grouping})
     return major_result
-
-
-def reparse_threads(result_js, m):
-    result_js = rank.rank_threads(result_js, m)
-    js = []
-    for entry in result_js:
-        js.append({'title': entry['title']})
-        js[-1]['articles'] = []
-        for art in entry['articles']:
-            for file_name in art:
-                js[-1]['articles'].append(file_name.split('/')[-1])
-    return js
 
 
 def process_get_impl(base, min_time, lang, cat, m):
@@ -110,7 +98,7 @@ def process_get_impl(base, min_time, lang, cat, m):
     cur_result = net.predict(stemmed_texts)
     n_groups = max(cur_result) + 1
     for i in range(n_groups):
-        grouping.append({"articles": []})
+        grouping.append({"articles": [], "category": cat})
     for i in range(len(files)):
         if cur_result[i] != -1:
             grouping[cur_result[i]]["articles"].append(
@@ -131,7 +119,7 @@ def thread_process_get(result, base, min_time, lang, cat, m):
 def process_get(base, min_time, lang, cat):
     m = rank.load_pagerank(assets_path(base) + '/pagerank.txt')
     if cat != 'any':
-        return {'threads': process_get_impl(base, min_time, lang, cat, m)}
+        return {'threads': remove_categories_from_threads(process_get_impl(base, min_time, lang, cat, m))}
 
     result = queue.SimpleQueue()
     threads = [threading.Thread(target=thread_process_get,
@@ -148,6 +136,12 @@ def process_get(base, min_time, lang, cat):
     return {'threads': total}
 
 
+def remove_categories_from_threads(js):
+    for entry in js:
+        del entry['category']
+    return js
+
+
 if __name__ == '__main__':
     base = str(Path(sys.argv[0]).parent) + '/'
     net_type = sys.argv[1]
@@ -158,5 +152,6 @@ if __name__ == '__main__':
         process_cat(base, path)
     elif net_type == 'threads':
         m = rank.load_pagerank(assets_path(base) + '/pagerank.txt')
-        print(json.dumps(rank.rank_threads(process_threads_impl(base, path), m), indent=2, ensure_ascii=False))
+        print(json.dumps(remove_categories_from_threads(rank.rank_threads(process_threads_impl(base, path), m)),
+                         indent=2, ensure_ascii=False))
 
