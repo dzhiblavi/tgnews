@@ -90,11 +90,3 @@ HTTP request:
 ```
 GET /threads?period=<period>&lang_code=<lang_code>&category=<category> HTTP/1.1
 ```
-
-# Authors
-
-- [dzhiblavi](https://github.com/dzhiblavi)
-
-- [RomaA2000](https://github.com/RomaA2000)
-
-- [gleb-kov](https://github.com/gleb-kov)
