@@ -22,6 +22,7 @@ ru_threads_eps = {
     "other": 1.1
 }
 
+
 class NetSystem:
     def __init__(self, base, lang):
         self.lang = lang
@@ -114,7 +115,7 @@ class ThreadsNet:
         self.vectorizer.fit(stemmed_texts)
         x_train_tfidf = self.vectorizer.transform(stemmed_texts)
 
-        lang_cat_eps = lang_cat_eps = en_threads_eps[self.category]
+        lang_cat_eps = en_threads_eps[self.category]
         if self.lang == 'ru':
             lang_cat_eps = ru_threads_eps[self.category]
 

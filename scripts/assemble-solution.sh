@@ -42,7 +42,7 @@ mv ${BIN_PATH}/python/rank*.pyc ${BIN_PATH}/python/rank.pyc
 
 cp ${DEB_PATH} ${PY_DEP_PATH} ${README_PATH} ${OUT_PATH}
 
-cd ${OUT_PATH}
-zip -r submission.zip . 
-cp submission.zip ../
+#cd ${OUT_PATH}
+#zip -r submission.zip . 
+#cp submission.zip ../
 

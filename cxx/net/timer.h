@@ -43,6 +43,9 @@ public:
     timer_unit(timer* timer, time_point_t wpoint, callback_t callback);
     ~timer_unit();
 
+    timer_unit(timer_unit&& tu);
+    timer_unit& operator=(timer_unit&&);
+
     void reset(timer& t, time_point_t tp);
     void reset(time_point_t tp);
     void callback();

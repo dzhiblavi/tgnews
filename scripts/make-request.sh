@@ -44,6 +44,8 @@ case "$MODE" in
 			"localhost:${PORT}/${WHAT}"
 	} ;;
 
+#            -H "Connection: Keep-Alive" \
+#            -H "Keep-Alive: 10" \
 	PUT) {
 		curl --dump-header - -X PUT \
             -H "Content-Type: text/html" \

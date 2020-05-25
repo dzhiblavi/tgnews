@@ -18,6 +18,25 @@ timer::time_point_t timer::top() const noexcept {
     return timers.begin()->second->wpoint;
 }
 
+timer_unit::timer_unit(timer_unit&&tu)
+    : tr(tu.tr)
+    , cb(tu.cb)
+    , wpoint(tu.wpoint) {
+    tr->remove(&tu);
+    tr->add(this);
+    tu.tr = nullptr;
+}
+
+timer_unit& timer_unit::operator=(timer_unit&&tu) {
+    tu.tr->remove(&tu);
+    std::swap(tr, tu.tr);
+    std::swap(cb, tu.cb);
+    std::swap(wpoint, tu.wpoint);
+    tu.tr = nullptr;
+    tr->add(this);
+    return *this;
+}
+
 void timer::callback(time_point_t base) noexcept {
     auto it = timers.begin();
 

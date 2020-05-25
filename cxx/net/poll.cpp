@@ -333,7 +333,7 @@ void poll::event_ctl(CTL ctl, event_info &evi) {
 
 int poll::wait(int wait) {
 #if defined(NET_POLL_KQUEUE)
-    timespec ts{ 0, wait / 1000000 };
+    timespec ts{ 0, std::max(0, wait / 1000000) };
     return kevent(native_handle(), nullptr, 0, events_.data(), events_.size(), wait != -1 ? &ts : nullptr);
 #elif defined(NET_POLL_EPOLL)
     return epoll_wait(native_handle(), events_.data(), events_.size(), wait);

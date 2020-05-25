@@ -82,7 +82,8 @@ server::server(std::filesystem::path const& base, io_api::io_context &ctx,
         ipv4::endpoint const &server_ep, ipv4::endpoint const& pyserver_ep)
     : del(base)
     , socket(ctx)
-    , pyserver(base, ctx, pyserver_ep) {
+    , pyserver(base, ctx, pyserver_ep)
+    , ctx(&ctx) {
     socket.bind(server_ep);
     socket.accept(ipv4::handler<ipv4::socket>([&, this] (ipv4::socket sock) {
         errlog(8, "on_connect");
@@ -116,7 +117,25 @@ void server::client_connection::on_read(int r) {
     offset += s;
     while (parser.ready()) {
         srv->request_thp.submit([this, request{parser.get()}] () mutable {
+            if (stor.disconnect && request.fields.find("Connection") != request.fields.end()
+                && request.fields["Connection"] == "Keep-Alive" && request.fields.find("Keep-Alive") != request.fields.end()) {
+
+                auto duration = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::steady_clock::now());
+                std::chrono::steady_clock::time_point cur = duration;
+                uint64_t dur = atoi(request.fields["Keep-Alive"].c_str());
+                std::cerr << "Setting keep-alive: " << request.fields["Keep-Alive"].c_str() << std::endl;
+
+                stor.disconnect = {};
+                tu = timer_unit(&srv->ctx->get_timer(), cur + std::chrono::seconds(dur), [this] {
+                    if (in_work == 0)
+                        on_disconnect();
+                    else
+                        stor.disconnect = [this] { on_disconnect(); };
+                });
+            }
+            ++in_work;
             stor.push(srv->process(std::move(request)).to_string());
+            --in_work;
         });
         parser.clear();
 
