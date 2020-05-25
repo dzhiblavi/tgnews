@@ -1,5 +1,16 @@
 ### rank utils
 
+def load_pagerank(path):
+    pagerank = {}
+    with open(path) as pf:
+        sc = pf.readlines()
+        for site in sc:
+            score, url = site.split('\t')
+            url = url[:-1]
+            pagerank[url] = float(score)
+    return pagerank
+
+
 def extract_url_domain(site):
     dom = site.split('/')[2]
     if dom.startswith("www."):
@@ -81,17 +92,6 @@ def rank_threads(groups, agencies):
         scores.append(calc_group_score(group, agencies, now_time))
     groups = sort_by_score(scores, groups)
     return groups
-
-
-def load_pagerank(path):
-    pagerank = {}
-    with open(path) as pf:
-        sc = pf.readlines()
-        for site in sc:
-            score, url = site.split('\t')
-            url = url[:-1]
-            pagerank[url] = float(score)
-    return pagerank
 
 
 if __name__ == '__main__':
