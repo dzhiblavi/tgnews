@@ -20,8 +20,8 @@ def make_dirs(base):
 @app.route('/<path:file_path>', methods=['PUT'])
 def process_put_request(file_path):
     print("PyServer: processing put request: " + file_path)
-    executors[request.headers.get("Language")].submit_data([file_path, str(request.data),
-                                                            request.headers.get("header"),
+    executors[request.headers.get("Language")].submit_data([file_path, request.data.decode('utf-8'),
+                                                            request.headers.get("header", as_bytes=True).decode('utf-8'),
                                                             request.headers.get("published_time"),
                                                             request.headers.get("og_url")])
     return ""

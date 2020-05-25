@@ -45,6 +45,7 @@ int main(int argc, char** argv) {
             nlohmann::json js = detect(argv[1], {"ru", "en"},
                                        [] (std::filesystem::path const& p, std::unordered_map<std::string, std::string>& meta) {
                                            std::map<std::string, std::string> mp;
+                                           mp["header"] = meta["og:title"];
                                            mp["filename"] = p;
                                            mp["published_time"] = std::to_string(html::parser::extract_time(meta["article:published_time"].c_str()));
                                            mp["og:url"] = meta["og:url"];

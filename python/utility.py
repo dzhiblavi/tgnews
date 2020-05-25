@@ -48,8 +48,8 @@ def out_path(base):
 
 
 def load_js(path):
-    with open(path, 'r') as file:
-        return json.load(file)
+    with open(path, 'r', encoding='utf-8') as file:
+        return json.loads(file.read())
 
 
 def flatten(lst):
@@ -63,7 +63,7 @@ def form_path(base, lang, category, name):
 def dump_info(base, js):
     path = form_path(base, js['lang'], js['category'], js['file_name'])
     with open(path, 'w') as file:
-        file.write(json.dumps(js, indent=2))
+        file.write(json.dumps(js, indent=2, ensure_ascii=False))
 
 
 def get_stemmer(lang):

@@ -49,21 +49,22 @@ def process_cat(base, path):
 
 def process_threads_impl(base, path):
     executors, js = process(base, path, ThreadingExecutor)
-    grouping = []
     en = 0 if js[0]['lang_code'] == 'en' else 1
     ru = 0 if js[0]['lang_code'] == 'ru' else 1
     ind = {'ru': ru, 'en': en}
+    major_result = []
     for lang in executors:
+        grouping = []
         li = ind[lang]
         exr = executors[lang]
         result = exr.result
-        for i in range(len(categories)):
+        for cat in range(len(categories)):
             files = []
-            while not result[i].empty():
-                files.append(result[i].get())
+            while not result[cat].empty():
+                files.append(result[cat].get())
             if len(files) < 8:
                 continue
-            net = ThreadsNet(min(8, int(0.1 * len(files))), lang, categories[i])
+            net = ThreadsNet(min(8, int(0.1 * len(files))), lang, categories[cat])
             cur_result = net.predict([t[1] for t in files])
             base_ind = len(grouping)
             n_groups = max(cur_result) + 1
@@ -71,9 +72,12 @@ def process_threads_impl(base, path):
                 grouping.append({"articles": []})
             for i in range(len(files)):
                 if cur_result[i] != -1:
-                    grouping[base_ind + cur_result[i]]["articles"].append({files[i][0]: js[li]['articles'][files[i][0]]})
-                    grouping[base_ind + cur_result[i]]["title"] = files[i][2].header
-    return grouping
+                    grouping[base_ind + cur_result[i]]["articles"].append(
+                        {
+                            files[i][0]: js[li]['articles'][files[i][0]]
+                        })
+        major_result.append({lang: grouping})
+    return major_result
 
 
 def reparse_threads(result_js, m):
@@ -114,10 +118,10 @@ def process_get_impl(base, min_time, lang, cat, m):
                     files[i]: {
                         'og:url': fjs[files[i]]['og:url'],
                         'published_time': fjs[files[i]]['published_time'],
+                        'header': fjs[files[i]]['header']
                     }
                 })
-            grouping[cur_result[i]]["title"] = fjs[files[i]]['header']
-    return reparse_threads(grouping, m)
+    return rank.rank_threads({lang: grouping}, m)
 
 
 def thread_process_get(result, base, min_time, lang, cat, m):
@@ -154,5 +158,5 @@ if __name__ == '__main__':
         process_cat(base, path)
     elif net_type == 'threads':
         m = rank.load_pagerank(assets_path(base) + '/pagerank.txt')
-        print(json.dumps(reparse_threads(process_threads_impl(base, path), m), indent=2, ensure_ascii=False))
+        print(json.dumps(rank.rank_threads(process_threads_impl(base, path), m), indent=2, ensure_ascii=False))
 
