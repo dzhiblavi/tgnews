@@ -109,7 +109,7 @@ def process_get_impl(base, min_time, lang, cat, m):
                         'header': fjs[files[i]]['header']
                     }
                 })
-    return rank.rank_threads({lang: grouping}, m)
+    return rank.rank_threads([{lang: grouping}], m)
 
 
 def thread_process_get(result, base, min_time, lang, cat, m):

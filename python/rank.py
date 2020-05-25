@@ -1,4 +1,5 @@
 from math import exp, log
+import json
 
 ### rank utils
 
@@ -50,7 +51,7 @@ def format_output(groups):
     result = []
     for group in groups:
         new_group = {"title": group["title"],
-                     #"category": group["category"],
+                     "category": group["category"],
                      "articles": []}
 
         for article in group["articles"]:
@@ -103,6 +104,7 @@ def rank_articles(group, agencies, now_time):
 
 # sort threads
 def rank_threads(groups, agencies):
+    print(json.dumps(groups, indent=2, ensure_ascii=False))
     now_time = find_max_time(groups[0]["ru"])
     now_time = max(now_time, find_max_time(groups[1]["en"]))
 
@@ -112,7 +114,7 @@ def rank_threads(groups, agencies):
         for lang in lg:
             for group in lg[lang]:
                 new_group = rank_articles(group, agencies, now_time)
-                #new_group["category"] = group["category"]
+                new_group["category"] = group["category"]
                 new_group["lang"] = lang
                 new_group["title"] = "HELLO"
                 new_groups.append(new_group)
