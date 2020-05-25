@@ -40,3 +40,8 @@ mv ${BIN_PATH}/python/executors*.pyc ${BIN_PATH}/python/executors.pyc
 mv ${BIN_PATH}/python/rank*.pyc ${BIN_PATH}/python/rank.pyc
 
 cp ${DEB_PATH} ${PY_DEP} ${OUT_PATH}
+
+cd ${OUT_PATH}
+zip -r submission.zip . 
+cp submission.zip ../
+
