@@ -30,6 +30,10 @@ while [ -n "$1" ]; do
 			WHAT="$1"
 		} ;;
 
+        -keep) {
+            KEEP="TRUE"
+        } ;;
+
 		*) {
 			echo "invalid key: $1"
 			exit 1
@@ -44,13 +48,20 @@ case "$MODE" in
 			"localhost:${PORT}/${WHAT}"
 	} ;;
 
-#            -H "Connection: Keep-Alive" \
-#            -H "Keep-Alive: 10" \
 	PUT) {
-		curl --dump-header - -X PUT \
-            -H "Content-Type: text/html" \
-            -H "Cache-Control: max-age=30000000" --data "@${FILE}" \
-			"localhost:${PORT}/${FILE}"
+        if ! [ -n "${KEEP}" ]; then
+		    curl --dump-header - -X PUT \
+                -H "Content-Type: text/html" \
+                -H "Cache-Control: max-age=30000000" --data "@${FILE}" \
+			    "localhost:${PORT}/${FILE}"
+        else
+		    curl --dump-header - -X PUT \
+                -H "Connection: Keep-Alive" \
+                -H "Keep-Alive: 10" \
+                -H "Content-Type: text/html" \
+                -H "Cache-Control: max-age=30000000" --data "@${FILE}" \
+			    "localhost:${PORT}/${FILE}"
+        fi
 	} ;;
 
 	DELETE) {

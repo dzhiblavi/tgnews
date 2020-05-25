@@ -6,7 +6,7 @@
 
 #include "net/socket.h"
 #include "net/io_api.h"
-#include "net/storage.h"
+#include "storage.h"
 #include "sysapi/sysapi.h"
 #include "http/request.h"
 

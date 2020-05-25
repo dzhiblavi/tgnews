@@ -4,13 +4,23 @@
 #include <deque>
 #include <mutex>
 
-#include "socket.h"
+#include "net/socket.h"
+#include "net/timer.h"
 
 struct storage {
+    typedef std::chrono::time_point<std::chrono::steady_clock, std::chrono::seconds> time_point_t;
+
     ipv4::socket* socket;
     std::function<void()> disconnect;
     std::deque<std::string> data;
     std::mutex m;
+    int jobs = 0;
+    timer* tr;
+    timer_unit tu{};
+
+    time_point_t current_time() {
+       return std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::steady_clock::now());
+    }
 
     void on_write(int r) {
         if (r == data.back().size()) {
@@ -21,8 +31,6 @@ struct storage {
 
         if (data.empty()) {
             socket->write(nullptr, 0, {});
-            if (disconnect)
-               disconnect();
         } else {
             set_on_write(true);
         }
@@ -48,19 +56,35 @@ private:
     }
 
 public:
-    storage(ipv4::socket* cc, std::function<void()> const& disconnect)
-            : socket(cc), disconnect(disconnect) {}
+    storage(ipv4::socket* cc, timer* tr, std::function<void()> const& disconnect)
+            : socket(cc), tr(tr), disconnect(disconnect) {}
 
     void push(std::string const& value) {
         std::lock_guard<std::mutex> lg(m);
         data.push_front(value);
         set_on_write();
+        --jobs;
     }
 
     void push(std::string&& value) {
         std::lock_guard<std::mutex> lg(m);
         data.push_front(std::move(value));
         set_on_write();
+        --jobs;
+    }
+
+    void register_task() {
+        std::lock_guard<std::mutex> lg(m);
+        ++jobs;
+    }
+
+    void set_end_point(int seconds) {
+        std::lock_guard<std::mutex> lg(m);
+
+        tu = timer_unit(tr, current_time() + std::chrono::seconds(seconds), [this] {
+            if (jobs == 0 && data.empty())
+                disconnect();
+        });
     }
 };
 

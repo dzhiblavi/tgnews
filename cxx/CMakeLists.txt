@@ -50,7 +50,6 @@ set(NET_SRC
         ${PROJECT_SOURCE_DIR}/net/poll.h
         ${PROJECT_SOURCE_DIR}/net/socket.cpp
         ${PROJECT_SOURCE_DIR}/net/socket.h
-        ${PROJECT_SOURCE_DIR}/net/storage.h
         ${PROJECT_SOURCE_DIR}/net/timer.cpp
         ${PROJECT_SOURCE_DIR}/net/timer.h
         ${PROJECT_SOURCE_DIR}/net/unique_fd.h)

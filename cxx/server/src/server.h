@@ -10,7 +10,7 @@
 #include "net/address.h"
 #include "net/timer.h"
 #include "net/socket.h"
-#include "net/storage.h"
+#include "storage.h"
 
 #include "http/request.h"
 #include "http/parser.h"
@@ -92,9 +92,7 @@ struct server::client_connection {
 private:
     server* srv;
     ipv4::socket socket;
-    std::atomic_int in_work;
     storage stor;
-    timer_unit tu{};
 
     char buff[CLIENT_BUFF_SIZE];
     http::parser<http::request> parser;

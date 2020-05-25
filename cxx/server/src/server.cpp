@@ -97,7 +97,7 @@ server::server(std::filesystem::path const& base, io_api::io_context &ctx,
 server::client_connection::client_connection(server* srv, ipv4::socket&& sock)
     : srv(srv)
     , socket(std::move(sock))
-    , stor(&socket, [this] { on_disconnect(); }) {
+    , stor(&socket, &srv->ctx->get_timer(), [this] { on_disconnect(); }) {
     socket.set_on_disconnect([this] { on_disconnect(); });
     socket.read(buff, CLIENT_BUFF_SIZE, ipv4::handler<int>([this] (int r) { on_read(r); }));
 }
@@ -117,28 +117,23 @@ void server::client_connection::on_read(int r) {
     offset += s;
     while (parser.ready()) {
         srv->request_thp.submit([this, request{parser.get()}] () mutable {
-            if (stor.disconnect && request.fields.find("Connection") != request.fields.end()
-                && request.fields["Connection"] == "Keep-Alive" && request.fields.find("Keep-Alive") != request.fields.end()) {
+            try {
+                if (stor.disconnect && request.fields.find("Connection") != request.fields.end()
+                    && request.fields["Connection"] == "Keep-Alive"
+                    && request.fields.find("Keep-Alive") != request.fields.end()) {
 
-                auto duration = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::steady_clock::now());
-                std::chrono::steady_clock::time_point cur = duration;
-                uint64_t dur = atoi(request.fields["Keep-Alive"].c_str());
-                std::cerr << "Setting keep-alive: " << request.fields["Keep-Alive"].c_str() << std::endl;
+                    std::cerr << "Setting keep-alive: " << request.fields["Keep-Alive"].c_str() << std::endl;
+                    stor.set_end_point(atoi(request.fields["Keep-Alive"].c_str()));
+                }
 
-                stor.disconnect = {};
-                tu = timer_unit(&srv->ctx->get_timer(), cur + std::chrono::seconds(dur), [this] {
-                    if (in_work == 0)
-                        on_disconnect();
-                    else
-                        stor.disconnect = [this] { on_disconnect(); };
-                });
+                stor.register_task();
+                stor.push(srv->process(std::move(request)).to_string());
+            } catch (std::runtime_error& e) {
+                std::cerr << "EERRRROOOR: " << e.what() << std::endl;
             }
-            ++in_work;
-            stor.push(srv->process(std::move(request)).to_string());
-            --in_work;
         });
-        parser.clear();
 
+        parser.clear();
         s = parser.feed(buff, offset, r);
         r -= s;
         offset += s;

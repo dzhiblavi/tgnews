@@ -1,6 +1,7 @@
 set(SERV_SRC
         PyServer.h
         PyServer.cpp
+        storage.h
         server.cpp
         server.h)
 
