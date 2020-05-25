@@ -11,7 +11,8 @@ ASSETS_PATH=${OUT_PATH}/assets
 CXX_PATH=../cxx
 PYTHON_PATH=../python
 DEB_PATH=../deb-packages.txt
-PY_DEP=../pymodules.sh
+PY_DEP_PATH=../pymodules.sh
+README_PATH=../README.md
 
 rm -rf ${OUT_PATH}
 
@@ -39,7 +40,7 @@ mv ${BIN_PATH}/python/utility*.pyc ${BIN_PATH}/python/utility.pyc
 mv ${BIN_PATH}/python/executors*.pyc ${BIN_PATH}/python/executors.pyc
 mv ${BIN_PATH}/python/rank*.pyc ${BIN_PATH}/python/rank.pyc
 
-cp ${DEB_PATH} ${PY_DEP} ${OUT_PATH}
+cp ${DEB_PATH} ${PY_DEP_PATH} ${README_PATH} ${OUT_PATH}
 
 cd ${OUT_PATH}
 zip -r submission.zip . 

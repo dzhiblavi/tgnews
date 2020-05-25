@@ -2,6 +2,25 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import DBSCAN
 from utility import *
 
+en_threads_eps = {
+    "entertainment": 1.1,
+    "society": 1.1,
+    "technology": 1.05,
+    "sports": 1.06,
+    "science": 1.08,
+    "economy": 1.12,
+    "other": 1.08
+}
+
+ru_threads_eps = {
+    "entertainment": 1.11,
+    "society": 1.15,
+    "technology": 1.12,
+    "sports": 1.13,
+    "science": 1.11,
+    "economy": 1.12,
+    "other": 1.1
+}
 
 class NetSystem:
     def __init__(self, base, lang):
@@ -94,7 +113,12 @@ class ThreadsNet:
             return []
         self.vectorizer.fit(stemmed_texts)
         x_train_tfidf = self.vectorizer.transform(stemmed_texts)
-        dbscan = DBSCAN(eps=1.1, metric='euclidean', metric_params=None, algorithm='auto',
+
+        lang_cat_eps = lang_cat_eps = en_threads_eps[self.category]
+        if self.lang == 'ru':
+            lang_cat_eps = ru_threads_eps[self.category]
+
+        dbscan = DBSCAN(eps=lang_cat_eps, metric='euclidean', metric_params=None, algorithm='auto',
                         leaf_size=30, min_samples=5)
         dbscan.fit(x_train_tfidf)
         return dbscan.labels_
