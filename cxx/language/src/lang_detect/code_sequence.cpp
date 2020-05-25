@@ -134,11 +134,13 @@ void CodeSequence::cleanchar_(string &data) {
   while (true) {
     size_t p = data.find("@", cursor);
     if (p == string::npos) break;
+    data.replace(p, 1, " ");
     cursor = p + 1;
     if (p == 0) continue;
     size_t start = data.find_last_not_of("-_." + alnum, p - 1);
     size_t end = data.find_first_not_of("-_." + alnum, p + 1);
-    if (p - start <= 64 && end - p <= 510) {
+    // std::cout << p << ' ' << start << ' ' << end << '\n';
+    if (start < data.size() && start < end && start <= p && p <= end && p - start <= 64 && end - p <= 510) {
       data.replace(start, end - start, " ");
       cursor = start + 1;
     }
