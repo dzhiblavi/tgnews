@@ -5,16 +5,20 @@ nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> cons
     std::map<std::string, cvector<std::map<std::string, std::string>>> mp;
 
     walker w(p, [&](walker::fs_path_t const& path) {
-        langdetect::Detector detector;
-        std::ifstream ifs(path);
-        std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+        try {
+            langdetect::Detector detector;
+            std::ifstream ifs(path);
+            std::string str((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
-        std::unordered_map<std::string, std::string> meta;
-        html::parser::extract(str, meta);
-        std::string result = detector.detect(str.data(), str.size()).name().substr(0, 2);
+            std::unordered_map<std::string, std::string> meta;
+            html::parser::extract(str, meta);
+            std::string result = detector.detect(str.data(), str.size()).name().substr(0, 2);
 
-        std::lock_guard<std::mutex> lg(m);
-        mp[result].push_back(func(path, meta));
+            std::lock_guard<std::mutex> lg(m);
+            mp[result].push_back(func(path, meta));
+        } catch (...) {
+            std::cerr << "Detect failed on path: " << path << std::endl;
+        }
     });
     w.run();
 
@@ -31,12 +35,16 @@ nlohmann::json detect(std::filesystem::path const& p, std::set<std::string> cons
 
         for (auto& s : p.second.to_vector()) {
             if (s.size() == 1) {
-                arts.push_back(std::move(s["filename"]));
+                if (s.find("filename") != s.end()) {
+                    arts.push_back(std::move(s["filename"]));
+                }
             } else {
-                auto name_it = s.find("filename");
-                std::string name = name_it->second;
-                s.erase(name_it);
-                arts[name] = std::move(s);
+                if (s.find("filename") != s.end()) {
+                    auto name_it = s.find("filename");
+                    std::string name = name_it->second;
+                    s.erase(name_it);
+                    arts[name] = std::move(s);
+                }
             }
         }
     }

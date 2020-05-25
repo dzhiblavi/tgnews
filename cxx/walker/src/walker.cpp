@@ -27,7 +27,13 @@ fawait walker::walk(thp_t &poolDir, thp_t& poolFile, file_handler_t &fh, fs_path
                 if (p.is_directory()) {
                     walker::walk(poolDir, poolFile, fh, p.path());
                 } else {
-                    poolFile.submit([&fh, p] { fh(p.path()); });
+                    poolFile.submit([&fh, p] {
+                        try {
+                            fh(p.path());
+                        } catch (...) {
+                            std::cerr << "Walker failure on path: " << p.path() << std::endl;
+                        }
+                    });
                 }
             }
         } catch (std::filesystem::filesystem_error const &er) {

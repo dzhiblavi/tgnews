@@ -46,10 +46,14 @@ void deleter::remove(std::pair<uint8_t, std::filesystem::path> p) {
     for (auto &lang : languages) {
         for (auto &cat : categories) {
             std::string full_path = pbase.string() + "/" + lang + "/" + cat + "/" + path.string();
-            if (std::filesystem::is_regular_file(full_path)) {
-                errlog(9, "found file: removing file: ", full_path);
-                std::filesystem::remove(full_path);
-                return;
+            try {
+                if (std::filesystem::is_regular_file(full_path)) {
+                    errlog(9, "found file: removing file: ", full_path);
+                    std::filesystem::remove(full_path);
+                    return;
+                }
+            } catch (...) {
+                std::cerr << "Deleter:: failed: " << full_path << std::endl;
             }
         }
     }
@@ -89,9 +93,11 @@ server::server(std::filesystem::path const& base, io_api::io_context &ctx,
         errlog(8, "on_connect");
         client_connection* cc = new client_connection(this, std::move(sock));
         clients.emplace(cc, std::unique_ptr<client_connection>(cc));
+    }, [] (std::runtime_error re) {
+        std::cerr << "CXXServer:: Accept failed: " << re.what() << std::endl;
     }));
 
-    std::cout << "Server booted" << std::endl;
+    std::cout << "CXXServer:: Server booted" << std::endl;
 }
 
 server::client_connection::client_connection(server* srv, ipv4::socket&& sock)
@@ -99,7 +105,8 @@ server::client_connection::client_connection(server* srv, ipv4::socket&& sock)
     , socket(std::move(sock))
     , stor(&socket, &srv->ctx->get_timer(), [this] { on_disconnect(); }) {
     socket.set_on_disconnect([this] { on_disconnect(); });
-    socket.read(buff, CLIENT_BUFF_SIZE, ipv4::handler<int>([this] (int r) { on_read(r); }));
+    socket.read(buff, CLIENT_BUFF_SIZE, ipv4::handler<int>([this] (int r) { on_read(r); },
+            [] (std::runtime_error re) { std::cerr << "CXXServer:: Read failed: " << re.what() << std::endl; }));
 }
 
 void server::client_connection::on_disconnect() {
@@ -146,15 +153,19 @@ void server::client_connection::on_read(int r) {
 }
 
 http::response server::process(http::request&& request) {
-    switch (request.meth) {
-        case http::PUT:
-            return process_put(std::move(request));
-        case http::GET:
-            return process_get(std::move(request));
-        case http::DELETE:
-            return process_delete(std::move(request));
-        default:
-            return {http::version::HTTP11, 400, "Bad Request"};
+    try {
+        switch (request.meth) {
+            case http::PUT:
+                return process_put(std::move(request));
+            case http::GET:
+                return process_get(std::move(request));
+            case http::DELETE:
+                return process_delete(std::move(request));
+            default:
+                return {http::version::HTTP11, 400, "Bad Request"};
+        }
+    } catch (...) {
+        return {http::version::HTTP11, 500, "Internal Error"};
     }
 }
 
@@ -183,26 +194,31 @@ http::response server::process_put(http::request&& request) {
         errlog(10, "article will last");
 
         worker_thp.submit([this, request{std::move(request)}]() mutable {
-            std::unordered_map<std::string, std::string> meta;
-            html::parser::extract(request.body, meta);
+            try {
+                std::unordered_map<std::string, std::string> meta;
+                html::parser::extract(request.body, meta);
 
-            request.fields["Content-Length"] = std::to_string(request.body.size());
-            errlog(15, "Extraction result: " + request.body);
+                request.fields["Content-Length"] = std::to_string(request.body.size());
+                errlog(15, "Extraction result: " + request.body);
 
-            std::string lang = detector.detect(request.body).name().substr(0, 2);
+                std::string lang = detector.detect(request.body).name().substr(0, 2);
 
-            request.fields["Language"] = lang;
-            request.fields["header"] = meta["og:title"];
-            request.fields["published_time"] = std::to_string(html::parser::extract_time(meta["article:published_time"]));
-            request.fields["og_url"] = meta["og:url"];
+                request.fields["Language"] = lang;
+                request.fields["header"] = meta["og:title"];
+                request.fields["published_time"] = std::to_string(
+                        html::parser::extract_time(meta["article:published_time"]));
+                request.fields["og_url"] = meta["og:url"];
 
-            errlog(10, "Language detection result: " + lang);
+                errlog(10, "Language detection result: " + lang);
 
-            if (lang == "ru" || lang == "en") {
-                errlog(10, "Submiting request");
-                pyserver.submit_request(request.to_string());
-            } else {
-                errlog(10, "Ignoring request");
+                if (lang == "ru" || lang == "en") {
+                    errlog(10, "Submiting request");
+                    pyserver.submit_request(request.to_string());
+                } else {
+                    errlog(10, "Ignoring request");
+                }
+            } catch (...) {
+                std::cerr << "CXXServer:: work failed" << std::endl;
             }
         });
     } else {
