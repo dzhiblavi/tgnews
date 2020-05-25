@@ -18,6 +18,16 @@ Full description (ENG): https://contest.com/docs/data_clustering2/
 
 # How to start
 
+## Stage 0. Install
+
+1. Install deb packages from deb-packages.txt
+
+2. Install python modules:
+
+```
+pymodules.sh
+```
+
 ## Stage 1. Clustering
 
 1.1. Grouping by language
@@ -80,11 +90,3 @@ HTTP request:
 ```
 GET /threads?period=<period>&lang_code=<lang_code>&category=<category> HTTP/1.1
 ```
-
-# Authors
-
-- [dzhiblavi](https://github.com/dzhiblavi)
-
-- [RomaA2000](https://github.com/RomaA2000)
-
-- [gleb-kov](https://github.com/gleb-kov)
