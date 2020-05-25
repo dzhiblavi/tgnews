@@ -30,7 +30,7 @@
 #endif
 #elif defined(__linux)
 #define NET_POLL_EPOLL
-#define NET_POLL_SIZE 1000
+#define NET_POLL_SIZE 1000000
 #include <sys/epoll.h>
 #elif defined(WIN32)
 #define NET_POLL_POLL

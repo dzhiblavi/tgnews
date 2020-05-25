@@ -30,9 +30,9 @@ PyServer::connection::connection(io_api::io_context& ctx, ipv4::endpoint const &
         socket.write(message.data(), message.size(), ipv4::handler<int>([&, this] (int r) {
             on_write(r);
         }));
-        }, [] (std::runtime_error re) {
-            std::cerr << "Failed to connect to PyServer: " << re.what() << std::endl;
-        }), [this] {
+    }, [this] (std::runtime_error re) {
+        std::cerr << "Failed to connect to PyServer" << re.what() << std::endl;
+    }), [this] {
         this->serv->con.erase(this);
     });
 }

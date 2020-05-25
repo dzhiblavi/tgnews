@@ -116,7 +116,10 @@ void server::client_connection::on_read(int r) {
     r -= s;
     offset += s;
     while (parser.ready()) {
-        srv->request_thp.submit([this, request{parser.get()}] () mutable {
+        http::request rq = parser.get();
+        thread_pool<WORKER_THP_SIZE>& chosen_thp = (rq.meth == http::GET) ? srv->get_thp : srv->request_thp;
+
+        chosen_thp.submit([this, request{rq}]() mutable {
             try {
                 if (stor.disconnect && request.fields.find("Connection") != request.fields.end()
                     && request.fields["Connection"] == "Keep-Alive"
@@ -130,8 +133,8 @@ void server::client_connection::on_read(int r) {
 
                 stor.register_task();
                 stor.push(srv->process(std::move(request)).to_string());
-            } catch (std::runtime_error& e) {
-                std::cerr << "EERRRROOOR: " << e.what() << std::endl;
+            } catch (...) {
+                errlog(0, "Error occurred during request handling");
             }
         });
 

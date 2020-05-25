@@ -25,9 +25,8 @@
 
 
 #define ERRLOG_LVL 5
-#define REQUEST_THP_SIZE 4
 #define WORKER_THP_SIZE 8
-#define DELETER_THP_SIZE 2
+#define DELETER_THP_SIZE 4
 #define MAX_DELETE_DELAY 3
 #define CLIENT_BUFF_SIZE 1 << 14
 
@@ -64,8 +63,9 @@ private:
     struct client_connection;
 
 private:
-    thread_pool<REQUEST_THP_SIZE> request_thp;
+    thread_pool<WORKER_THP_SIZE> request_thp;
     thread_pool<WORKER_THP_SIZE> worker_thp;
+    thread_pool<WORKER_THP_SIZE> get_thp;
     deleter del;
     ipv4::server_socket socket;
     std::map<client_connection*, std::unique_ptr<client_connection>> clients;
