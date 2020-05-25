@@ -8,7 +8,8 @@
 
 
 void launch_py(nlohmann::json const& js, std::filesystem::path const& cur, std::string const& arg, char** argv) {
-    std::filesystem::path tmp_path = std::string("tmp/__tmp_") + std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
+    std::filesystem::path tmp_path = std::string("tmp/__tmp_")
+                                     + std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
     {
         std::ofstream ofs(cur / tmp_path);
         ofs << js.dump(2);

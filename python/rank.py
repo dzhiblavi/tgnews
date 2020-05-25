@@ -1,5 +1,6 @@
 ### rank utils
 
+
 def extract_url_domain(site):
     dom = site.split('/')[2]
     if dom.startswith("www."):
