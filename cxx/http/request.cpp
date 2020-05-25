@@ -50,7 +50,8 @@ std::string response::to_string() const {
     ss << strversion(ver) << ' ' << code << ' ' << reason << HTTPCRLF
        << form_header(fields)
        << HTTPCRLF
-       << body;
+       << body
+       << HTTPCRLF;
     return ss.str();
 }
 
@@ -60,7 +61,8 @@ std::string request::to_string() const {
     ss << strmethod(meth) << ' ' << uri << ' ' << strversion(ver) << HTTPCRLF
        << form_header(fields)
        << HTTPCRLF
-       << body;
+       << body
+       << HTTPCRLF;
     return ss.str();
 }
 }
