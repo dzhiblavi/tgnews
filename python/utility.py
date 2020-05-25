@@ -86,7 +86,7 @@ def load_file(path):
         parser = HParser()
         parser.feed(file.read())
         # print(parser.result)
-        # print(parser.header)
+        # print('initial header=' + parser.header)
         return parser
         # return file.read()
 
