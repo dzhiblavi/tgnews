@@ -10,6 +10,7 @@ TMP_PATH=${OUT_PATH}/tmp
 ASSETS_PATH=${OUT_PATH}/assets
 CXX_PATH=../cxx
 PYTHON_PATH=../python
+DEB_PATH=../deb-packages.txt
 
 rm -rf ${OUT_PATH}
 
@@ -37,3 +38,4 @@ mv ${BIN_PATH}/python/utility*.pyc ${BIN_PATH}/python/utility.pyc
 mv ${BIN_PATH}/python/executors*.pyc ${BIN_PATH}/python/executors.pyc
 mv ${BIN_PATH}/python/rank*.pyc ${BIN_PATH}/python/rank.pyc
 
+cp ${DEB_PATH} ${OUT_PATH}
