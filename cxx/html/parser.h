@@ -148,7 +148,14 @@ namespace html {
             std::istringstream ss(s);
 
             if (ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S")) {
-                return mytimegm(t);
+                uint64_t gmt = mytimegm(t);
+                // timezone
+                if (s.size() == 25 && s[19] == '+') {
+                    uint64_t h = (s[20] - '0') * 10 + (s[21] - '0');
+                    uint64_t m = (s[23] - '0') * 10 + (s[24] - '0');
+                    gmt += (h*60 + m) * 60;
+                }
+                return gmt;
             } else {
                 return 0;
             }
