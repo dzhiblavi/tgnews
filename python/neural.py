@@ -63,7 +63,7 @@ def process_threads_impl(base, path):
                 files.append(result[i].get())
             if len(files) < 8:
                 continue
-            net = ThreadsNet(min(8, int(0.1 * len(files))), lang, i)
+            net = ThreadsNet(min(8, int(0.1 * len(files))), lang, categories[i])
             cur_result = net.predict([t[1] for t in files])
             base_ind = len(grouping)
             n_groups = max(cur_result) + 1

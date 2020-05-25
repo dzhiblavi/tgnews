@@ -42,7 +42,6 @@ def find_max_time(groups):
 
 
 ### calc score of unit
-
 def calc_article_score(meta, agencies, now_time):
     url_w = url_rank_weight(meta["og:url"], agencies)
     return url_w * int(meta["published_time"]) / now_time
