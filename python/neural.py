@@ -96,6 +96,7 @@ def process_get_impl(base, min_time, lang, cat, m):
     net = ThreadsNet(min(8, int(0.1 * len(files))), lang, cat)
     grouping = []
     cur_result = net.predict(stemmed_texts)
+    print(cur_result)
     n_groups = max(cur_result) + 1
     for i in range(n_groups):
         grouping.append({"articles": [], "category": cat})

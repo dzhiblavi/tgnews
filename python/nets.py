@@ -14,7 +14,7 @@ en_threads_eps = {
 
 ru_threads_eps = {
     "entertainment": 1.09,
-    "society": 1.06,
+    "society": 1.10,
     "technology": 1.12,
     "sports": 1.13,
     "science": 1.11,

@@ -56,10 +56,14 @@ def format_output(groups):
 
         for article in group["articles"]:
             for filename in article:
-                new_group["articles"].append(filename)
+                new_group["articles"].append(filename.split('/')[-1])
 
         result.append(new_group)
     return result
+
+def get_title(articles):
+    for filename in articles[0]:
+        return articles[0][filename]["header"]
 
 ### calc score of unit
 def calc_article_score(meta, agencies, now_time):
@@ -83,6 +87,8 @@ def calc_group_score(group, agencies, now_time):
     time_coef = sigmoid((mean_time - now_time) / 3600)
 
     penalty_coef = 1
+    if group["lang"] == 'ru':
+        penalty_coef = 0.7
     if cnt > 20:
         penalty_coef = 1 / cnt
 
@@ -104,9 +110,10 @@ def rank_articles(group, agencies, now_time):
 
 # sort threads
 def rank_threads(groups, agencies):
-    print(json.dumps(groups, indent=2, ensure_ascii=False))
-    now_time = find_max_time(groups[0]["ru"])
-    now_time = max(now_time, find_max_time(groups[1]["en"]))
+    now_time = 1
+    for lg in groups:
+        for lang in lg:
+            now_time = max(now_time, find_max_time(lg[lang]))
 
     new_groups = []
 
@@ -116,14 +123,16 @@ def rank_threads(groups, agencies):
                 new_group = rank_articles(group, agencies, now_time)
                 new_group["category"] = group["category"]
                 new_group["lang"] = lang
-                new_group["title"] = "HELLO"
+                new_group["title"] = get_title(new_group["articles"])
                 new_groups.append(new_group)
 
     groups = new_groups
     scores = []
+
     for group in groups:
         scores.append(calc_group_score(group, agencies, now_time))
     groups = sort_by_score(scores, groups)
+
     return format_output(groups)
 
 
@@ -255,4 +264,13 @@ if __name__ == '__main__':
         ]
 
     m = load_pagerank("assets/pagerank.txt")
+
+    sample2 = [
+        {
+            "ru": []
+        }
+    ]
+
+    #print(rank_threads(sample, m))
     print(rank_threads(sample, m))
+
