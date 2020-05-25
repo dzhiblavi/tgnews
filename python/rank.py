@@ -1,5 +1,4 @@
-from utility import *
-
+### rank utils
 
 def extract_url_domain(site):
     dom = site.split('/')[2]
@@ -15,54 +14,73 @@ def url_rank_weight(site, agencies):
     return 0.000015
 
 
-def calc_article_score(meta, agencies, nowtime):
-    url_w = url_rank_weight(meta["og:url"], agencies)
-    return url_w * int(meta["published_time"]) / nowtime
+def sort_by_score(scores, vals):
+    return [x for y, x in sorted(zip(scores, vals), key=lambda x: x[0], reverse=True)]
 
 
-# sort articles in each thread
-def rank_articles(groups, agencies):
-    nowtime = current_time()
-
-    result = []
+def find_max_time(groups):
+    ans = 0
 
     for group in groups:
-        newgroup = {"title": group["title"]}
-        scores = []
         for article in group["articles"]:
             for filename in article:
-                scores.append(calc_article_score(article[filename], agencies, nowtime))
-        # print(scores)
-        newgroup["articles"] = [x for y, x in sorted(zip(scores, group["articles"]), key=lambda x: x[0], reverse=True)]
-        result.append(newgroup)
-    return result
+                ans = max(ans, int(article[filename]["published_time"]))
+
+    return ans
+
+
+### calc score of unit
+
+def calc_article_score(meta, agencies, now_time):
+    url_w = url_rank_weight(meta["og:url"], agencies)
+    return url_w * int(meta["published_time"]) / now_time
 
 
 # TODO: nowtime usage
 # TODO: time percentile
-def calc_group_score(group, agencies, nowtime):
-    # print(group)
+def calc_group_score(group, agencies, now_time):
     cnt = len(group["articles"])
     agencies_weight = 0
+
     # index = int(0.9 * (cnt - 1))
     total_time = 0  # replace with percentile
+
     for article in group["articles"]:
         for filename in article:
             meta = article[filename]
             agencies_weight = agencies_weight + url_rank_weight(meta["og:url"], agencies)
             total_time = total_time + int(meta["published_time"])
+
     return agencies_weight * total_time * cnt
+
+
+### rank items in units
+
+# sort articles in thread
+def rank_articles(group, agencies, now_time):
+    new_group = {"title": group["title"]}
+    scores = []
+    for article in group["articles"]:
+        for filename in article:
+            scores.append(calc_article_score(article[filename], agencies, now_time))
+    new_group["articles"] = sort_by_score(scores, group["articles"])
+    return new_group
 
 
 # sort threads
 def rank_threads(groups, agencies):
-    nowtime = current_time()
+    now_time = find_max_time(groups)
+    new_groups = []
 
+    for group in groups:
+        new_groups.append(rank_articles(group, agencies, now_time))
+
+    groups = new_groups
     scores = []
     for group in groups:
-        scores.append(calc_group_score(group, agencies, nowtime))
-    groups = [x for y, x in sorted(zip(scores, groups), key=lambda x: x[0], reverse=True)]
-    return rank_articles(groups, agencies)
+        scores.append(calc_group_score(group, agencies, now_time))
+    groups = sort_by_score(scores, groups)
+    return groups
 
 
 def load_pagerank(path):
@@ -134,4 +152,3 @@ if __name__ == '__main__':
 
     m = load_pagerank("assets/pagerank.txt")
     print(rank_threads(sample, m))
-    # print(rank_articles(sample, m))

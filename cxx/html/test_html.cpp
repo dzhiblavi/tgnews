@@ -133,7 +133,11 @@ TEST(html_parser, simple_time) {
     uint64_t t2 = html::parser::extract_time(s);
     ASSERT_EQ(t2, 1590090743);
 
-    s = "2020-05-21T19:52:23+02:15";
+    s = "2020-05-21T19:52:23-02:15";
     uint64_t t3 = html::parser::extract_time(s);
     ASSERT_EQ(t3, 1590098843);
+
+    s = "2020-05-21T19:52:23+02:15";
+    uint64_t t4 = html::parser::extract_time(s);
+    ASSERT_EQ(t4, 1590082643);
 }

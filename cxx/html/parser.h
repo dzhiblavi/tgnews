@@ -150,10 +150,16 @@ namespace html {
             if (ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S")) {
                 uint64_t gmt = mytimegm(t);
                 // timezone
-                if (s.size() == 25 && s[19] == '+') {
+                if (s.size() == 25) {
                     uint64_t h = (s[20] - '0') * 10 + (s[21] - '0');
                     uint64_t m = (s[23] - '0') * 10 + (s[24] - '0');
-                    gmt += (h*60 + m) * 60;
+                    uint64_t zone = (h*60 + m) * 60;
+
+                    if (s[19] == '+') {
+                        gmt -= zone;
+                    } else if (s[19] == '-'){
+                        gmt += zone;
+                    }
                 }
                 return gmt;
             } else {

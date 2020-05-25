@@ -6,8 +6,6 @@ import pickle
 import warnings
 import json
 from html.parser import HTMLParser
-import calendar
-import time
 import os
 
 
@@ -103,10 +101,6 @@ def load(path):
 
 def tokenize(s):
     return s.split()
-
-
-def current_time():
-    return int(calendar.timegm(time.gmtime()))
 
 
 def collect_files_in_directory(path):
