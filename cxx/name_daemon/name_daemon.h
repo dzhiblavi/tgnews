@@ -40,7 +40,7 @@ public:
 
     bool add(std::string const&, uint64_t published_time, uint64_t end_time);
 
-    uint64_t current_time();
+    [[deprecated]] static uint64_t current_time();
 
     uint64_t max_indexed_time();
 

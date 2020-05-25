@@ -8,14 +8,11 @@ void name_daemon::load_file(std::filesystem::path &&path) {
             return;
         }
         nlohmann::json js = nlohmann::json::parse(data);
-        uint64_t cur_time = current_time();
 
         for (auto it = js.begin(); it != js.end(); it++) {
             uint64_t publ_time = it.value()["published_time"];
             uint64_t end_time = it.value()["end_time"];
-            if (cur_time < end_time) {
-                mt[it.key()] = {publ_time, end_time};
-            }
+            mt[it.key()] = {publ_time, end_time};
         }
     }
 }
@@ -31,7 +28,7 @@ uint64_t name_daemon::max_indexed_time() {
 }
 
 bool name_daemon::compare_time(uint64_t timep) {
-    uint64_t seconds_since_epoch = current_time();
+    uint64_t seconds_since_epoch = max_indexed_time();
     return seconds_since_epoch < timep;
 }
 
@@ -50,7 +47,7 @@ void name_daemon::dump() {
     std::ofstream fout(METAINFO_FILE);
 
     nlohmann::json js;
-    uint64_t cur_time = current_time();
+    uint64_t cur_time = max_indexed_time();
 
     for (auto const &article : mt) {
         if (cur_time < article.second.second) {
@@ -73,7 +70,7 @@ bool name_daemon::remove(std::string const &elem) {
         del_publtimes.push_back(publ_time);
         std::push_heap(del_publtimes.begin(), del_publtimes.end());
 
-        while (!del_publtimes.empty() && current_time() == del_publtimes.front()) {
+        while (!del_publtimes.empty() && max_indexed_time() == del_publtimes.front()) {
             std::pop_heap(publtimes.begin(), publtimes.end());
             std::pop_heap(del_publtimes.begin(), del_publtimes.end());
             publtimes.pop_back();
