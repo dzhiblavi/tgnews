@@ -15,6 +15,7 @@ struct storage {
     std::deque<std::string> data;
     std::mutex m;
     int jobs = 0;
+    bool ds = false;
     timer* tr;
     timer_unit tu{};
 
@@ -31,6 +32,8 @@ struct storage {
 
         if (data.empty()) {
             socket->write(nullptr, 0, {});
+            if (ds)
+                disconnect();
         } else {
             set_on_write(true);
         }
@@ -85,6 +88,11 @@ public:
             if (jobs == 0 && data.empty())
                 disconnect();
         });
+    }
+
+    void set_disconnect_first() {
+        std::lock_guard<std::mutex> lg(m);
+        ds = true;
     }
 };
 

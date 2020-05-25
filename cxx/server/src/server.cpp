@@ -124,6 +124,8 @@ void server::client_connection::on_read(int r) {
 
                     std::cerr << "Setting keep-alive: " << request.fields["Keep-Alive"].c_str() << std::endl;
                     stor.set_end_point(atoi(request.fields["Keep-Alive"].c_str()));
+                } else {
+                    stor.set_disconnect_first();
                 }
 
                 stor.register_task();
@@ -157,6 +159,11 @@ http::response server::process_put(http::request&& request) {
     errlog(8, __func__);
 
     uint64_t publish_time = html::parser::extract_time_from_html(request.body);
+    if (request.fields.find("Cache-Control") == request.fields.end()) {
+        errlog(0, "No Cache-Control in header");
+        return {http::HTTP11, 500, "Invalid request"};
+    }
+
     uint64_t ttl = atoi(request.fields["Cache-Control"].substr(8).c_str());
     uint64_t end_time = publish_time + ttl;
 
