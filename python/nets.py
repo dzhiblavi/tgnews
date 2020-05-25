@@ -4,7 +4,7 @@ from utility import *
 
 en_threads_eps = {
     "entertainment": 1.1,
-    "society": 1.1,
+    "society": 1.08,
     "technology": 1.05,
     "sports": 1.06,
     "science": 1.08,
@@ -13,12 +13,12 @@ en_threads_eps = {
 }
 
 ru_threads_eps = {
-    "entertainment": 1.11,
-    "society": 1.15,
+    "entertainment": 1.09,
+    "society": 1.06,
     "technology": 1.12,
     "sports": 1.13,
     "science": 1.11,
-    "economy": 1.12,
+    "economy": 1.10,
     "other": 1.1
 }
 

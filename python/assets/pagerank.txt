@@ -125,7 +125,6 @@
 0.001130	gizchina.com
 0.001130	newstatesman.com
 0.001127	nevnov.ru
-0.001123	starhit.ru
 0.001110	interfax-russia.ru
 0.001100	newsone.ua
 0.001092	nur.kz
@@ -1154,3 +1153,4 @@
 0.000289	lezgigazet.ru
 0.000289	glasnarod.ru
 0.000289	blendernation.com
+0.000289	starhit.ru
