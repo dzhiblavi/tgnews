@@ -154,5 +154,5 @@ if __name__ == '__main__':
         process_cat(base, path)
     elif net_type == 'threads':
         m = rank.load_pagerank(assets_path(base) + '/pagerank.txt')
-        print(json.dumps(reparse_threads(process_threads_impl(base, path), m), indent=2))
+        print(json.dumps(reparse_threads(process_threads_impl(base, path), m), indent=2, ensure_ascii=False))
 
