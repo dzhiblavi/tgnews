@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 set -e
 
 CXX_OUT_PATH=../cxx/_build

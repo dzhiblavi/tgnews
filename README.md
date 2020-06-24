@@ -18,7 +18,7 @@ Full description (ENG): https://contest.com/docs/data_clustering2/
 
 # How to start
 
-## Stage 0. Install
+## Stage 0. Install and Build
 
 1. Install deb packages from deb-packages.txt
 
@@ -27,6 +27,9 @@ Full description (ENG): https://contest.com/docs/data_clustering2/
 ```
 pymodules.sh
 ```
+3. Execute scripts/assemble-solution.sh
+
+4. Resulting binary file is in solution/
 
 ## Stage 1. Clustering
 
