@@ -95,8 +95,9 @@ def load(path):
     try:
         with open(path, 'rb') as file:
             return pickle.load(file)
-    except Exception:
+    except Exception as e:
         print("ERROR: Failed to load: " + path)
+        print(str(e))
 
 
 def tokenize(s):
