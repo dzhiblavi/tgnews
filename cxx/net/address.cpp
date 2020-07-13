@@ -53,7 +53,7 @@ std::list<address> address::getaddrinfo(std::string const& hostname) {
     std::list<address> ret;
     int r = ::getaddrinfo(hostname.c_str(), nullptr, &hints, &result);
 
-    if (r) {
+    if (0 != r) {
         IPV4_EXC("address::getaddrinfo failed: " + std::string(gai_strerror(r)));
     }
 

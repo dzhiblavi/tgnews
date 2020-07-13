@@ -360,3 +360,4 @@ poll::ev_it poll::begin(int size) {
 poll::ev_it poll::end(int size) {
     return ev_it(events_.data() + size, events_.data() + size);
 }
+

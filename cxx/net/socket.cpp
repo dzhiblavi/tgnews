@@ -11,14 +11,14 @@ namespace {
 #define ioctl ioctlsocket
 #endif
 
-void set_nonblock(ipv4::sock_fd_t handle) {
+void set_nonblock(sock_fd_t handle) {
     unsigned long int on = 1;
     if (0 > ioctl(handle, FIONBIO, &on)) {
         IPV4_EXC();
     }
 }
 
-void sock_enable_resuseaddr(ipv4::sock_fd_t fd) {
+void sock_enable_resuseaddr(sock_fd_t fd) {
 #ifdef WIN32
     char enable = 1;
 #elif defined(__linux) || defined(__APPLE__)
@@ -30,19 +30,19 @@ void sock_enable_resuseaddr(ipv4::sock_fd_t fd) {
     }
 }
 
-ipv4::sock_fd_t sock_create(int domain, int type, int proto) {
-    ipv4::sock_fd_t s = socket(domain, type, proto);
+sock_fd_t sock_create(int domain, int type, int proto) {
+    sock_fd_t s = socket(domain, type, proto);
     if (s < 0) {
         IPV4_EXC();
     }
     return s;
 }
 
-int sock_recv(ipv4::sock_fd_t sockfd, NET_BUFF_PTR buff, size_t maxlen) {
+int sock_recv(sock_fd_t sockfd, NET_BUFF_PTR buff, size_t maxlen) {
     return recv(sockfd, buff, maxlen, 0);
 }
 
-int sock_send(ipv4::sock_fd_t sockfd, NET_BUFF_CPTR buff, size_t len) {
+int sock_send(sock_fd_t sockfd, NET_BUFF_CPTR buff, size_t len) {
     return send(sockfd, buff, len, 0);
 }
 

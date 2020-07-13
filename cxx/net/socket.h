@@ -7,31 +7,14 @@
 #include <cstring>
 #include <cassert>
 
-#ifdef WIN32
-#elif defined(__linux) || defined(__APPLE__)
-#include <sys/socket.h>
-#endif
-
 #include "ipv4_error.h"
 #include "unique_fd.h"
 #include "address.h"
 #include "io_api.h"
+#include "handler.h"
+
 
 namespace ipv4 {
-#ifdef WIN32
-    typedef SOCKET sock_fd_t;
-#define NET_SOCK_CLOSE closesocket
-#define NET_BUFF_PTR char*
-#define NET_BUFF_CPTR char const*
-#define NET_INVALID_SOCKET INVALID_SOCKET
-#elif defined(__linux) || defined(__APPLE__)
-    typedef int sock_fd_t;
-#define NET_SOCK_CLOSE close
-#define NET_BUFF_PTR void*
-#define NET_BUFF_CPTR void const*
-#define NET_INVALID_SOCKET -1
-#endif
-
 typedef unique_fd<sock_fd_t, NET_INVALID_SOCKET, NET_SOCK_CLOSE> sock_ufd;
 
 class basic_socket {
@@ -61,45 +44,6 @@ public:
     void set_nonblock();
 };
 
-template <typename... Args>
-struct handler {
-    typedef std::function<void(Args...)> on_success_fn_t;
-    typedef std::function<void(std::runtime_error)> on_fail_fn_t;
-
-    friend class socket;
-    friend class server_socket;
-
-private:
-    on_success_fn_t on_suc;
-    on_fail_fn_t on_fail;
-
-private:
-    template <typename... ArgsI>
-    void success(ArgsI&&... args) const {
-        on_suc(std::forward<ArgsI>(args)...);
-    }
-
-    void fail(const std::runtime_error& re) const {
-        if (on_fail) {
-            on_fail(re);
-        } else {
-            std::cerr << "Suspended failure: " <<  re.what() << std::endl;
-        }
-    }
-
-public:
-    handler() = default;
-
-    handler(on_success_fn_t on_suc)
-        : handler(std::move(on_suc), {}) {}
-
-    handler(on_success_fn_t on_suc, on_fail_fn_t on_fail)
-        : on_suc(std::move(on_suc)), on_fail(std::move(on_fail)) {}
-
-    operator bool() const noexcept {
-        return bool(on_suc);
-    }
-};
 
 class socket : private basic_socket {
     friend class server_socket;

@@ -34,7 +34,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] int native_handle() const noexcept {
+    [[nodiscard]] T native_handle() const noexcept {
         return fd;
     }
 

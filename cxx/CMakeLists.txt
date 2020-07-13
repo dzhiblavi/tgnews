@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 project(tgserver)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(GTEST_SRC
         ${PROJECT_SOURCE_DIR}/gtest/gtest-all.cc
@@ -41,6 +42,7 @@ set(DAEMON_SRC
         ${PROJECT_SOURCE_DIR}/name_daemon/name_daemon.cpp)
 
 set(NET_SRC
+        ${PROJECT_SOURCE_DIR}/net/basic_include.h
         ${PROJECT_SOURCE_DIR}/net/address.cpp
         ${PROJECT_SOURCE_DIR}/net/address.h
         ${PROJECT_SOURCE_DIR}/net/io_api.cpp

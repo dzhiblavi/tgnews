@@ -1,16 +1,8 @@
-#ifndef WEB_CRACKER_IPV4_EXCEPTION_H
-#define WEB_CRACKER_IPV4_EXCEPTION_H
+#ifndef NET_IPV4_EXCEPTION 
+#define NET_IPV4_EXCEPTION 
 
 #include <string>
 #include <stdexcept>
-
-#if defined(__linux) || defined(__APPLE__)
-#define gerrno errno
-#define NET_EINPROGRESS EINPROGRESS
-#elif defined(WIN32)
-#define gerrno WSAGetLastError()
-#define NET_EINPROGRESS WSAEINPROGRESS
-#endif
 
 #define IPV4_ERROR(X) ipv4::error(std::string("IPV4 ERROR: ") + X \
                         + " in file: " + __FILE__ \
@@ -28,4 +20,4 @@ public:
 };
 } // namespace ipv4
 
-#endif //WEB_CRACKER_IPV4_EXCEPTION_H
+#endif // NET_IPV4_EXCEPTION 

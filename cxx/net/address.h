@@ -1,17 +1,6 @@
 #ifndef NET_ADDRESS_H
 #define NET_ADDRESS_H
 
-#ifdef WIN32
-#define WINVER 0x0A00
-#define _WIN32_WINNT 0x0A00
-#include <ws2tcpip.h>
-#include <winsock2.h>
-#include <windows.h>
-#elif defined(__linux) || defined(__APPLE__)
-#include <arpa/inet.h>
-#include <netdb.h>
-#endif
-
 #include <cstdint>
 #include <string>
 #include <list>
@@ -19,6 +8,8 @@
 #include <iostream>
 
 #include "unique_fd.h"
+#include "basic_include.h"
+
 
 namespace ipv4 {
 struct address {

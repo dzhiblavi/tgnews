@@ -1,11 +1,13 @@
 #ifndef SERVER_STORAGE
 #define SERVER_STORAGE
 
+#include <cstdio>
 #include <deque>
 #include <mutex>
 
 #include "net/socket.h"
 #include "net/timer.h"
+
 
 struct storage {
     typedef std::chrono::time_point<std::chrono::steady_clock, std::chrono::seconds> time_point_t;
